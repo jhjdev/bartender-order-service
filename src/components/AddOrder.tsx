@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable react-hooks/rules-of-hooks */
-
-import { useEffect } from "react";
 import { useSharedOrdersState } from "../state/totalOrder.state";
 
 export const AddToOrder = () => {

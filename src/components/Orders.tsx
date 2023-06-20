@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable react-hooks/rules-of-hooks */
-
 import { useEffect } from "react";
 import { useSharedOrdersState } from "../state/totalOrder.state";
 
@@ -48,50 +45,53 @@ export const Orders = () => {
         <div className="grid grid-cols-1 gap-4 justify-evenly m-8">
           <h2 className="text-2xl text-blue-900">Served Drinks:</h2>
         </div>
-        {servedDrinks.map((drink, index) => (
-          <>
-            <div className="rounded-lg">
-              <div className="justify-center center-items bg-white dark:bg-gray-950">
-                <div className="max-w-md rounded-3xl p-px bg-gradient-to-b from-blue-300 to-pink-300 dark:from-blue-800 dark:to-purple-800 ">
-                  <div className="rounded-[calc(1.5rem-1px)] p-10 bg-white dark:bg-gray-900">
-                    <div className="flex gap-4 items-center">
-                      <p
-                        key={index}
-                        className="text-gray-700 dark:text-gray-300"
-                      >
-                        {drink}
-                      </p>
+        <div className="grid grid-cols-4 gap-4 justify-evenly m-8">
+          {servedDrinks.map((drink, index) => (
+            <>
+              <div className="rounded-lg">
+                <div className="justify-center center-items bg-white dark:bg-gray-950">
+                  <div className="max-w-md rounded-3xl p-px bg-gradient-to-b from-blue-300 to-pink-300 dark:from-blue-800 dark:to-purple-800 ">
+                    <div className="rounded-[calc(1.5rem-1px)] p-10 bg-white dark:bg-gray-900">
+                      <div className="flex gap-4 items-center">
+                        <p
+                          key={index}
+                          className="text-gray-700 dark:text-gray-300"
+                        >
+                          {drink}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </>
-        ))}
-
+            </>
+          ))}
+        </div>
         <div className="grid grid-cols-1 gap-4 justify-evenly m-8">
           <h2 className="text-2xl text-blue-900 pt-5">Completed orders:</h2>
         </div>
-        {servedCustomers.map((customer, index) => (
-          <>
-            <div className="rounded-lg">
-              <div className="justify-center center-items bg-white dark:bg-gray-950">
-                <div className="max-w-md rounded-3xl p-px bg-gradient-to-b from-blue-300 to-pink-300 dark:from-blue-800 dark:to-purple-800 ">
-                  <div className="rounded-[calc(1.5rem-1px)] p-10 bg-white dark:bg-gray-900">
-                    <div className="flex gap-4 items-center">
-                      <p
-                        key={index + 1}
-                        className="text-gray-700 dark:text-gray-300"
-                      >
-                        {customer}
-                      </p>
+        <div className="grid grid-cols-4 gap-4 justify-evenly m-8">
+          {servedCustomers.map((customer, index) => (
+            <>
+              <div className="rounded-lg">
+                <div className="justify-center center-items bg-white dark:bg-gray-950">
+                  <div className="max-w-md rounded-3xl p-px bg-gradient-to-b from-blue-300 to-pink-300 dark:from-blue-800 dark:to-purple-800 ">
+                    <div className="rounded-[calc(1.5rem-1px)] p-10 bg-white dark:bg-gray-900">
+                      <div className="flex gap-4 items-center">
+                        <p
+                          key={index}
+                          className="text-gray-700 dark:text-gray-300"
+                        >
+                          {customer}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </>
-        ))}
+            </>
+          ))}
+        </div>
       </div>
     </>
   );
