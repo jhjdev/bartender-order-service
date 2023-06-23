@@ -28,7 +28,7 @@ export const Orders = () => {
               120,00
             </div>
           </div>
-          <div className="w-full px-4 py-5 bg-white rounded-lg shadow">
+          <div className="w-full px-4 py-5 bg-white border-cyan-700 border-2 shadow-cyan-700/50 rounded-lg shadow">
             <div className="text-sm font-medium text-gray-500 truncate">
               Total Profit
             </div>
@@ -36,7 +36,7 @@ export const Orders = () => {
               $ 450k
             </div>
           </div>
-          <div className="w-full px-4 py-5 bg-white rounded-lg shadow">
+          <div className="w-full px-4 py-5 bg-white border-cyan-700 border-2 shadow-cyan-700/50 rounded-lg shadow">
             <div className="text-sm font-medium text-gray-500 truncate">
               Total Orders
             </div>

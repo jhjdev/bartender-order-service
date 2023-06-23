@@ -34,7 +34,7 @@ export const AddToOrder = () => {
     <>
       <div className="container max-w-full mt-4">
         <div className="grid grid-cols-1 gap-6 mb-6 lg:grid-cols-3">
-          <div className="w-full px-4 py-5 bg-white rounded-lg shadow">
+          <div className="w-full px-4 py-5 bg-white border-cyan-700 border-2 shadow-cyan-700/50 rounded-lg shadow">
             <div className="text-sm font-medium text-gray-500 truncate">
               Total Customers
             </div>
@@ -42,7 +42,7 @@ export const AddToOrder = () => {
               120,00
             </div>
           </div>
-          <div className="w-full px-4 py-5 bg-white rounded-lg shadow">
+          <div className="w-full px-4 py-5 bg-white border-cyan-700 border-2 shadow-cyan-700/50 rounded-lg shadow">
             <div className="text-sm font-medium text-gray-500 truncate">
               Total Profit
             </div>
@@ -50,7 +50,7 @@ export const AddToOrder = () => {
               $ 450k
             </div>
           </div>
-          <div className="w-full px-4 py-5 bg-white rounded-lg shadow">
+          <div className="w-full px-4 py-5 bg-white border-cyan-700 border-2 shadow-cyan-700/50 rounded-lg shadow">
             <div className="text-sm font-medium text-gray-500 truncate">
               Total Orders
             </div>
@@ -58,9 +58,9 @@ export const AddToOrder = () => {
           </div>
         </div>
         <div className="grid gap-6 mb-6 center-items justify-center">
-          <div className="w-full px-4 py-5 bg-white rounded-lg shadow">
+          <div className="w-full px-4 py-5 bg-white border-cyan-700 border-2 shadow-cyan-700/50 rounded-lg shadow">
             <div className="space-y-12">
-              <div className="border-b border-gray-900/10 pb-12">
+              <div className="tw-border-solid border-b-2 border-cyan-700 shadow-cyan-700/50 pb-12">
                 <h2 className="text-base font-semibold leading-7 text-gray-900">
                   New drink order:
                 </h2>

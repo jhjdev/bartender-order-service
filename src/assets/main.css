@@ -746,17 +746,13 @@ video {
   border-width: 2px;
 }
 
-.border-b {
-  border-bottom-width: 1px;
+.border-b-2 {
+  border-bottom-width: 2px;
 }
 
 .border-cyan-700 {
   --tw-border-opacity: 1;
   border-color: rgb(14 116 144 / var(--tw-border-opacity));
-}
-
-.border-gray-900\/10 {
-  border-color: rgb(17 24 39 / 0.1);
 }
 
 .bg-blue-600 {
