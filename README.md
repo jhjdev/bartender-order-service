@@ -1,6 +1,6 @@
 # bartender-order-service
 
-A simple bartender Order service example app with a NodeJS API backend and a ReactJS frontend.
+A simple bartender order service example app with a NodeJS API backend and a ReactJS frontend.
 
 To install:
 
