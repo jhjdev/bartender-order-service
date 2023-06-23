@@ -27,12 +27,9 @@ app.post("/orders", (req, res) => {
   const { customerNumber, drinkType } = req.body;
 
   // Check if the barman can accept the order
-  if (
-    drinkType === "BEER" &&
-    servedDrinks.length >= 2 &&
-    drinkType === "DRINK" &&
-    servedDrinks.length >= 1
-  ) {
+  if (drinkType === "BEER" && servedDrinks.length >= 2) {
+    res.status(429).send("Cannot accept order at the moment");
+  } else if (drinkType === "DRINK" && servedDrinks.length >= 1) {
     res.status(429).send("Cannot accept order at the moment");
   } else {
     // Add the order to the served drinks and customers
