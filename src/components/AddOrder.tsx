@@ -32,7 +32,7 @@ export const AddToOrder = () => {
   };
   return (
     <>
-      <div className="container mx-auto w-screen">
+      <div className="container max-w-full mt-4">
         <div className="grid grid-cols-1 gap-6 mb-6 lg:grid-cols-3">
           <div className="w-full px-4 py-5 bg-white rounded-lg shadow">
             <div className="text-sm font-medium text-gray-500 truncate">
@@ -58,7 +58,7 @@ export const AddToOrder = () => {
           </div>
         </div>
         <div className="grid gap-6 mb-6 center-items justify-center">
-          <div className="w-10/12 px-4 py-5 bg-white rounded-lg shadow">
+          <div className="w-full px-4 py-5 bg-white rounded-lg shadow">
             <div className="space-y-12">
               <div className="border-b border-gray-900/10 pb-12">
                 <h2 className="text-base font-semibold leading-7 text-gray-900">

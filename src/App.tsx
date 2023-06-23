@@ -6,14 +6,17 @@ import "./App.css";
 function App() {
   return (
     <BrowserRouter>
-      <div className="flex">
-        <div className="flex h-screen fixed left-0 top-0">
+      <main className="flex flex-col h-screen w-screen">
+        <div className="flex flex-1 overflow-hidden">
           <Sidebar />
+          <div className="flex flex-1">
+            {/* <div className="flex bg-gray-300 h-16 p-4">Header</div> */}
+            <div className="flex flex-1 overflow-y-auto px-4">
+              <Router />
+            </div>
+          </div>
         </div>
-        <div className="flex h-screen relative left-64 top-0 mt-6">
-          <Router />
-        </div>
-      </div>
+      </main>
     </BrowserRouter>
   );
 }
