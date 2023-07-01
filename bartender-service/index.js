@@ -1,7 +1,11 @@
 import express from "express";
+import http from "http";
 import cors from "cors";
+import { createTerminus } from "@godaddy/terminus";
 
 const app = express();
+
+const server = http.createServer(app);
 
 // Store the served drinks and customers in memory
 let servedDrinks = [];
@@ -60,14 +64,35 @@ app.get("/served", (req, res) => {
   res.json({ servedDrinks, servedCustomers });
 });
 
-// Start the server
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+const onSignal = () => {
+  console.log("server is starting cleanup");
+  return Promise.all([
+    // your clean logic, like closing database connections
+  ]);
+};
+
+const onShutdown = () => {
+  console.log("cleanup finished, server is shutting down");
+};
+
+const healthCheck = ({ state }) => {
+  // `state.isShuttingDown` (boolean) shows whether the server is shutting down or not
+  return Promise
+    .resolve
+    // optionally include a resolve value to be included as
+    // info in the health check response
+    ();
+};
+
+createTerminus(server, {
+  signal: "SIGINT",
+  healthChecks: { "/healthcheck": healthCheck },
+  onSignal,
+  onShutdown,
 });
 
-process.on("SIGINT", function () {
-  console.log("\nGracefully shutting down from SIGINT (Ctrl-C)");
-  // some other closing procedures go here
-  process.exit(0);
+// Start the server
+const PORT = process.env.PORT || 3001;
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

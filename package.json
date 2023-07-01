@@ -6,8 +6,7 @@
   "proxy": "http://localhost:3001",
   "scripts": {
     "start": "yarn watch:css & node bartender-service/index.js & vite",
-    "build": "yarn build:css & tsc & vite build",
-    "build:css": "postcss src/assets/tailwind.css -o src/assets/main.css",
+    "build": "yarn watch:css & tsc & vite build",
     "watch:css": "postcss src/assets/tailwind.css -o src/assets/main.css",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
@@ -35,6 +34,7 @@
     "use-between": "^1.3.5"
   },
   "devDependencies": {
+    "@godaddy/terminus": "^4.12.1",
     "@types/react": "^18.0.37",
     "@types/react-dom": "^18.0.11",
     "@types/uuid": "^9.0.2",
