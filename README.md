@@ -28,7 +28,7 @@ Start the server
 yarn start
 ```
 
-### Yarn start will also start the NodeJS backend on port 4000.
+#### Yarn start will also start the NodeJS backend on port 4000. ####
 
 ## Features and requirements:
 
