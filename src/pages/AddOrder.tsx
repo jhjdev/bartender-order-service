@@ -12,6 +12,7 @@ export const AddToOrder = () => {
     setStatus,
     drinkCount,
     setDrinkCount,
+    orders,
   } = useSharedOrdersState();
 
   const handleCustomerNumberChange = (
@@ -69,9 +70,9 @@ export const AddToOrder = () => {
     <>
       <div className="container max-w-full mt-4">
         <div className="grid grid-cols-1 gap-6 mb-6 lg:grid-cols-3">
-          <InfoCard headline="Total Customers" text={customerNumber.length} />
+          <InfoCard headline="Total Number of Orders" text={orders.length} />
+          <InfoCard headline="Total Number of Drinks" text={20 + "k"} />
           <InfoCard headline="Total Profit" text={"$ " + 450 + "k"} />
-          <InfoCard headline="Total Orders" text={20 + "k"} />
         </div>
         <div className="w-full grid gap-6 mb-6">
           <div className="w-7/12 px-4 py-5 bg-white border-cyan-700 border-2 shadow-cyan-700/50 rounded-lg shadow flex-col mx-auto">

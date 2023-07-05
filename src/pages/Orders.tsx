@@ -33,9 +33,9 @@ export const Orders = () => {
     <>
       <div className="container max-w-full mt-4">
         <div className="grid grid-cols-1 gap-6 mb-10 lg:grid-cols-3">
-          <InfoCard headline="Total Customers" text={customerNumber.length} />
+          <InfoCard headline="Total Number of Orders" text={orders.length} />
+          <InfoCard headline="Total Number of Drinks" text={20 + "k"} />
           <InfoCard headline="Total Profit" text={"$ " + 450 + "k"} />
-          <InfoCard headline="Total Orders" text={20 + "k"} />
         </div>
         <div className="grid grid-cols-1 gap-4 justify-evenly m-2">
           <h2 className="text-2xl text-blue-900 dark:text-white">
