@@ -9,4 +9,4 @@ To install:
 3. yarn
 4. Yarn start
 
-Yarn start will also start the NodeJS backend on port 3001.
+Yarn start will also start the NodeJS backend on port 4000.
