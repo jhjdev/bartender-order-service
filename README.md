@@ -11,7 +11,7 @@ To install:
 
 Yarn start will also start the NodeJS backend on port 4000.
 
-// TODO:
+  // TODO:
   1. Add total amount of ordered drinks of both drink types to the API
   2. Add price field to the order form
   3. Add total price for all orders to the API
