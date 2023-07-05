@@ -37,8 +37,14 @@ yarn start
   - Responds with 429 code when order is not accepted at the moment.
   - Respond with 409 code if a customer number already exists.
 - When a post request is made, it is stored in the API.
-  • The NodeJS Typescript API is separated into server.ts, orderController.ts and a Order.ts Model.
-  • The Dashboard ReactJS Typescript Dashboard includes two components at the moment: - AddOrder.tsx where you can create a new order. - Orders.tsx where you can view orders that have been created.
+- The NodeJS Typescript API is separated into:
+  - index.ts (NodeJS server)
+  - orderController.ts (controller)
+  - order.ts (modal)
+- The Dashboard ReactJS Typescript Dashboard includes two components at the moment:
+
+  - AddOrder.tsx where you can create a new order.
+  - Orders.tsx where you can view orders that have been created.
 
 - The barman can prepare at once 2 beers (drinks of BEER type) or 1 drink (DRINK type)
 - Preparing one drink takes X seconds (5 by default) regardless of drink type.
