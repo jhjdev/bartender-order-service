@@ -48,7 +48,9 @@ yarn start
 - Each order can either include 1 or two drinks of type BEER, or 1 drink of type DRINK. but never both types. You can choose drink of type BEER 2 times.
 - Customer numbers must be unique. If you try to enter the same customer number twice, a message with the status code 409 will appear.
 
-#### See the Roadmap section for list of improvements and changes. ## Roadmap
+#### See the Roadmap section for list of improvements and changes.
+
+## Roadmap
 
 - Full CRUD implementation, with update and delete functionality as well.
 
