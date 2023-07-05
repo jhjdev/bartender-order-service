@@ -43,8 +43,8 @@ yarn start
   - order.ts (modal)
 - The Dashboard ReactJS Typescript Dashboard includes two components at the moment:
 
-  - AddOrder.tsx where you can create a new order.
-  - Orders.tsx where you can view orders that have been created.
+  - AddOrder.tsx (where you can create a new order).
+  - Orders.tsx (where you can view orders that have been created).
 
 - The barman can prepare at once 2 beers (drinks of BEER type) or 1 drink (DRINK type)
 - Preparing one drink takes X seconds (5 by default) regardless of drink type.
