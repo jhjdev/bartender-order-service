@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
-import Orders from "../components/Orders";
-import AddOrder from "../components/AddOrder";
-import ErrorMessage from "../components/ErrorPage";
+import Orders from "../pages/Orders";
+import AddOrder from "../pages/AddOrder";
+import ErrorMessage from "../pages/ErrorPage";
 
 const Router = () => {
   /* nesting routes*/
