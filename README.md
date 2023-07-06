@@ -68,6 +68,10 @@ yarn start
 
 - Add total amount of all drink ordres in the info cards at at the top.
 
+- Move the form into orderForm component
+
+- Add tests.
+
 - Cleanup Tailwind CSS classes
 
 - Add a notification service that will display when an order is created, updated or deleted.
