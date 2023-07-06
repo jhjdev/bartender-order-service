@@ -48,7 +48,7 @@ yarn start
 
 - The barman can prepare at once 2 beers (drinks of BEER type) or 1 drink (DRINK type)
 - Preparing one drink takes X seconds (5 by default) regardless of drink type.
-- Drink requess get the response as soon as barman starts to prepare a drink. It is be delayed for the time of the drink preparation.
+- Drink requess get the response as soon as barman starts to prepare a drink, and is not delayed for the time of the drink preparation.
 - Each drink order contains a customer number, a drink type, and number of drinks ordered.
 - Each order is grouped in a from request that posts the order to the API.
 - Each order can either include 1 or two drinks of type BEER, or 1 drink of type DRINK. but never both types. You can choose drink of type BEER 2 times.
