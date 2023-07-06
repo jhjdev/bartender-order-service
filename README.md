@@ -35,7 +35,7 @@ yarn start
 - The service accepts a POST requests with customer number and drink type (BEER|DRINK) and:
   - Responds with 200 code when ordered drink will be served.
   - Responds with 429 code when order is not accepted at the moment.
-  - Respond with 409 code if a customer number already exists.
+  - Responds with 409 code if a customer number already exists.
 - When a post request is made, it is stored in the API.
 - The NodeJS Typescript API is separated into:
   - index.ts (NodeJS server)
