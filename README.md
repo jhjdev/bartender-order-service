@@ -41,7 +41,7 @@ yarn start
   - index.ts (NodeJS server)
   - orderController.ts (controller)
   - order.ts (modal)
-- The ReactJS Typescript Dashboard includes two components at the moment:
+- The ReactJS Typescript Dashboard includes two page components at the moment:
 
   - AddOrder.tsx (where you can create a new order).
   - Orders.tsx (where you can view orders that have been created).
