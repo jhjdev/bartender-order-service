@@ -4,7 +4,7 @@ import { PageNotFoundBtn } from "../assets/svg/PageNotFoundBtn";
 const ErrorMessage = () => {
   return (
     <>
-      <div className="h-screen w-screen flex">
+      <div className="h-screen w-full flex">
         <div className="flex flex-col justify-center mx-auto">
           <div className="flex-col items-center justify-center">
             <PageNotFoundArt />
