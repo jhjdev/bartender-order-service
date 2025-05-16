@@ -1,68 +1,48 @@
-import { useSharedOrdersState } from "../state/totalOrder.state";
+import { useState } from "react";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import Button from "../components/Button";
 import InfoCard from "../components/InfoCard";
+import { createOrder } from "../redux/slices/orderSlice";
+import { RootState } from "../redux/store";
 
-export const AddToOrder = () => {
-  const {
-    drinkType,
-    setDrinkType,
-    customerNumber,
-    setCustomerNumber,
-    status,
-    setStatus,
-    drinkCount,
-    setDrinkCount,
-    orders,
-  } = useSharedOrdersState();
+export const AddOrder = () => {
+  const dispatch = useAppDispatch();
+  const { orders, loading, error } = useAppSelector((state: RootState) => state.orders);
+  
+  const [customerNumber, setCustomerNumber] = useState("");
+  const [tableNumber, setTableNumber] = useState<number>(1);
+  const [status, setStatus] = useState<string>("");
 
-  const handleCustomerNumberChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const totalDrinks = orders.reduce((sum, order) => {
+    return sum + order.items.reduce((itemSum, item) => itemSum + item.quantity, 0);
+  }, 0);
+
+  const totalProfit = orders.reduce((sum, order) => {
+    return sum + order.total;
+  }, 0);
+
+  const handleCustomerNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCustomerNumber(event.target.value);
   };
 
-  const handleDrinkTypeChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    setDrinkType(event.target.value as "BEER" | "DRINK");
-  };
-
-  const handleDrinkCountChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setDrinkCount(parseInt(event.target.value, 10));
+  const handleTableNumberChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setTableNumber(Number(event.target.value));
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:4000/orders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          customerNumber,
-          drinkType,
-          drinkCount,
-        }),
-      });
-
-      if (response.ok) {
-        setStatus("Order placed successfully");
-      } else if (response.status === 409) {
-        setStatus("Customer number already exists");
-        // Handle 409 Conflict error if needed
-      } else if (response.status === 429) {
-        setStatus("Order not accepted at the moment");
-        // Handle 429 Too Many Requests error if needed
-      } else {
-        setStatus("Failed to place order");
-        // Handle other errors if needed
-      }
-    } catch (error) {
-      console.error(error); // Optional: Handle error
+      await dispatch(createOrder({
+        customerNumber,
+        tableNumber,
+        items: []  // Items will be added through drink selection
+      })).unwrap();
+      
+      setStatus("Order created successfully");
+      setCustomerNumber("");
+    } catch (error: any) {
+      setStatus(error.message || "Failed to create order");
     }
   };
 
@@ -70,24 +50,28 @@ export const AddToOrder = () => {
     <>
       <div className="container max-w-full mt-4">
         <div className="grid grid-cols-1 gap-6 mb-6 lg:grid-cols-3">
-          <InfoCard headline="Total Number of Orders" text={orders.length} />
-          <InfoCard headline="Total Number of Drinks" text={20 + "k"} />
-          <InfoCard headline="Total Profit" text={"$ " + 450 + "k"} />
+          <InfoCard 
+            headline="Total Number of Orders" 
+            text={orders.length.toString()} 
+          />
+          <InfoCard 
+            headline="Total Number of Drinks" 
+            text={totalDrinks.toString()} 
+          />
+          <InfoCard 
+            headline="Total Profit" 
+            text={`$ ${totalProfit.toFixed(2)}`} 
+          />
         </div>
         <div className="w-full grid gap-6 mb-6">
           <div className="w-7/12 px-4 py-5 bg-white border-cyan-700 border-2 shadow-cyan-700/50 rounded-lg shadow flex-col mx-auto">
             <div className="space-y-12">
               <div className="tw-border-solid border-b-2 border-cyan-700 shadow-cyan-700/50 pb-12">
                 <h2 className="text-base font-semibold leading-7 text-gray-900">
-                  New drink order:
+                  New Order:
                 </h2>
                 <p className="mt-1 text-sm leading-6 text-gray-600">
-                  Fill in customer number, and the amount of beers and drinks
-                  you want to order. <br />
-                  <span className="text-red-600">
-                    Please note that you can order a maximum of 2 drinks of type
-                    BEER in one order or one drink of type DRINK.
-                  </span>
+                  Create a new order by entering a customer number and selecting a table.
                 </p>
                 <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                   <div className="sm:col-span-4">
@@ -107,6 +91,7 @@ export const AddToOrder = () => {
                             id="customerNumber"
                             value={customerNumber}
                             onChange={handleCustomerNumberChange}
+                            required
                           />
                         </div>
                       </div>
@@ -114,19 +99,23 @@ export const AddToOrder = () => {
                         <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                           <label
                             className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                            htmlFor="drinkType"
+                            htmlFor="tableNumber"
                           >
-                            Drink Type:
+                            Table Number:
                           </label>
                           <div className="relative">
                             <select
                               className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                              id="drinkType"
-                              value={drinkType}
-                              onChange={handleDrinkTypeChange}
+                              id="tableNumber"
+                              value={tableNumber}
+                              onChange={handleTableNumberChange}
+                              required
                             >
-                              <option value="BEER">Beer</option>
-                              <option value="DRINK">Drink</option>
+                              {Array.from({ length: 12 }, (_, i) => i + 1).map((num) => (
+                                <option key={num} value={num}>
+                                  Table {num}
+                                </option>
+                              ))}
                             </select>
                             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                               <svg
@@ -140,48 +129,24 @@ export const AddToOrder = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="flex flex-wrap -mx-3 mb-6">
-                        <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                          <label
-                            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                            htmlFor="drinkCount"
-                          >
-                            Drink Count:
-                          </label>
-                          <input
-                            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                            type="number"
-                            id="drinkCount"
-                            value={drinkCount}
-                            onChange={handleDrinkCountChange}
-                          />
-                        </div>
-                      </div>
-                      <Button type="submit" text="Place Order" />
+                      <Button 
+                        type="submit" 
+                        text={loading ? "Creating Order..." : "Create Order"} 
+                        disabled={loading}
+                      />
                     </form>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="mt-6 flex items-center justify-end gap-x-6">
-              {Number(status) !== 0 && (
-                <p className="dark:text-gray-600 text-gray-600">
-                  Status Code:
-                  <span
-                    className={
-                      status === "Order not accepted at the moment" ||
-                      status === "Failed to place order" ||
-                      status === "Customer number already exists"
-                        ? "dark:text-red-600 text-red-600"
-                        : "dark:text-green-600 text-green-600"
-                    }
-                  >
-                    {status}
-                  </span>
+            {(status || error) && (
+              <div className="mt-6 flex items-center justify-end gap-x-6">
+                <p className={`text-${error ? 'red' : 'green'}-600`}>
+                  {status || error}
                 </p>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -189,4 +154,4 @@ export const AddToOrder = () => {
   );
 };
 
-export default AddToOrder;
+export default AddOrder;
