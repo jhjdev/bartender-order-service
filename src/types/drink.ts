@@ -7,6 +7,12 @@ export enum DrinkCategory {
   NON_ALCOHOLIC = 'NON_ALCOHOLIC',
 }
 
+export interface ImageData {
+  _id: string;
+  url: string;
+  name: string;
+}
+
 export interface Drink {
   _id: string;
   name: string;
@@ -14,7 +20,7 @@ export interface Drink {
   price: number;
   description?: string;
   available: boolean;
-  imageUrl?: string;
+  imageData?: ImageData;
   alcoholPercentage?: number;
   brewery?: string;
   wineType?: string;

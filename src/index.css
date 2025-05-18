@@ -1,7 +1,107 @@
+/* Reset all font sizes and prevent changes */
+*,
+*::before,
+*::after {
+  font-size: 16px !important;
+  -webkit-text-size-adjust: none !important;
+  text-size-adjust: none !important;
+  transform: none !important;
+  scale: 1 !important;
+  zoom: 1 !important;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Lock font sizes throughout the application */
+#root,
+#root * {
+  font-size: 16px !important;
+  -webkit-text-size-adjust: none !important;
+  text-size-adjust: none !important;
+  transform: none !important;
+  scale: 1 !important;
+}
+
+/* Specific form styles */
+.staff-form {
+  font-size: 16px !important;
+  -webkit-text-size-adjust: none !important;
+  text-size-adjust: none !important;
+  transform: none !important;
+  scale: 1 !important;
+  zoom: 1 !important;
+}
+
+.staff-form * {
+  font-size: 16px !important;
+  -webkit-text-size-adjust: none !important;
+  text-size-adjust: none !important;
+  transform: none !important;
+  scale: 1 !important;
+  zoom: 1 !important;
+}
+
+/* Ensure form elements maintain size */
+input,
+select,
+textarea {
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+  -webkit-text-size-adjust: 100% !important;
+  text-size-adjust: 100% !important;
+  transform: none !important;
+  scale: 1 !important;
+  zoom: 1 !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  max-height: 999999px !important; /* Prevent iOS zoom */
+}
+
+/* Prevent font size changes on focus */
+input:focus,
+select:focus,
+textarea:focus,
+.prevent-zoom {
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+  -webkit-text-size-adjust: 100% !important;
+  text-size-adjust: 100% !important;
+  transform: none !important;
+  scale: 1 !important;
+  zoom: 1 !important;
+}
+
+/* Chrome-specific fixes */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  input,
+  select,
+  textarea,
+  input:focus,
+  select:focus,
+  textarea:focus,
+  .prevent-zoom {
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+    -webkit-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
+    transform: none !important;
+    scale: 1 !important;
+    zoom: 1 !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+}
+
+/* Override any potential Tailwind transforms */
+* {
+  transform: none !important;
+}
+
+/* Base styles */
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -21,12 +121,12 @@
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #4B5563;
+  background: #4b5563;
   border-radius: 2px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #6B7280;
+  background: #6b7280;
 }
 
 /* Hide scrollbar for mobile devices */
@@ -45,6 +145,8 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  -webkit-text-size-adjust: 100% !important;
+  text-size-adjust: 100% !important;
 }
 
 #root {
@@ -55,6 +157,8 @@ body {
 /* Prevent content shift when scrollbar appears */
 html {
   scrollbar-gutter: stable;
+  -webkit-text-size-adjust: 100% !important;
+  text-size-adjust: 100% !important;
 }
 
 /* Smooth transitions */
@@ -74,7 +178,8 @@ html {
 
 /* Improve button/link tap targets on mobile */
 @media (max-width: 768px) {
-  button, a {
+  button,
+  a {
     min-height: 44px;
     min-width: 44px;
   }
@@ -87,5 +192,28 @@ html {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Prevent zoom on input focus */
+input[type='text'],
+input[type='email'],
+input[type='tel'],
+input[type='date'],
+select {
+  font-size: 16px !important;
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Prevent zoom on iOS */
+@supports (-webkit-touch-callout: none) {
+  input[type='text'],
+  input[type='email'],
+  input[type='tel'],
+  input[type='date'],
+  select {
+    font-size: 16px !important;
   }
 }

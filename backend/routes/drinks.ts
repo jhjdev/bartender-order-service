@@ -1,8 +1,7 @@
 import { Router } from 'express';
 import { ObjectId } from 'mongodb';
 import { client } from '../config/db';
-import { Drink, DrinkCategory } from '../types/drink';
-import path from 'path';
+import { DrinkCategory } from '../types/drink';
 
 const router = Router();
 const drinks = client.db().collection('drinks');
@@ -18,13 +17,10 @@ router.get('/', async (req, res) => {
       })
       .toArray();
 
-    // Transform ObjectIds to strings and convert image URLs to relative paths
+    // Transform ObjectIds to strings
     const drinksWithStringIds = allDrinks.map((drink) => ({
       ...drink,
       _id: drink._id.toString(),
-      imageUrl: drink.imageUrl
-        ? `/uploads/${path.basename(drink.imageUrl)}`
-        : undefined,
     }));
 
     res.json(drinksWithStringIds);
@@ -36,7 +32,10 @@ router.get('/', async (req, res) => {
 // Add new drink
 router.post('/', async (req, res) => {
   try {
-    const drink: Omit<Drink, '_id'> = req.body;
+    const drink = {
+      ...req.body,
+      _id: new ObjectId(),
+    };
     const result = await drinks.insertOne(drink);
     res.status(201).json({
       ...drink,
@@ -55,8 +54,7 @@ router.put('/:id', async (req, res) => {
       return res.status(400).json({ message: 'Invalid drink ID format' });
     }
 
-    const updateData: Partial<Drink> = req.body;
-    // Remove _id from update data if it exists
+    const updateData = { ...req.body };
     delete updateData._id;
 
     const result = await drinks.findOneAndUpdate(

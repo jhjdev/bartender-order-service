@@ -1,84 +1,49 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
-import path from 'path';
 import { connectDB } from './config/db';
-import { authMiddleware } from './middleware/auth';
+import authRoutes from './routes/auth';
+import drinksRoutes from './routes/drinks';
+import cocktailsRoutes from './routes/cocktails';
+import imageRoutes from './routes/images';
+import staffRoutes from './routes/staff';
+import ordersRoutes from './routes/orders';
+import * as dotenv from 'dotenv';
+import * as path from 'path';
 
-// Import routes
-import authRouter from './routes/auth';
-import drinksRouter from './routes/drinks';
-import cocktailsRouter from './routes/cocktails';
-import imagesRouter from './routes/images';
-import employeesRouter from './routes/employees';
-import shiftsRouter from './routes/shifts';
-import reportsRouter from './routes/reports';
-import tablesRouter from './routes/tables';
-import filesRouter from './routes/files';
-import ordersRouter from './routes/orders';
-
-dotenv.config();
+// Load environment variables from root .env file
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
-const port = process.env.PORT || 4000;
-
-// CORS configuration
-const corsOptions = {
-  origin: ['http://localhost:5173', 'http://localhost:4000'],  // Frontend dev server and backend
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-};
+const PORT = process.env.PORT || 4000;
 
 // Middleware
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-// Serve static files
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use('/uploads/documents', express.static(path.join(__dirname, 'uploads', 'documents')));
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/drinks', drinksRoutes);
+app.use('/api/cocktails', cocktailsRoutes);
+app.use('/api/staff', staffRoutes);
+app.use('/api/orders', ordersRoutes);
+app.use('/api/images', imageRoutes);
 
-// Health check route
-app.get('/api/health', (req: Request, res: Response) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString() });
-});
-
-// Public routes
-app.use('/api/auth', authRouter);
-
-// Protected routes
-app.use('/api/drinks', drinksRouter);
-app.use('/api/cocktails', cocktailsRouter);
-app.use('/api/images', imagesRouter);
-app.use('/api/employees', employeesRouter);
-app.use('/api/shifts', shiftsRouter);
-app.use('/api/reports', reportsRouter);
-app.use('/api/tables', tablesRouter);
-app.use('/api/files', filesRouter);
-app.use('/api/orders', ordersRouter);
-
-// Error handling middleware
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  console.error('Error:', err);
-  res.status(err.status || 500).json({
-    message: err.message || 'Something went wrong!',
-    error: process.env.NODE_ENV === 'development' ? err : {}
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'OK',
+    timestamp: new Date().toISOString(),
   });
 });
 
-// Connect to MongoDB and start server
-const startServer = async () => {
-  try {
-    await connectDB();
-    console.log('Connected to MongoDB');
-    app.listen(port, () => {
-      console.log(`Server is running on port ${port}`);
+// Connect to database and start server
+connectDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
     });
-  } catch (error) {
+  })
+  .catch((error) => {
     console.error('Failed to start server:', error);
     process.exit(1);
-  }
-};
-
-startServer();
+  });

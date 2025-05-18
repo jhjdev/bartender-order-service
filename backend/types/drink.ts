@@ -1,4 +1,3 @@
-import { BaseDocument } from './mongodb';
 import { ObjectId } from 'mongodb';
 
 export enum DrinkCategory {
@@ -10,9 +9,9 @@ export enum DrinkCategory {
 }
 
 export interface ImageData {
+  _id: string;
   url: string;
-  source: 'upload' | 'unsplash';
-  unsplashId?: string;
+  name: string;
 }
 
 // Client-side interface for creating and updating
@@ -22,7 +21,6 @@ export interface Drink {
   price: number;
   description?: string;
   isAvailable: boolean;
-  imageUrl?: string;
   imageData?: ImageData;
 }
 
@@ -30,6 +28,9 @@ export interface CocktailRecipe extends Drink {
   ingredients: { name: string; amount: string; unit: string }[];
   instructions: string[];
   isInMenu: boolean;
+  glassType?: string;
+  garnish?: string;
+  preparationTime?: number;
 }
 
 // MongoDB document interfaces
@@ -49,37 +50,6 @@ export interface DrinkApiResponse extends Omit<Drink, '_id'> {
 export interface CocktailApiResponse extends Omit<CocktailRecipe, '_id'> {
   _id: string;
 }
-
-export interface DrinkApiResponse extends Omit<Drink, '_id'> {
-  _id: string;
-}
-
-export interface CocktailRecipe {
-  _id?: string;
-  name: string;
-  category: DrinkCategory.COCKTAIL;
-  price: number;
-  description: string;
-  isAvailable: boolean;
-  imageData: ImageData;
-  ingredients: {
-    name: string;
-    amount: string;
-    unit: string;
-  }[];
-  instructions: string[];
-  glassType: string;
-  garnish?: string;
-  preparationTime: number;
-  isInMenu: boolean;
-}
-
-// MongoDB specific collection interfaces
-export interface DrinkDocument extends Omit<Drink, '_id'>, BaseDocument {}
-
-export interface CocktailDocument
-  extends Omit<CocktailRecipe, '_id'>,
-    BaseDocument {}
 
 // Input interfaces for create operations (without _id)
 export type DrinkInput = Omit<Drink, '_id'>;

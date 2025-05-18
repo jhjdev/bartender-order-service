@@ -1,17 +1,17 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import LoginForm from "../components/auth/LoginForm";
-import ProtectedRoute from "../components/auth/ProtectedRoute";
-import Orders from "../pages/Orders";
-import AddOrder from "../pages/AddOrder";
-import DrinksPage from "../pages/menu/DrinksPage";
-import CocktailsPage from "../pages/menu/CocktailsPage";
-import StaffPage from "../pages/staff/StaffPage";
-import SchedulePage from "../pages/schedule/SchedulePage";
-import TablesPage from "../pages/TablesPage";
-import ReportsPage from "../pages/reports/ReportsPage";
-import FilesPage from "../pages/files/FilesPage";
-import ProfilePage from "../pages/Profile";
-import ErrorPage from "../pages/ErrorPage";
+import { Routes, Route, Navigate } from 'react-router-dom';
+import LoginForm from '../components/auth/LoginForm';
+import ProtectedRoute from '../components/auth/ProtectedRoute';
+import Orders from '../pages/Orders';
+import AddOrder from '../pages/AddOrder';
+import DrinksPage from '../pages/menu/DrinksPage';
+import CocktailsPage from '../pages/menu/CocktailsPage';
+import StaffPage from '../pages/staff/StaffPage';
+import SchedulePage from '../pages/schedule/SchedulePage';
+import TablesPage from '../pages/TablesPage';
+import ReportsPage from '../pages/reports/ReportsPage';
+import FilesPage from '../pages/files/FilesPage';
+import ProfilePage from '../pages/Profile';
+import ErrorPage from '../pages/ErrorPage';
 
 const AppRoutes = () => {
   return (
@@ -19,7 +19,7 @@ const AppRoutes = () => {
       {/* Public Routes */}
       <Route path="/login" element={<LoginForm />} />
       <Route path="/error" element={<ErrorPage />} />
-      
+
       {/* Protected Routes */}
       <Route element={<ProtectedRoute />}>
         {/* Menu Routes */}

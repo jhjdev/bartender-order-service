@@ -1,6 +1,8 @@
 import React from 'react';
 import { useCocktails } from '../../hooks/useCocktails';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+
 const CocktailsPage = () => {
   const { cocktails, loading, error, searchTerm, setSearchTerm } =
     useCocktails();
@@ -28,17 +30,33 @@ const CocktailsPage = () => {
               key={cocktail._id}
               className="bg-white p-4 border rounded shadow"
             >
-              {cocktail.imageUrl && (
+              {cocktail.imageData && (
                 <img
-                  src={`http://localhost:4000${cocktail.imageUrl}`}
+                  src={`${API_URL}${cocktail.imageData.url}`}
                   alt={cocktail.name}
                   className="w-full h-48 object-cover rounded mb-4"
                   onError={(e) => {
-                    console.error('Image failed to load:', cocktail.imageUrl);
+                    console.error('Failed to load image for cocktail:', {
+                      name: cocktail.name,
+                      imageData: cocktail.imageData,
+                      fullUrl: cocktail.imageData
+                        ? `${API_URL}${cocktail.imageData.url}`
+                        : null,
+                      error: e,
+                    });
                     if (!e.currentTarget.src.includes('data:image/svg+xml')) {
                       e.currentTarget.src =
                         'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2YzZjRmNiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IiM2YjcyN2QiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4=';
                     }
+                  }}
+                  onLoad={() => {
+                    console.log('Successfully loaded image for cocktail:', {
+                      name: cocktail.name,
+                      imageData: cocktail.imageData,
+                      fullUrl: cocktail.imageData
+                        ? `${API_URL}${cocktail.imageData.url}`
+                        : null,
+                    });
                   }}
                 />
               )}

@@ -1,5 +1,5 @@
-import { Router } from 'express';
-import { ObjectId } from 'mongodb';
+import { Router, Request, Response } from 'express';
+import { ObjectId, Filter, WithId } from 'mongodb';
 import { client } from '../config/db';
 import {
   CocktailRecipe,
@@ -10,13 +10,12 @@ import {
   convertArrayToApiResponse,
   convertToApiResponse,
 } from '../types/mongodb';
-import path from 'path';
 
 const router = Router();
 const cocktails = client.db().collection<CocktailDocument>('cocktails');
 
 // Get all cocktails
-router.get('/', async (req, res) => {
+router.get('/', async (req: Request, res: Response): Promise<void> => {
   try {
     const allCocktails = await cocktails
       .find({
@@ -24,15 +23,8 @@ router.get('/', async (req, res) => {
       })
       .toArray();
 
-    // Transform ObjectIds to strings and convert image URLs to relative paths
-    const cocktailsWithStringIds = convertArrayToApiResponse(allCocktails).map(
-      (cocktail) => ({
-        ...cocktail,
-        imageUrl: cocktail.imageUrl
-          ? `/uploads/${path.basename(cocktail.imageUrl)}`
-          : undefined,
-      })
-    );
+    // Transform ObjectIds to strings
+    const cocktailsWithStringIds = convertArrayToApiResponse(allCocktails);
 
     res.json(cocktailsWithStringIds);
   } catch (error) {
@@ -41,7 +33,7 @@ router.get('/', async (req, res) => {
 });
 
 // Get menu cocktails
-router.get('/menu', async (req, res) => {
+router.get('/menu', async (req: Request, res: Response): Promise<void> => {
   try {
     const menuCocktails = await cocktails
       .find({
@@ -58,15 +50,16 @@ router.get('/menu', async (req, res) => {
 });
 
 // Add new cocktail recipe
-router.post('/', async (req, res) => {
+router.post('/', async (req: Request, res: Response): Promise<void> => {
   try {
-    const cocktail: Omit<CocktailRecipe, '_id'> = {
+    const cocktail = {
       ...req.body,
+      _id: new ObjectId(),
       category: DrinkCategory.COCKTAIL,
-      isInMenu: false, // New cocktails start off-menu by default
+      isInMenu: false,
     };
 
-    const result = await cocktails.insertOne(cocktail as CocktailDocument);
+    const result = await cocktails.insertOne(cocktail);
     const insertedCocktail = await cocktails.findOne({
       _id: result.insertedId,
     });
@@ -82,69 +75,86 @@ router.post('/', async (req, res) => {
 });
 
 // Update cocktail recipe
-router.put('/:id', async (req, res) => {
+router.put('/:id', async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     if (!ObjectId.isValid(id)) {
-      return res.status(400).json({ message: 'Invalid cocktail ID format' });
+      res.status(400).json({ message: 'Invalid cocktail ID format' });
+      return;
     }
 
     const updateData: Partial<Omit<CocktailRecipe, '_id'>> = req.body;
 
     const result = await cocktails.findOneAndUpdate(
-      { _id: new ObjectId(id) },
+      { _id: new ObjectId(id) } as unknown as Filter<WithId<CocktailDocument>>,
       { $set: updateData },
       { returnDocument: 'after' }
     );
 
-    if (result.value) {
-      res.json(convertToApiResponse(result.value));
-    } else {
+    if (!result) {
       res.status(404).json({ message: 'Cocktail recipe not found' });
+      return;
     }
+
+    res.json(convertToApiResponse(result));
   } catch (error) {
     res.status(500).json({ message: 'Error updating cocktail recipe', error });
   }
 });
 
 // Toggle menu status
-router.patch('/:id/toggle-menu', async (req, res) => {
-  try {
-    const { id } = req.params;
-    if (!ObjectId.isValid(id)) {
-      return res.status(400).json({ message: 'Invalid cocktail ID format' });
-    }
+router.patch(
+  '/:id/toggle-menu',
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { id } = req.params;
+      if (!ObjectId.isValid(id)) {
+        res.status(400).json({ message: 'Invalid cocktail ID format' });
+        return;
+      }
 
-    const cocktail = await cocktails.findOne({ _id: new ObjectId(id) });
-    if (!cocktail) {
-      return res.status(404).json({ message: 'Cocktail not found' });
-    }
+      const cocktail = await cocktails.findOne({
+        _id: new ObjectId(id),
+      } as unknown as Filter<WithId<CocktailDocument>>);
 
-    const result = await cocktails.findOneAndUpdate(
-      { _id: new ObjectId(id) },
-      { $set: { isInMenu: !cocktail.isInMenu } },
-      { returnDocument: 'after' }
-    );
+      if (!cocktail) {
+        res.status(404).json({ message: 'Cocktail not found' });
+        return;
+      }
 
-    if (result.value) {
-      res.json(convertToApiResponse(result.value));
-    } else {
-      res.status(404).json({ message: 'Cocktail not found' });
+      const result = await cocktails.findOneAndUpdate(
+        { _id: new ObjectId(id) } as unknown as Filter<
+          WithId<CocktailDocument>
+        >,
+        { $set: { isInMenu: !cocktail.isInMenu } },
+        { returnDocument: 'after' }
+      );
+
+      if (!result) {
+        res.status(404).json({ message: 'Cocktail not found' });
+        return;
+      }
+
+      res.json(convertToApiResponse(result));
+    } catch (error) {
+      res.status(500).json({ message: 'Error toggling menu status', error });
     }
-  } catch (error) {
-    res.status(500).json({ message: 'Error toggling menu status', error });
   }
-});
+);
 
 // Delete cocktail recipe (and remove from menu)
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     if (!ObjectId.isValid(id)) {
-      return res.status(400).json({ message: 'Invalid cocktail ID format' });
+      res.status(400).json({ message: 'Invalid cocktail ID format' });
+      return;
     }
 
-    const result = await cocktails.deleteOne({ _id: new ObjectId(id) });
+    const result = await cocktails.deleteOne({
+      _id: new ObjectId(id),
+    } as unknown as Filter<WithId<CocktailDocument>>);
+
     if (result.deletedCount === 1) {
       res.json({ message: 'Cocktail recipe deleted successfully' });
     } else {

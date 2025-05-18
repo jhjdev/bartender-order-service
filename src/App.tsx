@@ -66,7 +66,6 @@ function App() {
             }
             ${isSidebarCollapsed ? 'w-16' : 'w-64'}
             bg-white shadow-lg md:shadow-md`}
-          style={{ height: '100vh' }}
         >
           <Sidebar onClose={() => isMobile && dispatch(toggleSidebar())} />
         </div>

@@ -1,5 +1,5 @@
-import { Request, Response } from "express";
-import { Order } from "../models/order";
+import { Request, Response } from 'express';
+import { Order } from '../models/order';
 
 const orders: Order[] = [];
 
@@ -14,18 +14,18 @@ export const orderController = {
     if (existingOrder) {
       return res
         .status(409)
-        .json({ message: "Customer number already exists." });
+        .json({ message: 'Customer number already exists.' });
     }
 
     // Check if the barman can accept the order
-    if (drinkType === "BEER" && drinkCount > 2) {
+    if (drinkType === 'BEER' && drinkCount > 2) {
       return res
         .status(429)
-        .json({ message: "Order not accepted at the moment." });
-    } else if (drinkType === "DRINK" && drinkCount > 1) {
+        .json({ message: 'Order not accepted at the moment.' });
+    } else if (drinkType === 'DRINK' && drinkCount > 1) {
       return res
         .status(429)
-        .json({ message: "Order not accepted at the moment." });
+        .json({ message: 'Order not accepted at the moment.' });
     }
 
     // Create a new order
@@ -38,12 +38,12 @@ export const orderController = {
     orders.push(order);
 
     // Respond with 200 code
-    return res.status(200).json({ message: "Order received." });
+    return res.status(200).json({ message: 'Order received.' });
   },
 
   getOrders: (_req: Request, res: Response) => {
     if (orders.length === 0) {
-      return res.status(200).json({ message: "No orders at the moment." });
+      return res.status(200).json({ message: 'No orders at the moment.' });
     }
 
     return res.status(200).json({ orders });

@@ -4,6 +4,7 @@ import uiReducer from './slices/uiSlice';
 import authReducer from './slices/authSlice';
 import drinksReducer from './slices/drinksSlice';
 import cocktailsReducer from './slices/cocktailsSlice';
+import staffReducer from './slices/staffSlice';
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     auth: authReducer,
     drinks: drinksReducer,
     cocktails: cocktailsReducer,
+    staff: staffReducer,
   },
 });
 

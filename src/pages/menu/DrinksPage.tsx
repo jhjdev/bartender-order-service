@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDrinks } from '../../hooks/useDrinks';
 import { DrinkCategory } from '../../types/drink';
 
@@ -11,6 +11,12 @@ const categories = [
   { value: DrinkCategory.NON_ALCOHOLIC, label: 'Non-Alcoholic' },
 ];
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+
+// Base64 encoded 1x1 transparent pixel
+const TRANSPARENT_PIXEL =
+  'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
 const DrinksPage = () => {
   const {
     drinks,
@@ -21,6 +27,9 @@ const DrinksPage = () => {
     selectedCategory,
     setSelectedCategory,
   } = useDrinks();
+
+  // Track failed image loads to prevent infinite loops
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
   // Debug information
   console.log('Rendering DrinksPage with:', {
@@ -64,60 +73,92 @@ const DrinksPage = () => {
         <p>No drinks found</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {drinks.map((drink) => (
-            <div key={drink._id} className="bg-white p-4 border rounded shadow">
-              {drink.imageUrl && (
-                <img
-                  src={`http://localhost:4000${drink.imageUrl}`}
-                  alt={drink.name}
-                  className="w-full h-48 object-cover rounded mb-4"
-                  onError={(e) => {
-                    console.error('Image failed to load:', drink.imageUrl);
-                    if (!e.currentTarget.src.includes('data:image/svg+xml')) {
-                      e.currentTarget.src =
-                        'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2YzZjRmNiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IiM2YjcyN2QiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4=';
-                    }
-                  }}
-                />
-              )}
-              <h2 className="text-xl font-semibold mb-2">{drink.name}</h2>
-              <p className="text-gray-800 font-bold mb-2">
-                ${drink.price.toFixed(2)}
-              </p>
-              <p className="text-sm text-gray-500 mb-4">{drink.description}</p>
+          {drinks.map((drink) => {
+            const imageUrl = drink.imageData
+              ? `${API_URL}${drink.imageData.url}`
+              : undefined;
+            const hasFailed = imageUrl ? failedImages.has(imageUrl) : true;
 
-              {/* Additional drink details */}
-              {drink.alcoholPercentage && (
-                <p className="text-sm text-gray-600">
-                  Alcohol: {drink.alcoholPercentage}%
+            return (
+              <div
+                key={drink._id}
+                className="bg-white p-4 border rounded shadow"
+              >
+                <div className="relative h-48">
+                  {drink.imageData && !hasFailed && (
+                    <img
+                      src={imageUrl}
+                      alt={drink.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        console.error('Failed to load image for drink:', {
+                          name: drink.name,
+                          imageData: drink.imageData,
+                          fullUrl: imageUrl,
+                          error: e,
+                        });
+                        if (imageUrl) {
+                          setFailedImages((prev) =>
+                            new Set(prev).add(imageUrl)
+                          );
+                        }
+                        e.currentTarget.src = TRANSPARENT_PIXEL;
+                      }}
+                      onLoad={() => {
+                        console.log('Successfully loaded image for drink:', {
+                          name: drink.name,
+                          imageData: drink.imageData,
+                          fullUrl: imageUrl,
+                        });
+                      }}
+                    />
+                  )}
+                </div>
+                <h2 className="text-xl font-semibold mb-2">{drink.name}</h2>
+                <p className="text-gray-800 font-bold mb-2">
+                  ${drink.price.toFixed(2)}
                 </p>
-              )}
-              {drink.brewery && (
-                <p className="text-sm text-gray-600">
-                  Brewery: {drink.brewery}
+                <p className="text-sm text-gray-500 mb-4">
+                  {drink.description}
                 </p>
-              )}
-              {drink.wineType && (
-                <p className="text-sm text-gray-600">Type: {drink.wineType}</p>
-              )}
-              {drink.region && (
-                <p className="text-sm text-gray-600">Region: {drink.region}</p>
-              )}
-              {drink.year && (
-                <p className="text-sm text-gray-600">Year: {drink.year}</p>
-              )}
-              {drink.distillery && (
-                <p className="text-sm text-gray-600">
-                  Distillery: {drink.distillery}
-                </p>
-              )}
-              {drink.ageStatement && (
-                <p className="text-sm text-gray-600">
-                  Age: {drink.ageStatement}
-                </p>
-              )}
-            </div>
-          ))}
+
+                {/* Additional drink details */}
+                {drink.alcoholPercentage && (
+                  <p className="text-sm text-gray-600">
+                    Alcohol: {drink.alcoholPercentage}%
+                  </p>
+                )}
+                {drink.brewery && (
+                  <p className="text-sm text-gray-600">
+                    Brewery: {drink.brewery}
+                  </p>
+                )}
+                {drink.wineType && (
+                  <p className="text-sm text-gray-600">
+                    Type: {drink.wineType}
+                  </p>
+                )}
+                {drink.region && (
+                  <p className="text-sm text-gray-600">
+                    Region: {drink.region}
+                  </p>
+                )}
+                {drink.year && (
+                  <p className="text-sm text-gray-600">Year: {drink.year}</p>
+                )}
+                {drink.distillery && (
+                  <p className="text-sm text-gray-600">
+                    Distillery: {drink.distillery}
+                  </p>
+                )}
+                {drink.ageStatement && (
+                  <p className="text-sm text-gray-600">
+                    Age: {drink.ageStatement}
+                  </p>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
