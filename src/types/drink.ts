@@ -19,7 +19,7 @@ export interface Drink {
   category: DrinkCategory;
   price: number;
   description?: string;
-  available: boolean;
+  isAvailable: boolean;
   imageData?: ImageData;
   alcoholPercentage?: number;
   brewery?: string;

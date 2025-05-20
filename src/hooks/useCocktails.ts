@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { fetchCocktails } from '../redux/slices/cocktailsSlice';
-import { CocktailRecipe } from '../types/drink';
 
 export const useCocktails = () => {
   const dispatch = useAppDispatch();
@@ -11,15 +10,10 @@ export const useCocktails = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    console.log('Fetching cocktails...');
     dispatch(fetchCocktails());
   }, [dispatch]);
 
-  useEffect(() => {
-    console.log('Cocktails state:', { cocktails, loading, error });
-  }, [cocktails, loading, error]);
-
-  const filteredCocktails = cocktails.filter((cocktail: CocktailRecipe) =>
+  const filteredCocktails = cocktails.filter((cocktail) =>
     cocktail.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -29,5 +23,6 @@ export const useCocktails = () => {
     error,
     searchTerm,
     setSearchTerm,
+    refetch: () => dispatch(fetchCocktails()),
   };
 };

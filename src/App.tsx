@@ -55,10 +55,10 @@ function App() {
 
   return (
     <Router>
-      <div className="flex min-h-screen bg-gray-100 overflow-x-hidden">
-        {/* Sidebar */}
-        <div
-          className={`transform transition-all duration-300 ease-in-out fixed md:relative z-30
+      <div className="relative h-screen overflow-hidden bg-gray-100">
+        {/* Sidebar - Fixed to viewport */}
+        <aside
+          className={`fixed top-0 left-0 h-screen z-30 transform transition-all duration-300 ease-in-out
             ${
               isMobile && isSidebarCollapsed
                 ? '-translate-x-full'
@@ -68,7 +68,7 @@ function App() {
             bg-white shadow-lg md:shadow-md`}
         >
           <Sidebar onClose={() => isMobile && dispatch(toggleSidebar())} />
-        </div>
+        </aside>
 
         {/* Overlay */}
         {isMobile && !isSidebarCollapsed && (
@@ -93,7 +93,6 @@ function App() {
               stroke="currentColor"
               className="w-6 h-6"
             >
-              {/* Show X icon when sidebar is open, hamburger menu when collapsed */}
               {!isSidebarCollapsed ? (
                 <path
                   strokeLinecap="round"
@@ -111,18 +110,11 @@ function App() {
           </button>
         )}
 
-        {/* Main Content */}
+        {/* Main Content - Scrollable */}
         <main
-          className={`flex-1 transition-all duration-300 ease-in-out
+          className={`h-screen overflow-y-auto transition-all duration-300 ease-in-out
             ${isMobile ? 'pt-16 px-2' : ''}
-            ${
-              !isSidebarCollapsed && !isMobile
-                ? 'md:ml-0'
-                : isMobile
-                ? ''
-                : 'md:ml-0'
-            }`}
-          style={{ transitionProperty: 'margin, padding, width' }}
+            ${!isSidebarCollapsed ? 'md:ml-64' : 'md:ml-16'}`}
         >
           {/* Header with UserMenu for authenticated users */}
           {isAuthenticated && (
@@ -138,9 +130,7 @@ function App() {
             </div>
           )}
 
-          <div
-            className={`p-3 sm:p-4 md:p-6 transition-all duration-300 ease-in-out`}
-          >
+          <div className="p-3 sm:p-4 md:p-6">
             <ErrorBoundary>
               <RouteWrapper />
             </ErrorBoundary>

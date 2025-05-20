@@ -1,10 +1,10 @@
 import { MongoClient } from 'mongodb';
 import bcrypt from 'bcryptjs';
-import dotenv from 'dotenv';
-import path from 'path';
+import * as dotenv from 'dotenv';
+import { getEnvPath } from '../utils/paths';
 
 // Load environment variables from the root .env file
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+dotenv.config({ path: getEnvPath() });
 
 const MONGODB_URI = process.env.MONGODB_URI;
 const DB_NAME = process.env.DB_NAME || 'bartender';

@@ -3,13 +3,22 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "yarn": ">=1.22.0",
+    "node": ">=16.0.0"
+  },
+  "workspaces": [
+    "backend",
+    "src"
+  ],
   "scripts": {
-    "dev": "concurrently \"cd backend && yarn dev\" \"vite\"",
+    "dev": "concurrently \"yarn workspace @bartender/backend dev\" \"vite\"",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@bartender/backend": "workspace:*",
     "@reduxjs/toolkit": "^1.9.5",
     "@types/uuid": "^10.0.0",
     "axios": "^1.4.0",
@@ -21,6 +30,7 @@
     "react-dom": "^18.2.0",
     "react-redux": "^8.1.2",
     "react-router-dom": "^6.15.0",
+    "react-toastify": "^11.0.5",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
@@ -40,8 +50,10 @@
     "eslint-plugin-react-refresh": "^0.4.3",
     "postcss": "^8.4.27",
     "tailwindcss": "^3.3.3",
+    "tsx": "^4.19.4",
     "typescript": "^5.0.2",
     "vite": "^4.4.5",
     "vite-plugin-svgr": "^4.3.0"
-  }
+  },
+  "packageManager": "yarn@4.9.1"
 }

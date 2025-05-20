@@ -1,9 +1,9 @@
 import { MongoClient } from 'mongodb';
-import dotenv from 'dotenv';
-import path from 'path';
+import * as dotenv from 'dotenv';
+import { getEnvPath } from '../utils/paths';
 
 // Load environment variables
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+dotenv.config({ path: getEnvPath() });
 
 const MONGODB_URI =
   process.env.MONGODB_URI || 'mongodb://localhost:4000/bartender';

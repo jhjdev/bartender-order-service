@@ -1,9 +1,9 @@
 import { MongoClient } from 'mongodb';
 import * as dotenv from 'dotenv';
-import * as path from 'path';
+import { getEnvPath } from '../utils/paths';
 
 // Load environment variables from root .env file
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+dotenv.config({ path: getEnvPath() });
 
 // Constants
 const MONGODB_URI =

@@ -1,16 +1,17 @@
 {
-  "name": "backend",
+  "name": "@bartender/backend",
   "version": "1.0.0",
   "description": "Bar Management App Backend",
+  "type": "module",
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
-    "dev": "ts-node-dev --respawn --transpile-only index.ts",
+    "dev": "tsx watch index.ts",
     "build": "tsc",
     "test": "jest",
-    "seed:drinks": "ts-node scripts/seed-drinks.ts",
-    "seed:images": "ts-node scripts/downloadImages.ts",
-    "seed:admin": "ts-node scripts/seedAdmin.ts"
+    "seed:drinks": "tsx scripts/seed-drinks.ts",
+    "seed:images": "tsx scripts/downloadImages.ts",
+    "seed:admin": "tsx scripts/seedAdmin.ts"
   },
   "dependencies": {
     "@types/uuid": "^10.0.0",

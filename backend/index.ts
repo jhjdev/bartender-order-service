@@ -8,10 +8,10 @@ import imageRoutes from './routes/images';
 import staffRoutes from './routes/staff';
 import ordersRoutes from './routes/orders';
 import * as dotenv from 'dotenv';
-import * as path from 'path';
+import { getEnvPath } from './utils/paths';
 
 // Load environment variables from root .env file
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
+dotenv.config({ path: getEnvPath() });
 
 const app = express();
 const PORT = process.env.PORT || 4000;

@@ -26,3 +26,8 @@ dist-ssr
 # Environment variables
 .env
 .env.local
+
+# Yarn Berry
+.yarn/*
+!.yarn/releases
+.pnp.*

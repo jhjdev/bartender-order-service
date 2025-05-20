@@ -3,15 +3,16 @@ import * as fs from 'fs';
 import * as path from 'path';
 import axios from 'axios';
 import * as dotenv from 'dotenv';
+import { getEnvPath, getUploadsPath } from '../utils/paths';
 
 // Load environment variables from root .env file
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+dotenv.config({ path: getEnvPath() });
 
 // Constants
 const MONGODB_URI =
   process.env.MONGODB_URI || 'mongodb://localhost:4000/bartender';
 console.log('Using MongoDB URI:', MONGODB_URI);
-const UPLOADS_DIR = path.join(__dirname, '..', '..', 'uploads');
+const UPLOADS_DIR = getUploadsPath();
 
 // Ensure uploads directory exists
 if (!fs.existsSync(UPLOADS_DIR)) {
