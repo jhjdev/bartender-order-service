@@ -1,8 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import type { RootState } from '../redux/store';
-import ProtectedRoute from '../components/auth/ProtectedRoute';
+import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 import LoginPage from '../pages/auth/LoginPage';
 import ProfilePage from '../pages/profile/ProfilePage';
 import DrinksPage from '../pages/menu/DrinksPage';
@@ -16,24 +14,15 @@ import FilesPage from '../pages/files/FilesPage';
 import SchedulePage from '../pages/schedule/SchedulePage';
 
 const AppRoutes: React.FC = () => {
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-
   return (
     <Routes>
-      <Route
-        path="/login"
-        element={
-          isAuthenticated ? <Navigate to="/profile" replace /> : <LoginPage />
-        }
-      />
+      <Route path="/login" element={<LoginPage />} />
       <Route
         path="/"
         element={
-          isAuthenticated ? (
+          <ProtectedRoute>
             <Navigate to="/profile" replace />
-          ) : (
-            <Navigate to="/login" replace />
-          )
+          </ProtectedRoute>
         }
       />
       <Route

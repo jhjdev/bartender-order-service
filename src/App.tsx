@@ -1,33 +1,16 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { getCurrentUser } from './redux/slices/authSlice';
-import type { RootState, AppDispatch } from './redux/store';
-import { authService } from './services/authService';
+import React from 'react';
+import { BrowserRouter as Router, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import type { RootState } from './redux/store';
 import Sidebar from './components/Sidebar';
 import AppRoutes from './routes/Routes';
 
 const AppContent: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
   const { isAuthenticated, loading } = useSelector(
     (state: RootState) => state.auth
   );
-
-  useEffect(() => {
-    const initializeAuth = async () => {
-      const hasToken = authService.initializeAuth();
-      if (hasToken && !isAuthenticated) {
-        try {
-          await dispatch(getCurrentUser()).unwrap();
-        } catch (error: unknown) {
-          console.error('Failed to get current user:', error);
-          authService.logout();
-        }
-      }
-    };
-
-    initializeAuth();
-  }, [dispatch, isAuthenticated]);
+  const location = useLocation();
+  const isLoginPage = location.pathname === '/login';
 
   if (loading) {
     return (
@@ -57,6 +40,10 @@ const AppContent: React.FC = () => {
         </div>
       </div>
     );
+  }
+
+  if (isLoginPage) {
+    return <AppRoutes />;
   }
 
   return (

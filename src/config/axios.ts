@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { authService } from '../services/authService';
 
 // Create an axios instance with default config
 const instance = axios.create({
@@ -11,8 +12,8 @@ const instance = axios.create({
 // Add a request interceptor
 instance.interceptors.request.use(
   (config) => {
-    // Get token from localStorage
-    const token = localStorage.getItem('token');
+    // Get token from authService
+    const token = authService.getToken();
 
     // If token exists, add it to the headers
     if (token) {
@@ -47,8 +48,8 @@ instance.interceptors.response.use(
 
     // Handle 401 Unauthorized errors
     if (error.response?.status === 401) {
-      // Clear token
-      localStorage.removeItem('token');
+      // Clear token using authService
+      authService.removeToken();
       // Let the application handle the redirection
       error.isUnauthorized = true;
     }

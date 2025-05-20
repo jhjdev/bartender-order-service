@@ -36,7 +36,9 @@ export const authService = {
   initializeAuth() {
     const token = this.getToken();
     if (token) {
-      this.setToken(token);
+      if (!axios.defaults.headers.common['Authorization']) {
+        this.setToken(token);
+      }
       return true;
     }
     return false;

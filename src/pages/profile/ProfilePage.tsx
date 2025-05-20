@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { RootState, AppDispatch } from '../../redux/store';
-import { updateProfile, logout } from '../../redux/slices/authSlice';
+import {
+  updateProfile,
+  logout,
+  getCurrentUser,
+} from '../../redux/slices/authSlice';
 import { User } from '../../types/user';
 
 interface FormData extends Omit<User, 'id' | 'createdAt' | 'updatedAt'> {}
@@ -10,7 +14,11 @@ interface FormData extends Omit<User, 'id' | 'createdAt' | 'updatedAt'> {}
 const ProfilePage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { user, loading } = useSelector((state: RootState) => state.auth);
+  const {
+    user,
+    loading,
+    error: authError,
+  } = useSelector((state: RootState) => state.auth);
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -20,6 +28,13 @@ const ProfilePage: React.FC = () => {
     role: 'staff',
     active: true,
   });
+
+  useEffect(() => {
+    // Try to get the current user if we don't have one
+    if (!user && !loading) {
+      dispatch(getCurrentUser());
+    }
+  }, [dispatch, user, loading]);
 
   useEffect(() => {
     if (user) {
@@ -110,7 +125,7 @@ const ProfilePage: React.FC = () => {
     );
   }
 
-  if (!user) {
+  if (!user || authError) {
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="bg-white p-8 rounded-lg shadow-md">
@@ -118,7 +133,8 @@ const ProfilePage: React.FC = () => {
             Profile Not Found
           </h2>
           <p className="text-gray-600 mb-6">
-            Unable to load your profile. Please try logging in again.
+            {authError ||
+              'Unable to load your profile. Please try logging in again.'}
           </p>
           <button
             onClick={handleLogout}

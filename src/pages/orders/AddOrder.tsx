@@ -1,16 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import Button from '../../components/Button';
 import InfoCard from '../../components/InfoCard';
-import { createOrder } from '../../redux/slices/orderSlice';
+import { createOrder, fetchOrders } from '../../redux/slices/orderSlice';
 import { RootState } from '../../redux/store';
-import { Order } from '../../shared/types';
+import { Order } from '../../types/order';
 
 const AddOrder: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { orders, loadingStates, errors } = useAppSelector(
-    (state: RootState) => state.orders
-  );
+  const {
+    orders = [],
+    loadingStates,
+    errors,
+  } = useAppSelector((state: RootState) => state.orders);
+
+  useEffect(() => {
+    dispatch(fetchOrders());
+  }, [dispatch]);
 
   const [customerNumber, setCustomerNumber] = useState<string>('');
   const [tableNumber, setTableNumber] = useState<number>(1);
@@ -19,16 +25,21 @@ const AddOrder: React.FC = () => {
   const isLoading = loadingStates.create || false;
   const error = errors.find((e) => e.operation === 'create')?.message;
 
-  const totalDrinks = orders.reduce((sum: number, order: Order) => {
-    return (
-      sum +
-      order.items.reduce((itemSum: number, item) => itemSum + item.quantity, 0)
-    );
-  }, 0);
+  const totalDrinks =
+    orders?.reduce((sum: number, order: Order) => {
+      return (
+        sum +
+        (order.items?.reduce(
+          (itemSum: number, item) => itemSum + item.quantity,
+          0
+        ) || 0)
+      );
+    }, 0) || 0;
 
-  const totalProfit = orders.reduce((sum: number, order: Order) => {
-    return sum + order.total;
-  }, 0);
+  const totalProfit =
+    orders?.reduce((sum: number, order: Order) => {
+      return sum + (order.total || 0);
+    }, 0) || 0;
 
   const handleCustomerNumberChange = (
     event: React.ChangeEvent<HTMLInputElement>

@@ -7,13 +7,15 @@ interface AuthState {
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
+  initialized: boolean;
 }
 
 const initialState: AuthState = {
   user: null,
-  isAuthenticated: !!localStorage.getItem('token'),
+  isAuthenticated: !!authService.getToken(),
   loading: false,
   error: null,
+  initialized: false,
 };
 
 export const login = createAsyncThunk(
@@ -28,14 +30,13 @@ export const getCurrentUser = createAsyncThunk(
   'auth/getCurrentUser',
   async (_, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = authService.getToken();
       if (!token) {
         throw new Error('No token found');
       }
       const user = await authService.getCurrentUser();
       return user;
     } catch (error) {
-      localStorage.removeItem('token');
       return rejectWithValue(
         error instanceof Error ? error.message : 'Failed to get current user'
       );
@@ -67,6 +68,9 @@ const authSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    setInitialized: (state) => {
+      state.initialized = true;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -80,12 +84,14 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
         state.user = action.payload;
         state.error = null;
+        state.initialized = true;
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
         state.isAuthenticated = false;
         state.user = null;
         state.error = action.error.message || 'Login failed';
+        state.initialized = true;
       })
       // Get Current User
       .addCase(getCurrentUser.pending, (state) => {
@@ -97,12 +103,16 @@ const authSlice = createSlice({
         state.user = action.payload;
         state.isAuthenticated = true;
         state.error = null;
+        state.initialized = true;
       })
       .addCase(getCurrentUser.rejected, (state, action) => {
         state.loading = false;
         state.isAuthenticated = false;
         state.user = null;
-        state.error = action.error.message || 'Failed to get current user';
+        if (action.error.message !== 'No token found') {
+          state.error = action.error.message || 'Failed to get current user';
+        }
+        state.initialized = true;
       })
       // Update Profile
       .addCase(updateProfile.pending, (state) => {
@@ -124,11 +134,12 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
         state.loading = false;
         state.error = null;
+        state.initialized = false;
       });
   },
 });
 
-export const { clearError } = authSlice.actions;
+export const { clearError, setInitialized } = authSlice.actions;
 
 // Selectors
 export const selectAuthLoading = (state: { auth: AuthState }) =>
@@ -137,5 +148,7 @@ export const selectAuthError = (state: { auth: AuthState }) => state.auth.error;
 export const selectAuthUser = (state: { auth: AuthState }) => state.auth.user;
 export const selectIsAuthenticated = (state: { auth: AuthState }) =>
   state.auth.isAuthenticated;
+export const selectAuthInitialized = (state: { auth: AuthState }) =>
+  state.auth.initialized;
 
 export default authSlice.reducer;
