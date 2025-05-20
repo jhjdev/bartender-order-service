@@ -9,7 +9,7 @@ import AppRoutes from './routes/Routes';
 
 const AppContent: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isAuthenticated, loading, user } = useSelector(
+  const { isAuthenticated, loading } = useSelector(
     (state: RootState) => state.auth
   );
 
@@ -19,7 +19,7 @@ const AppContent: React.FC = () => {
       if (hasToken && !isAuthenticated) {
         try {
           await dispatch(getCurrentUser()).unwrap();
-        } catch (error) {
+        } catch (error: unknown) {
           console.error('Failed to get current user:', error);
           authService.logout();
         }

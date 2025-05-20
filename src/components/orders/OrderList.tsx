@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAppSelector } from '../../redux/hooks';
-import { Order, OrderStatus } from '../../types/order';
+import { OrderStatus } from '../../types/order';
 import OrderCard from './OrderCard';
 
 const ORDER_STATUS_OPTIONS: OrderStatus[] = [
@@ -10,6 +10,11 @@ const ORDER_STATUS_OPTIONS: OrderStatus[] = [
   'served',
   'cancelled',
 ];
+
+interface OrderError {
+  operation: string;
+  message: string;
+}
 
 const OrderList: React.FC = () => {
   const {
@@ -81,7 +86,9 @@ const OrderList: React.FC = () => {
   };
 
   // Get fetch error if it exists
-  const fetchError = errors.find((error) => error.operation === 'fetch');
+  const fetchError = (errors as OrderError[]).find(
+    (error) => error.operation === 'fetch'
+  );
 
   return (
     <div className="container mx-auto px-4 py-8">

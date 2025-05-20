@@ -10,7 +10,7 @@ export const authService = {
     password: string
   ): Promise<{ token: string; user: User }> {
     const response = await axios.post(`${API_URL}/login`, { email, password });
-    const { token, user } = response.data;
+    const { token } = response.data;
     this.setToken(token);
     return response.data;
   },
