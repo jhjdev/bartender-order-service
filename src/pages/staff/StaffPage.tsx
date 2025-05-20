@@ -1,27 +1,51 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../redux/store';
 import {
-  addStaff,
+  fetchStaff,
+  createStaff,
   updateStaff,
   deleteStaff,
-  fetchStaff,
-  StaffMember,
 } from '../../redux/slices/staffSlice';
-import type { RootState, AppDispatch } from '../../redux/store';
-import { countries } from '../../utils/countries';
-import { validatePhoneNumber } from '../../utils/phoneValidation';
-import { FormInput } from '../../components/FormInput';
-import { FormSelect } from '../../components/FormSelect';
-import styles from './StaffPage.module.css';
+import { Staff } from '../../types/staff';
 
-type FormData = Omit<StaffMember, 'id'>;
+type FormData = Omit<Staff, 'id' | 'createdAt' | 'updatedAt'> & {
+  confirmPassword?: string;
+};
+
+// Utility function to omit keys from an object
+function omit<T extends object, K extends keyof T>(
+  obj: T,
+  keys: K[]
+): Omit<T, K> {
+  const result = { ...obj };
+  keys.forEach((key) => {
+    delete result[key];
+  });
+  return result;
+}
 
 const StaffPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const staff = useSelector((state: RootState) => state.staff.staff);
-  const loading = useSelector((state: RootState) => state.staff.loading);
-  const error = useSelector((state: RootState) => state.staff.error);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const { staff, loading, error } = useSelector(
+    (state: RootState) => state.staff
+  );
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingStaff, setEditingStaff] = useState<Staff | null>(null);
+
+  // Add effect to handle body scroll when modal is open
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isModalOpen]);
+
   const [formData, setFormData] = useState<FormData>({
     firstName: '',
     lastName: '',
@@ -40,7 +64,7 @@ const StaffPage: React.FC = () => {
     },
     employmentType: 'FULL_TIME',
     age: 0,
-    gender: 'PREFER_NOT_TO_SAY',
+    gender: 'OTHER',
     dateOfBirth: '',
     address: {
       street: '',
@@ -52,7 +76,16 @@ const StaffPage: React.FC = () => {
     startDate: '',
     position: '',
     isActive: true,
+    role: 'STAFF',
+    password: '',
   });
+
+  // Search and filter state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [sortField, setSortField] = useState<keyof Staff>('firstName');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   useEffect(() => {
     dispatch(fetchStaff());
@@ -62,125 +95,59 @@ const StaffPage: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    console.log('Input change:', { name, value });
-
-    setFormData((prev) => {
-      if (name.includes('.')) {
-        const parts = name.split('.');
-        console.log('Field parts:', parts);
-
-        if (parts[0] === 'phone') {
+    if (name.includes('.')) {
+      const [parent, child] = name.split('.');
+      setFormData((prev) => {
+        const parentValue = prev[parent as keyof FormData];
+        if (parentValue && typeof parentValue === 'object') {
           return {
             ...prev,
-            phone: {
-              countryCode:
-                parts[1] === 'countryCode' ? value : prev.phone.countryCode,
-              number: parts[1] === 'number' ? value : prev.phone.number,
-            },
-          };
-        } else if (parts[0] === 'emergencyContact') {
-          if (parts[1] === 'phone') {
-            return {
-              ...prev,
-              emergencyContact: {
-                ...prev.emergencyContact,
-                phone: {
-                  countryCode:
-                    parts[2] === 'countryCode'
-                      ? value
-                      : prev.emergencyContact.phone.countryCode,
-                  number:
-                    parts[2] === 'number'
-                      ? value
-                      : prev.emergencyContact.phone.number,
-                },
-              },
-            };
-          } else {
-            return {
-              ...prev,
-              emergencyContact: {
-                ...prev.emergencyContact,
-                [parts[1]]: value,
-              },
-            };
-          }
-        } else if (parts[0] === 'address') {
-          return {
-            ...prev,
-            address: {
-              ...prev.address,
-              [parts[1]]: value,
+            [parent]: {
+              ...parentValue,
+              [child]: value,
             },
           };
         }
-      }
-
-      return {
+        return prev;
+      });
+    } else {
+      setFormData((prev) => ({
         ...prev,
         [name]: value,
-      };
-    });
+      }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Submitting form. editingId:', editingId); // Debug log
 
-    // Validate phone numbers
-    const phoneValidation = validatePhoneNumber(
-      formData.phone.countryCode,
-      formData.phone.number
-    );
-
-    const emergencyPhoneValidation = validatePhoneNumber(
-      formData.emergencyContact.phone.countryCode,
-      formData.emergencyContact.phone.number
-    );
-
-    if (!phoneValidation.isValid) {
-      alert(`Invalid phone number: ${phoneValidation.error}`);
+    // Validate password match if creating new staff
+    if (!editingStaff && formData.password !== formData.confirmPassword) {
+      alert('Passwords do not match');
       return;
     }
 
-    if (!emergencyPhoneValidation.isValid) {
-      alert(
-        `Invalid emergency contact phone number: ${emergencyPhoneValidation.error}`
-      );
+    // Validate password length if creating new staff
+    if (!editingStaff && formData.password && formData.password.length < 6) {
+      alert('Password must be at least 6 characters long');
       return;
     }
-
-    // Format phone numbers
-    const formattedData = {
-      ...formData,
-      phone: {
-        countryCode: formData.phone.countryCode,
-        number: phoneValidation.formattedNumber,
-      },
-      emergencyContact: {
-        ...formData.emergencyContact,
-        phone: {
-          countryCode: formData.emergencyContact.phone.countryCode,
-          number: emergencyPhoneValidation.formattedNumber,
-        },
-      },
-    };
 
     try {
-      if (editingId) {
-        console.log('Updating staff member:', {
-          id: editingId,
-          data: formattedData,
-        }); // Debug log
-        const updateData = { _id: editingId, ...formattedData };
-        console.log('Update data:', updateData); // Debug log
-        await dispatch(updateStaff(updateData)).unwrap();
+      if (editingStaff) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { confirmPassword, ...staffData } = formData;
+        await dispatch(
+          updateStaff({ id: editingStaff.id, staffData })
+        ).unwrap();
+        alert('Staff member updated successfully');
       } else {
-        console.log('Creating new staff member:', formattedData); // Debug log
-        await dispatch(addStaff(formattedData)).unwrap();
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { confirmPassword, ...staffData } = formData;
+        await dispatch(createStaff(staffData)).unwrap();
+        alert('Staff member added successfully');
       }
-
-      // Reset form and editing state
+      setIsModalOpen(false);
       setFormData({
         firstName: '',
         lastName: '',
@@ -199,7 +166,7 @@ const StaffPage: React.FC = () => {
         },
         employmentType: 'FULL_TIME',
         age: 0,
-        gender: 'PREFER_NOT_TO_SAY',
+        gender: 'OTHER',
         dateOfBirth: '',
         address: {
           street: '',
@@ -211,422 +178,399 @@ const StaffPage: React.FC = () => {
         startDate: '',
         position: '',
         isActive: true,
+        role: 'STAFF',
+        password: '',
       });
-      setEditingId(null);
-    } catch (err) {
-      console.error('Failed to save staff member:', err);
-      alert('Failed to save staff member. Please try again.');
+      setEditingStaff(null);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'An error occurred');
     }
   };
 
-  const handleEdit = (staffMember: StaffMember) => {
-    console.log('Editing staff member:', staffMember); // Debug log
-    if (!staffMember._id) {
-      console.error('Staff member has no _id');
-      return;
-    }
-    // Format phone numbers if they exist
-    const formattedPhone = staffMember.phone?.number
-      ? staffMember.phone.number.replace(/[^\d+]/g, '')
-      : '';
-    const formattedEmergencyPhone = staffMember.emergencyContact?.phone?.number
-      ? staffMember.emergencyContact.phone.number.replace(/[^\d+]/g, '')
-      : '';
-
+  const handleEdit = (staff: Staff) => {
+    setEditingStaff(staff);
+    const rest = omit(staff, ['id', 'createdAt', 'updatedAt']);
     setFormData({
-      firstName: staffMember.firstName || '',
-      lastName: staffMember.lastName || '',
-      email: staffMember.email || '',
-      phone: {
-        countryCode: staffMember.phone?.countryCode || '+1',
-        number: formattedPhone,
-      },
-      emergencyContact: {
-        name: staffMember.emergencyContact?.name || '',
-        relationship: staffMember.emergencyContact?.relationship || '',
-        phone: {
-          countryCode: staffMember.emergencyContact?.phone?.countryCode || '+1',
-          number: formattedEmergencyPhone,
-        },
-      },
-      employmentType: staffMember.employmentType || 'FULL_TIME',
-      age: staffMember.age || 0,
-      gender: staffMember.gender || 'PREFER_NOT_TO_SAY',
-      dateOfBirth: staffMember.dateOfBirth || '',
-      address: {
-        street: staffMember.address?.street || '',
-        city: staffMember.address?.city || '',
-        state: staffMember.address?.state || '',
-        postalCode: staffMember.address?.postalCode || '',
-        country: staffMember.address?.country || '',
-      },
-      startDate: staffMember.startDate || '',
-      position: staffMember.position || '',
-      isActive: staffMember.isActive ?? true,
+      ...rest,
+      password: '',
+      confirmPassword: '',
     });
-    setEditingId(staffMember._id);
-    console.log('Set editingId to:', staffMember._id); // Debug log
+    setIsModalOpen(true);
   };
 
   const handleDelete = async (id: string) => {
-    if (!id) {
-      console.error('No id provided for deletion');
-      return;
-    }
     if (window.confirm('Are you sure you want to delete this staff member?')) {
       try {
         await dispatch(deleteStaff(id)).unwrap();
-      } catch (err) {
-        console.error('Failed to delete staff member:', err);
+        alert('Staff member deleted successfully');
+      } catch (error) {
+        alert(error instanceof Error ? error.message : 'An error occurred');
       }
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  // Filter and sort staff
+  const filteredStaff = useMemo(() => {
+    return staff
+      .filter((member) => {
+        const searchLower = searchTerm.toLowerCase();
+        return (
+          member.firstName.toLowerCase().includes(searchLower) ||
+          member.lastName.toLowerCase().includes(searchLower) ||
+          member.email.toLowerCase().includes(searchLower) ||
+          member.position.toLowerCase().includes(searchLower)
+        );
+      })
+      .sort((a, b) => {
+        const aValue = a[sortField];
+        const bValue = b[sortField];
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+          return sortDirection === 'asc'
+            ? aValue.localeCompare(bValue)
+            : bValue.localeCompare(aValue);
+        }
+        return sortDirection === 'asc'
+          ? (aValue as number) - (bValue as number)
+          : (bValue as number) - (aValue as number);
+      });
+  }, [staff, searchTerm, sortField, sortDirection]);
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+  // Pagination
+  const totalPages = Math.ceil(filteredStaff.length / rowsPerPage);
+  const paginatedStaff = filteredStaff.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+
+  const handleSort = (field: keyof Staff) => {
+    if (field === sortField) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Staff Management</h1>
-
-      {/* Add/Edit Form */}
-      <form
-        onSubmit={handleSubmit}
-        className={`mb-8 bg-white p-4 rounded shadow ${styles.formContainer}`}
-      >
-        <h2 className="text-xl font-semibold mb-4">
-          {editingId ? 'Edit Staff Member' : 'Add New Staff Member'}
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <FormInput
-            label="First Name"
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleInputChange}
-            required
-          />
-          <FormInput
-            label="Last Name"
-            name="lastName"
-            value={formData.lastName}
-            onChange={handleInputChange}
-            required
-          />
-          <FormInput
-            label="Email"
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleInputChange}
-            required
-          />
-          <div className="md:col-span-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Phone
-            </label>
-            <div className="flex gap-2 items-center">
-              <div className="w-20">
-                <FormSelect
-                  name="phone.countryCode"
-                  value={formData.phone.countryCode}
-                  onChange={handleInputChange}
-                  options={countries.map((country) => ({
-                    value: country.code,
-                    label: `${country.code} (${country.name})`,
-                    key: `${country.code}-${country.name}`,
-                  }))}
-                  required
-                />
+    <>
+      {/* Modal - Moved outside the main container */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[9999] bg-black bg-opacity-50">
+          <div className="fixed inset-0 flex items-center justify-center">
+            <div className="bg-white p-6 rounded-lg w-full max-w-2xl mx-4 shadow-lg">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold">
+                  {editingStaff ? 'Edit Staff Member' : 'Add Staff Member'}
+                </h2>
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <svg
+                    className="h-6 w-6"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
-              <div className="flex-grow">
-                <FormInput
-                  name="phone.number"
-                  type="tel"
-                  value={formData.phone.number}
-                  onChange={handleInputChange}
-                  placeholder="Phone number"
-                  required
-                />
-              </div>
-            </div>
-          </div>
-          <FormInput
-            label="Position"
-            name="position"
-            value={formData.position}
-            onChange={handleInputChange}
-            required
-          />
-          <FormSelect
-            label="Employment Type"
-            name="employmentType"
-            value={formData.employmentType}
-            onChange={handleInputChange}
-            options={[
-              { value: 'FULL_TIME', label: 'Full Time' },
-              { value: 'PART_TIME', label: 'Part Time' },
-            ]}
-            required
-          />
-          <FormSelect
-            label="Gender"
-            name="gender"
-            value={formData.gender}
-            onChange={handleInputChange}
-            options={[
-              { value: 'MALE', label: 'Male' },
-              { value: 'FEMALE', label: 'Female' },
-              { value: 'OTHER', label: 'Other' },
-              { value: 'PREFER_NOT_TO_SAY', label: 'Prefer not to say' },
-            ]}
-            required
-          />
-          <FormInput
-            label="Date of Birth"
-            name="dateOfBirth"
-            type="date"
-            value={formData.dateOfBirth}
-            onChange={handleInputChange}
-            required
-          />
-          <FormInput
-            label="Start Date"
-            name="startDate"
-            type="date"
-            value={formData.startDate}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-
-        {/* Emergency Contact */}
-        <div className="mt-4">
-          <h3 className="text-lg font-medium mb-2">Emergency Contact</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <FormInput
-              label="Name"
-              name="emergencyContact.name"
-              value={formData.emergencyContact.name}
-              onChange={handleInputChange}
-              required
-            />
-            <FormInput
-              label="Relationship"
-              name="emergencyContact.relationship"
-              value={formData.emergencyContact.relationship}
-              onChange={handleInputChange}
-              required
-            />
-            <div className="md:col-span-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Emergency Contact Phone
-              </label>
-              <div className="flex gap-2 items-center">
-                <div className="w-20">
-                  <FormSelect
-                    name="emergencyContact.phone.countryCode"
-                    value={formData.emergencyContact.phone.countryCode}
-                    onChange={handleInputChange}
-                    options={countries.map((country) => ({
-                      value: country.code,
-                      label: `${country.code} (${country.name})`,
-                      key: `${country.code}-${country.name}`,
-                    }))}
-                    required
-                  />
+              <form
+                onSubmit={handleSubmit}
+                className="overflow-y-auto max-h-[calc(100vh-200px)]"
+              >
+                <div className="grid grid-cols-2 gap-4">
+                  <div key="firstName">
+                    <label className="block text-sm font-medium text-gray-700">
+                      First Name
+                    </label>
+                    <input
+                      type="text"
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleInputChange}
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                      required
+                    />
+                  </div>
+                  <div key="lastName">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Last Name
+                    </label>
+                    <input
+                      type="text"
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleInputChange}
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                      required
+                    />
+                  </div>
+                  <div key="email">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                      required
+                    />
+                  </div>
+                  <div key="position">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Position
+                    </label>
+                    <input
+                      type="text"
+                      name="position"
+                      value={formData.position}
+                      onChange={handleInputChange}
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                      required
+                    />
+                  </div>
+                  {!editingStaff && (
+                    <React.Fragment key="password-fields">
+                      <div key="password">
+                        <label className="block text-sm font-medium text-gray-700">
+                          Password
+                        </label>
+                        <input
+                          type="password"
+                          name="password"
+                          value={formData.password}
+                          onChange={handleInputChange}
+                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                          required
+                        />
+                      </div>
+                      <div key="confirmPassword">
+                        <label className="block text-sm font-medium text-gray-700">
+                          Confirm Password
+                        </label>
+                        <input
+                          type="password"
+                          name="confirmPassword"
+                          value={formData.confirmPassword}
+                          onChange={handleInputChange}
+                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                          required
+                        />
+                      </div>
+                    </React.Fragment>
+                  )}
                 </div>
-                <div className="flex-grow">
-                  <FormInput
-                    name="emergencyContact.phone.number"
-                    type="tel"
-                    value={formData.emergencyContact.phone.number}
-                    onChange={handleInputChange}
-                    placeholder="Phone number"
-                    required
-                  />
+                <div className="mt-6 flex justify-end space-x-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsModalOpen(false)}
+                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                  >
+                    {editingStaff ? 'Update' : 'Add'} Staff Member
+                  </button>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
         </div>
+      )}
 
-        {/* Address */}
-        <div className="mt-4">
-          <h3 className="text-lg font-medium mb-2">Address</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <FormInput
-              label="Street"
-              name="address.street"
-              value={formData.address.street}
-              onChange={handleInputChange}
-              required
-            />
-            <FormInput
-              label="City"
-              name="address.city"
-              value={formData.address.city}
-              onChange={handleInputChange}
-              required
-            />
-            <FormInput
-              label="State"
-              name="address.state"
-              value={formData.address.state}
-              onChange={handleInputChange}
-              required
-            />
-            <FormInput
-              label="Postal Code"
-              name="address.postalCode"
-              value={formData.address.postalCode}
-              onChange={handleInputChange}
-              required
-            />
-            <FormInput
-              label="Country"
-              name="address.country"
-              value={formData.address.country}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-        </div>
-
-        <div className="mt-4">
+      {/* Main content */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">Staff Management</h1>
           <button
-            type="submit"
-            className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
-          >
-            {editingId ? 'Update Staff Member' : 'Add Staff Member'}
-          </button>
-          {editingId && (
-            <button
-              type="button"
-              onClick={() => {
-                setEditingId(null);
-                setFormData({
-                  firstName: '',
-                  lastName: '',
-                  email: '',
+            onClick={() => {
+              setEditingStaff(null);
+              setFormData({
+                firstName: '',
+                lastName: '',
+                email: '',
+                phone: {
+                  countryCode: '+1',
+                  number: '',
+                },
+                emergencyContact: {
+                  name: '',
+                  relationship: '',
                   phone: {
                     countryCode: '+1',
                     number: '',
                   },
-                  emergencyContact: {
-                    name: '',
-                    relationship: '',
-                    phone: {
-                      countryCode: '+1',
-                      number: '',
-                    },
-                  },
-                  employmentType: 'FULL_TIME',
-                  age: 0,
-                  gender: 'PREFER_NOT_TO_SAY',
-                  dateOfBirth: '',
-                  address: {
-                    street: '',
-                    city: '',
-                    state: '',
-                    postalCode: '',
-                    country: '',
-                  },
-                  startDate: '',
-                  position: '',
-                  isActive: true,
-                });
-              }}
-              className="ml-2 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-            >
-              Cancel
-            </button>
-          )}
+                },
+                employmentType: 'FULL_TIME',
+                age: 0,
+                gender: 'OTHER',
+                dateOfBirth: '',
+                address: {
+                  street: '',
+                  city: '',
+                  state: '',
+                  postalCode: '',
+                  country: '',
+                },
+                startDate: '',
+                position: '',
+                isActive: true,
+                role: 'STAFF',
+                password: '',
+              });
+              setIsModalOpen(true);
+            }}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Add Staff Member
+          </button>
         </div>
-      </form>
 
-      {/* Staff Table */}
-      <div className="bg-white rounded shadow overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Name
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Position
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Email
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Phone
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {staff.map((member) => (
-              <tr key={`staff-row-${member._id}`}>
-                <td
-                  key={`${member._id}-name`}
-                  className="px-6 py-4 whitespace-nowrap"
+        {/* Search and filter controls */}
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Search staff..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="border p-2 rounded w-full md:w-64"
+          />
+        </div>
+
+        {/* Staff table */}
+        <div className="bg-white shadow-md rounded-lg overflow-hidden">
+          <table className="min-w-full">
+            <thead className="bg-gray-50">
+              <tr key="header-row">
+                <th
+                  key="name-header"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                  onClick={() => handleSort('firstName')}
                 >
-                  <div className="text-sm font-medium text-gray-900">
-                    {member.firstName} {member.lastName}
-                  </div>
-                </td>
-                <td
-                  key={`${member._id}-position`}
-                  className="px-6 py-4 whitespace-nowrap"
+                  Name
+                </th>
+                <th
+                  key="email-header"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                  onClick={() => handleSort('email')}
                 >
-                  <div className="text-sm text-gray-900">{member.position}</div>
-                </td>
-                <td
-                  key={`${member._id}-email`}
-                  className="px-6 py-4 whitespace-nowrap"
+                  Email
+                </th>
+                <th
+                  key="position-header"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                  onClick={() => handleSort('position')}
                 >
-                  <div className="text-sm text-gray-900">{member.email}</div>
-                </td>
-                <td
-                  key={`${member._id}-phone`}
-                  className="px-6 py-4 whitespace-nowrap"
+                  Position
+                </th>
+                <th
+                  key="actions-header"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  <div className="text-sm text-gray-900">
-                    {member.phone.countryCode} {member.phone.number}
-                  </div>
-                </td>
-                <td
-                  key={`${member._id}-actions`}
-                  className="px-6 py-4 whitespace-nowrap text-sm font-medium"
-                >
-                  <button
-                    key={`${member._id}-edit`}
-                    onClick={() => handleEdit(member)}
-                    className="text-indigo-600 hover:text-indigo-900 mr-4"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    key={`${member._id}-delete`}
-                    onClick={() => handleDelete(member._id || '')}
-                    className="text-red-600 hover:text-red-900"
-                  >
-                    Delete
-                  </button>
-                </td>
+                  Actions
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {paginatedStaff.map((member, index) => (
+                <tr key={`${member.id}-${index}`} className="hover:bg-gray-50">
+                  <td
+                    key={`${member.id}-name-${index}`}
+                    className="px-6 py-4 whitespace-nowrap"
+                  >
+                    {member.firstName} {member.lastName}
+                  </td>
+                  <td
+                    key={`${member.id}-email-${index}`}
+                    className="px-6 py-4 whitespace-nowrap"
+                  >
+                    {member.email}
+                  </td>
+                  <td
+                    key={`${member.id}-position-${index}`}
+                    className="px-6 py-4 whitespace-nowrap"
+                  >
+                    {member.position}
+                  </td>
+                  <td
+                    key={`${member.id}-actions-${index}`}
+                    className="px-6 py-4 whitespace-nowrap"
+                  >
+                    <button
+                      key={`${member.id}-edit-${index}`}
+                      onClick={() => handleEdit(member)}
+                      className="text-blue-600 hover:text-blue-900 mr-4"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      key={`${member.id}-delete-${index}`}
+                      onClick={() => handleDelete(member.id)}
+                      className="text-red-600 hover:text-red-900"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination */}
+        <div className="mt-4 flex justify-between items-center">
+          <div>
+            <select
+              value={rowsPerPage}
+              onChange={(e) => setRowsPerPage(Number(e.target.value))}
+              className="border p-2 rounded"
+            >
+              {[5, 10, 20, 50].map((value) => (
+                <option key={`rows-${value}`} value={value}>
+                  {value} per page
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex items-center space-x-2">
+            <button
+              key="prev-page"
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 border rounded disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span key="page-info">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              key="next-page"
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 border rounded disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

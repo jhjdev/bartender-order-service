@@ -5,7 +5,7 @@ import {
   login,
   selectAuthLoading,
   selectAuthError,
-  clearAuthError,
+  clearError,
 } from '../../redux/slices/authSlice';
 import { AppDispatch } from '../../redux/store';
 
@@ -17,6 +17,7 @@ const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -33,6 +34,7 @@ const LoginForm: React.FC = () => {
 
     if (!email || !password) return;
 
+    setIsSubmitting(true);
     console.log('Attempting login with:', { email });
 
     try {
@@ -49,10 +51,12 @@ const LoginForm: React.FC = () => {
         stack: err instanceof Error ? err.stack : undefined,
       });
       // Keep the error visible
-      dispatch(clearAuthError());
+      dispatch(clearError());
       setTimeout(() => {
-        dispatch(clearAuthError());
+        dispatch(clearError());
       }, 10000); // Keep error visible for 10 seconds
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -73,6 +77,8 @@ const LoginForm: React.FC = () => {
       localStorage.removeItem('lastAuthError');
     }
   }, []);
+
+  const isButtonDisabled = isLoading || isSubmitting;
 
   return (
     <div className="flex min-h-[80vh] flex-col justify-center">
@@ -109,7 +115,7 @@ const LoginForm: React.FC = () => {
                   <div className="-mx-1.5 -my-1.5">
                     <button
                       type="button"
-                      onClick={() => dispatch(clearAuthError())}
+                      onClick={() => dispatch(clearError())}
                       className="inline-flex rounded-md p-1.5 text-red-500 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2"
                     >
                       <span className="sr-only">Dismiss</span>
@@ -149,7 +155,7 @@ const LoginForm: React.FC = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
                   placeholder="you@example.com"
-                  disabled={isLoading}
+                  disabled={isButtonDisabled}
                 />
               </div>
             </div>
@@ -170,12 +176,13 @@ const LoginForm: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
-                  disabled={isLoading}
+                  disabled={isButtonDisabled}
                 />
                 <button
                   type="button"
                   className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-500"
                   onClick={() => setShowPassword(!showPassword)}
+                  disabled={isButtonDisabled}
                 >
                   {showPassword ? (
                     <svg
@@ -213,10 +220,10 @@ const LoginForm: React.FC = () => {
             <div>
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={isButtonDisabled}
                 className="flex w-full justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoading ? (
+                {isButtonDisabled ? (
                   <>
                     <svg
                       className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"

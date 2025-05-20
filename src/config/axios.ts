@@ -1,84 +1,60 @@
 import axios from 'axios';
 
-// Configure axios defaults
-// axios.defaults.baseURL = '/api';  // Removing this line
+// Create an axios instance with default config
+const instance = axios.create({
+  baseURL: '/api',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
-// Add a request interceptor to handle errors
-axios.interceptors.request.use(
+// Add a request interceptor
+instance.interceptors.request.use(
   (config) => {
-    const requestInfo = {
-      url: config.url,
-      method: config.method,
-      data: config.data,
-      timestamp: new Date().toISOString(),
-    };
-    console.log('Making request:', requestInfo);
-    localStorage.setItem('lastRequest', JSON.stringify(requestInfo));
+    // Get token from localStorage
+    const token = localStorage.getItem('token');
+
+    // If token exists, add it to the headers
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    console.log('Making request to:', config.url);
     return config;
   },
   (error) => {
-    console.error('Request error:', error);
-    localStorage.setItem(
-      'lastRequestError',
-      JSON.stringify({
-        error: error.message,
-        timestamp: new Date().toISOString(),
-      })
-    );
     return Promise.reject(error);
   }
 );
 
-// Add a response interceptor to handle errors
-axios.interceptors.response.use(
+// Add a response interceptor
+instance.interceptors.response.use(
   (response) => {
-    const responseInfo = {
+    console.log('Response received:', {
+      url: response.config.url,
       status: response.status,
       data: response.data,
-      headers: response.headers,
-      timestamp: new Date().toISOString(),
-    };
-    console.log('Response received:', responseInfo);
-    localStorage.setItem('lastResponse', JSON.stringify(responseInfo));
+    });
     return response;
   },
   (error) => {
-    const errorInfo = {
+    console.error('Response error:', {
+      url: error.config?.url,
       status: error.response?.status,
       data: error.response?.data,
       message: error.message,
-      config: {
-        url: error.config?.url,
-        method: error.config?.method,
-        data: error.config?.data,
-      },
-      timestamp: new Date().toISOString(),
-    };
-    console.error('Response error:', errorInfo);
-    localStorage.setItem('lastResponseError', JSON.stringify(errorInfo));
+    });
 
+    // Handle 401 Unauthorized errors
     if (error.response?.status === 401) {
-      // Handle unauthorized access
+      // Clear token
       localStorage.removeItem('token');
-      window.location.href = '/login';
+      // Let the application handle the redirection
+      error.isUnauthorized = true;
     }
+
     return Promise.reject(error);
   }
 );
 
-// Log any persisted errors on load
-const lastRequestError = localStorage.getItem('lastRequestError');
-const lastResponseError = localStorage.getItem('lastResponseError');
-if (lastRequestError) {
-  console.error('Found persisted request error:', JSON.parse(lastRequestError));
-  localStorage.removeItem('lastRequestError');
-}
-if (lastResponseError) {
-  console.error(
-    'Found persisted response error:',
-    JSON.parse(lastResponseError)
-  );
-  localStorage.removeItem('lastResponseError');
-}
-
-export default axios;
+export default instance;

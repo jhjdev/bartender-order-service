@@ -1,20 +1,20 @@
-import express from 'express';
+import express, { Express } from 'express';
 import cors from 'cors';
 import { connectDB } from './config/db';
-import authRoutes from './routes/auth';
-import drinksRoutes from './routes/drinks';
-import cocktailsRoutes from './routes/cocktails';
+import authRoutes from './routes/authRoutes';
+import drinksRoutes from './routes/drinksRoutes';
+import cocktailsRoutes from './routes/cocktailsRoutes';
 import imageRoutes from './routes/images';
-import staffRoutes from './routes/staff';
-import ordersRoutes from './routes/orders';
+import staffRoutes from './routes/staffRoutes';
+import ordersRoutes from './routes/ordersRoutes';
 import * as dotenv from 'dotenv';
 import { getEnvPath } from './utils/paths';
 
 // Load environment variables from root .env file
 dotenv.config({ path: getEnvPath() });
 
-const app = express();
-const PORT = process.env.PORT || 4000;
+const app: Express = express();
+const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors());

@@ -20,6 +20,8 @@ export interface Address {
   country: string;
 }
 
+export type UserRole = 'ADMIN' | 'STAFF';
+
 export interface StaffMember {
   _id?: ObjectId;
   firstName: string;
@@ -35,6 +37,8 @@ export interface StaffMember {
   startDate: string;
   position: string;
   isActive: boolean;
+  role: UserRole;
+  profilePicture?: string; // Base64 encoded image or URL
   createdAt?: Date;
   updatedAt?: Date;
 }

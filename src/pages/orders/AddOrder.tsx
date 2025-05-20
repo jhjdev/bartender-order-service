@@ -1,31 +1,44 @@
-import { useState } from "react";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import Button from "../components/Button";
-import InfoCard from "../components/InfoCard";
-import { createOrder } from "../redux/slices/orderSlice";
-import { RootState } from "../redux/store";
+import { useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import Button from '../../components/Button';
+import InfoCard from '../../components/InfoCard';
+import { createOrder } from '../../redux/slices/orderSlice';
+import { RootState } from '../../redux/store';
+import { Order } from '../../shared/types';
 
-export const AddOrder = () => {
+const AddOrder: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { orders, loading, error } = useAppSelector((state: RootState) => state.orders);
-  
-  const [customerNumber, setCustomerNumber] = useState("");
-  const [tableNumber, setTableNumber] = useState<number>(1);
-  const [status, setStatus] = useState<string>("");
+  const { orders, loadingStates, errors } = useAppSelector(
+    (state: RootState) => state.orders
+  );
 
-  const totalDrinks = orders.reduce((sum, order) => {
-    return sum + order.items.reduce((itemSum, item) => itemSum + item.quantity, 0);
+  const [customerNumber, setCustomerNumber] = useState<string>('');
+  const [tableNumber, setTableNumber] = useState<number>(1);
+  const [status, setStatus] = useState<string>('');
+
+  const isLoading = loadingStates.create || false;
+  const error = errors.find((e) => e.operation === 'create')?.message;
+
+  const totalDrinks = orders.reduce((sum: number, order: Order) => {
+    return (
+      sum +
+      order.items.reduce((itemSum: number, item) => itemSum + item.quantity, 0)
+    );
   }, 0);
 
-  const totalProfit = orders.reduce((sum, order) => {
+  const totalProfit = orders.reduce((sum: number, order: Order) => {
     return sum + order.total;
   }, 0);
 
-  const handleCustomerNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCustomerNumberChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setCustomerNumber(event.target.value);
   };
 
-  const handleTableNumberChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleTableNumberChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     setTableNumber(Number(event.target.value));
   };
 
@@ -33,16 +46,20 @@ export const AddOrder = () => {
     event.preventDefault();
 
     try {
-      await dispatch(createOrder({
-        customerNumber,
-        tableNumber,
-        items: []  // Items will be added through drink selection
-      })).unwrap();
-      
-      setStatus("Order created successfully");
-      setCustomerNumber("");
-    } catch (error: any) {
-      setStatus(error.message || "Failed to create order");
+      await dispatch(
+        createOrder({
+          customerNumber,
+          tableNumber,
+          items: [], // Items will be added through drink selection
+        })
+      ).unwrap();
+
+      setStatus('Order created successfully');
+      setCustomerNumber('');
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to create order';
+      setStatus(errorMessage);
     }
   };
 
@@ -50,17 +67,17 @@ export const AddOrder = () => {
     <>
       <div className="container max-w-full mt-4">
         <div className="grid grid-cols-1 gap-6 mb-6 lg:grid-cols-3">
-          <InfoCard 
-            headline="Total Number of Orders" 
-            text={orders.length.toString()} 
+          <InfoCard
+            headline="Total Number of Orders"
+            text={orders.length.toString()}
           />
-          <InfoCard 
-            headline="Total Number of Drinks" 
-            text={totalDrinks.toString()} 
+          <InfoCard
+            headline="Total Number of Drinks"
+            text={totalDrinks.toString()}
           />
-          <InfoCard 
-            headline="Total Profit" 
-            text={`$ ${totalProfit.toFixed(2)}`} 
+          <InfoCard
+            headline="Total Profit"
+            text={`$ ${totalProfit.toFixed(2)}`}
           />
         </div>
         <div className="w-full grid gap-6 mb-6">
@@ -71,7 +88,8 @@ export const AddOrder = () => {
                   New Order:
                 </h2>
                 <p className="mt-1 text-sm leading-6 text-gray-600">
-                  Create a new order by entering a customer number and selecting a table.
+                  Create a new order by entering a customer number and selecting
+                  a table.
                 </p>
                 <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                   <div className="sm:col-span-4">
@@ -111,11 +129,13 @@ export const AddOrder = () => {
                               onChange={handleTableNumberChange}
                               required
                             >
-                              {Array.from({ length: 12 }, (_, i) => i + 1).map((num) => (
-                                <option key={num} value={num}>
-                                  Table {num}
-                                </option>
-                              ))}
+                              {Array.from({ length: 12 }, (_, i) => i + 1).map(
+                                (num) => (
+                                  <option key={num} value={num}>
+                                    Table {num}
+                                  </option>
+                                )
+                              )}
                             </select>
                             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                               <svg
@@ -129,10 +149,10 @@ export const AddOrder = () => {
                           </div>
                         </div>
                       </div>
-                      <Button 
-                        type="submit" 
-                        text={loading ? "Creating Order..." : "Create Order"} 
-                        disabled={loading}
+                      <Button
+                        type="submit"
+                        text={isLoading ? 'Creating Order...' : 'Create Order'}
+                        disabled={isLoading}
                       />
                     </form>
                   </div>

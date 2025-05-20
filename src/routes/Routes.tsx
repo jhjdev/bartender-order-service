@@ -1,49 +1,122 @@
+import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import LoginForm from '../components/auth/LoginForm';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../redux/store';
 import ProtectedRoute from '../components/auth/ProtectedRoute';
-import Orders from '../pages/Orders';
-import AddOrder from '../pages/AddOrder';
+import LoginPage from '../pages/auth/LoginPage';
+import ProfilePage from '../pages/profile/ProfilePage';
 import DrinksPage from '../pages/menu/DrinksPage';
 import CocktailsPage from '../pages/menu/CocktailsPage';
+import OrdersPage from '../pages/orders/OrdersPage';
+import AddOrder from '../pages/orders/AddOrder';
 import StaffPage from '../pages/staff/StaffPage';
-import SchedulePage from '../pages/schedule/SchedulePage';
-import TablesPage from '../pages/TablesPage';
+import TablesPage from '../pages/tables/TablesPage';
 import ReportsPage from '../pages/reports/ReportsPage';
 import FilesPage from '../pages/files/FilesPage';
-import ProfilePage from '../pages/Profile';
-import ErrorPage from '../pages/ErrorPage';
+import SchedulePage from '../pages/schedule/SchedulePage';
 
-const AppRoutes = () => {
+const AppRoutes: React.FC = () => {
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+
   return (
     <Routes>
-      {/* Public Routes */}
-      <Route path="/login" element={<LoginForm />} />
-      <Route path="/error" element={<ErrorPage />} />
-
-      {/* Protected Routes */}
-      <Route element={<ProtectedRoute />}>
-        {/* Menu Routes */}
-        <Route path="/menu/drinks" element={<DrinksPage />} />
-        <Route path="/menu/cocktails" element={<CocktailsPage />} />
-
-        {/* Order Routes */}
-        <Route path="/orders" element={<Orders />} />
-        <Route path="/add-order" element={<AddOrder />} />
-
-        {/* Staff Routes */}
-        <Route path="/staff" element={<StaffPage />} />
-        <Route path="/schedule" element={<SchedulePage />} />
-
-        {/* Other Routes */}
-        <Route path="/tables" element={<TablesPage />} />
-        <Route path="/reports" element={<ReportsPage />} />
-        <Route path="/files" element={<FilesPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-      </Route>
-
-      {/* Default Route */}
-      <Route path="/" element={<Navigate to="/orders" replace />} />
-      <Route path="*" element={<ErrorPage />} />
+      <Route
+        path="/login"
+        element={
+          isAuthenticated ? <Navigate to="/profile" replace /> : <LoginPage />
+        }
+      />
+      <Route
+        path="/"
+        element={
+          isAuthenticated ? (
+            <Navigate to="/profile" replace />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/menu/drinks"
+        element={
+          <ProtectedRoute>
+            <DrinksPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/menu/cocktails"
+        element={
+          <ProtectedRoute>
+            <CocktailsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/orders"
+        element={
+          <ProtectedRoute>
+            <OrdersPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/add-order"
+        element={
+          <ProtectedRoute>
+            <AddOrder />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/tables"
+        element={
+          <ProtectedRoute>
+            <TablesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/reports"
+        element={
+          <ProtectedRoute>
+            <ReportsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/schedule"
+        element={
+          <ProtectedRoute>
+            <SchedulePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/staff"
+        element={
+          <ProtectedRoute>
+            <StaffPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/files"
+        element={
+          <ProtectedRoute>
+            <FilesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="*" element={<Navigate to="/profile" replace />} />
     </Routes>
   );
 };

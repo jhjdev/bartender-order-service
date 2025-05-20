@@ -1,32 +1,41 @@
-import axios from 'axios';
-import { StaffMember } from '../redux/slices/staffSlice';
+import axios from '../config/axios';
+import { Staff } from '../types/staff';
 
-const API_URL = '/api/staff';
+const API_URL = '/staff';
 
 export const staffService = {
   // Get all staff members
-  getAllStaff: async (): Promise<StaffMember[]> => {
+  async getAllStaff(): Promise<Staff[]> {
     const response = await axios.get(API_URL);
     return response.data;
   },
 
+  // Get a staff member by ID
+  async getStaffById(id: string): Promise<Staff> {
+    const response = await axios.get(`${API_URL}/${id}`);
+    return response.data;
+  },
+
+  // Get the current staff member
+  async getCurrentStaff(): Promise<Staff> {
+    const response = await axios.get(`${API_URL}/me`);
+    return response.data;
+  },
+
   // Create a new staff member
-  createStaff: async (staff: Omit<StaffMember, 'id'>): Promise<StaffMember> => {
+  async createStaff(staff: Omit<Staff, 'id'>): Promise<Staff> {
     const response = await axios.post(API_URL, staff);
     return response.data;
   },
 
   // Update a staff member
-  updateStaff: async (staff: StaffMember): Promise<StaffMember> => {
-    const { _id, ...staffData } = staff;
-    console.log('Sending update request:', { _id, staffData }); // Debug log
-    const response = await axios.put(`${API_URL}/${_id}`, staffData);
-    console.log('Update response:', response.data); // Debug log
+  async updateStaff(id: string, staff: Partial<Staff>): Promise<Staff> {
+    const response = await axios.put(`${API_URL}/${id}`, staff);
     return response.data;
   },
 
   // Delete a staff member
-  deleteStaff: async (id: string): Promise<void> => {
+  async deleteStaff(id: string): Promise<void> {
     await axios.delete(`${API_URL}/${id}`);
   },
 };

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { RootState } from '../../redux/store';
-import { deleteOrder, calculateOrderTotal } from '../../redux/slices/orderSlice';
-import { Order, OrderStatus } from '../../shared/types';
+import { useAppDispatch } from '../../redux/hooks';
+import {
+  deleteOrder,
+  calculateOrderTotal,
+} from '../../redux/slices/orderSlice';
+import { Order, OrderStatus } from '../../types/order';
 import OrderPayment from './OrderPayment';
 
 interface OrderCardProps {
@@ -11,7 +13,6 @@ interface OrderCardProps {
 
 const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
   const dispatch = useAppDispatch();
-  const { loading } = useAppSelector((state: RootState) => state.orders);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
@@ -30,17 +31,15 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
   // Status badge color
   const getStatusColor = (status: OrderStatus) => {
     switch (status) {
-      case OrderStatus.PENDING:
+      case 'pending':
         return 'bg-yellow-100 text-yellow-800';
-      case OrderStatus.PROCESSING:
+      case 'preparing':
         return 'bg-blue-100 text-blue-800';
-      case OrderStatus.READY:
+      case 'ready':
         return 'bg-purple-100 text-purple-800';
-      case OrderStatus.DELIVERED:
+      case 'served':
         return 'bg-green-100 text-green-800';
-      case OrderStatus.PAID:
-        return 'bg-green-100 text-green-800';
-      case OrderStatus.CANCELLED:
+      case 'cancelled':
         return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
@@ -56,8 +55,10 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
     try {
       setDeleteError(null);
       await dispatch(deleteOrder(order._id!)).unwrap();
-    } catch (err: any) {
-      setDeleteError(err.message || 'Failed to delete order');
+    } catch (err: unknown) {
+      setDeleteError(
+        err instanceof Error ? err.message : 'Failed to delete order'
+      );
       setDeleteConfirm(false);
     }
   };
@@ -80,7 +81,11 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
             </p>
           </div>
           <div className="mt-2 md:mt-0">
-            <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(order.status)}`}>
+            <span
+              className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(
+                order.status
+              )}`}
+            >
               {order.status}
             </span>
           </div>
@@ -91,31 +96,34 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
       <div className="p-4">
         {/* Customer Info */}
         <div className="mb-4">
-          <h3 className="text-md font-semibold text-gray-700 mb-2">Customer Information</h3>
+          <h3 className="text-md font-semibold text-gray-700 mb-2">
+            Customer Information
+          </h3>
           <div className="flex flex-col sm:flex-row sm:gap-4">
             <p className="text-sm text-gray-600">
               <span className="font-medium">Table:</span> {order.tableNumber}
             </p>
-            {order.customerNumber && (
-              <p className="text-sm text-gray-600">
-                <span className="font-medium">Customer:</span> {order.customerNumber}
-              </p>
-            )}
           </div>
         </div>
 
         {/* Order Items */}
         <div className="mb-4">
-          <h3 className="text-md font-semibold text-gray-700 mb-2">Order Items</h3>
+          <h3 className="text-md font-semibold text-gray-700 mb-2">
+            Order Items
+          </h3>
           <div className="bg-gray-50 rounded-md p-2">
             <ul className="divide-y divide-gray-200">
               {order.items.map((item, index) => (
                 <li key={index} className="py-2">
                   <div className="flex justify-between">
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-800">{item.name}</p>
+                      <p className="text-sm font-medium text-gray-800">
+                        {item.name}
+                      </p>
                       {item.notes && (
-                        <p className="text-xs text-gray-500 mt-1">{item.notes}</p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {item.notes}
+                        </p>
                       )}
                     </div>
                     <div className="flex items-center">
@@ -154,26 +162,12 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
             <div className="flex flex-col sm:flex-row gap-2">
               <button
                 onClick={handleDeleteOrder}
-                disabled={loading}
-                className={`flex-1 py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded-md font-medium transition-colors ${
-                  loading ? 'opacity-70 cursor-not-allowed' : ''
-                }`}
+                className={`flex-1 py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded-md font-medium transition-colors`}
               >
-                {loading ? (
-                  <div className="flex items-center justify-center">
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Deleting...
-                  </div>
-                ) : (
-                  'Confirm Delete'
-                )}
+                Deleting...
               </button>
               <button
                 onClick={cancelDelete}
-                disabled={loading}
                 className="flex-1 py-2 px-4 bg-gray-500 hover:bg-gray-600 text-white rounded-md font-medium transition-colors"
               >
                 Cancel
@@ -194,4 +188,3 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
 };
 
 export default OrderCard;
-
