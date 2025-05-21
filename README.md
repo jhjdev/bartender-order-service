@@ -77,7 +77,7 @@ SMTP_USER=your_email@example.com
 SMTP_PASS=your_email_password
 
 # Other Configuration
-API_URL=http://localhost:3000
+API_URL=http://localhost:4000
 ```
 
 4. Start the development server:
