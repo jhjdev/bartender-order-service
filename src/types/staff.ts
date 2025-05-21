@@ -32,6 +32,15 @@ export interface Staff {
   dateOfBirth: string;
   address: Address;
   startDate: string;
+  endDate?: string;
+  leaveType?:
+    | 'MATERNITY'
+    | 'PATERNITY'
+    | 'STUDY'
+    | 'SICK'
+    | 'VACATION'
+    | 'TERMINATED'
+    | 'OTHER';
   position: string;
   isActive: boolean;
   role: UserRole;

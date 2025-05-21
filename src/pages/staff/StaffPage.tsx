@@ -11,6 +11,15 @@ import { Staff } from '../../types/staff';
 
 type FormData = Omit<Staff, 'id' | 'createdAt' | 'updatedAt'> & {
   confirmPassword?: string;
+  endDate?: string;
+  leaveType?:
+    | 'MATERNITY'
+    | 'PATERNITY'
+    | 'STUDY'
+    | 'SICK'
+    | 'VACATION'
+    | 'TERMINATED'
+    | 'OTHER';
 };
 
 // Utility function to omit keys from an object
@@ -339,6 +348,232 @@ const StaffPage: React.FC = () => {
                       required
                     />
                   </div>
+                  <div key="phone">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Phone Number
+                    </label>
+                    <div className="flex gap-2">
+                      <select
+                        name="phone.countryCode"
+                        value={formData.phone.countryCode}
+                        onChange={handleInputChange}
+                        className="mt-1 block w-24 border border-gray-300 rounded-md shadow-sm p-2"
+                      >
+                        <option value="+1">+1</option>
+                        <option value="+44">+44</option>
+                        <option value="+46">+46</option>
+                      </select>
+                      <input
+                        type="tel"
+                        name="phone.number"
+                        value={formData.phone.number}
+                        onChange={handleInputChange}
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div key="employmentType">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Employment Type
+                    </label>
+                    <select
+                      name="employmentType"
+                      value={formData.employmentType}
+                      onChange={handleInputChange}
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                      required
+                    >
+                      <option value="FULL_TIME">Full Time</option>
+                      <option value="PART_TIME">Part Time</option>
+                      <option value="CONTRACT">Contract</option>
+                      <option value="TEMPORARY">Temporary</option>
+                    </select>
+                  </div>
+                  <div key="startDate">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Start Date
+                    </label>
+                    <input
+                      type="date"
+                      name="startDate"
+                      value={formData.startDate}
+                      onChange={handleInputChange}
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                      required
+                    />
+                  </div>
+                  <div key="endDate">
+                    <label className="block text-sm font-medium text-gray-700">
+                      End Date
+                    </label>
+                    <input
+                      type="date"
+                      name="endDate"
+                      value={formData.endDate || ''}
+                      onChange={handleInputChange}
+                      disabled={formData.isActive}
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 disabled:bg-gray-100"
+                    />
+                  </div>
+                  <div
+                    key="isActive"
+                    className="col-span-2 flex items-center space-x-4 p-4 bg-blue-50 rounded-lg border border-blue-200 mb-4 h-20"
+                  >
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        name="isActive"
+                        checked={formData.isActive}
+                        onChange={(e) => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            isActive: e.target.checked,
+                            endDate: e.target.checked ? '' : prev.endDate,
+                          }));
+                        }}
+                        className="h-6 w-6 rounded border-2 border-emerald-500 focus:ring-emerald-500 focus:ring-offset-0 cursor-pointer appearance-none checked:bg-emerald-50 checked:border-emerald-500 checked:bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%2310b981%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M16.707%205.293a1%201%200%20010%201.414l-8%208a1%201%200%2001-1.414%200l-4-4a1%201%200%20011.414-1.414L8%2012.586l7.293-7.293a1%201%200%20011.414%200z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E')] checked:bg-center checked:bg-no-repeat"
+                      />
+                      <label className="ml-3 block text-base font-semibold text-gray-700">
+                        {formData.isActive
+                          ? 'Active Employee'
+                          : 'Inactive Employee'}
+                      </label>
+                    </div>
+                    {!formData.isActive && (
+                      <div className="flex items-center space-x-4">
+                        <select
+                          name="leaveType"
+                          value={formData.leaveType || ''}
+                          onChange={handleInputChange}
+                          className="rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-0"
+                        >
+                          <option value="" className="text-gray-500">
+                            Select Reason
+                          </option>
+                          <option value="MATERNITY" className="text-gray-700">
+                            Maternity Leave
+                          </option>
+                          <option value="PATERNITY" className="text-gray-700">
+                            Paternity Leave
+                          </option>
+                          <option value="STUDY" className="text-gray-700">
+                            Study Leave
+                          </option>
+                          <option value="SICK" className="text-gray-700">
+                            Sick Leave
+                          </option>
+                          <option value="VACATION" className="text-gray-700">
+                            Vacation
+                          </option>
+                          <option value="TERMINATED" className="text-gray-700">
+                            Employment Terminated
+                          </option>
+                          <option value="OTHER" className="text-gray-700">
+                            Other
+                          </option>
+                        </select>
+                        <div className="text-sm text-gray-600">
+                          Set end date above
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div key="address" className="col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Address
+                    </label>
+                    <div className="grid grid-cols-2 gap-4">
+                      <input
+                        type="text"
+                        name="address.street"
+                        value={formData.address.street}
+                        onChange={handleInputChange}
+                        placeholder="Street"
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                      />
+                      <input
+                        type="text"
+                        name="address.city"
+                        value={formData.address.city}
+                        onChange={handleInputChange}
+                        placeholder="City"
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                      />
+                      <input
+                        type="text"
+                        name="address.state"
+                        value={formData.address.state}
+                        onChange={handleInputChange}
+                        placeholder="State"
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                      />
+                      <input
+                        type="text"
+                        name="address.postalCode"
+                        value={formData.address.postalCode}
+                        onChange={handleInputChange}
+                        placeholder="Postal Code"
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                      />
+                      <input
+                        type="text"
+                        name="address.country"
+                        value={formData.address.country}
+                        onChange={handleInputChange}
+                        placeholder="Country"
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                      />
+                    </div>
+                  </div>
+                  <div key="emergencyContact" className="col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Emergency Contact
+                    </label>
+                    <div className="grid grid-cols-2 gap-4">
+                      <input
+                        type="text"
+                        name="emergencyContact.name"
+                        value={formData.emergencyContact.name}
+                        onChange={handleInputChange}
+                        placeholder="Contact Name"
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                      />
+                      <input
+                        type="text"
+                        name="emergencyContact.relationship"
+                        value={formData.emergencyContact.relationship}
+                        onChange={handleInputChange}
+                        placeholder="Relationship"
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                      />
+                      <div className="col-span-2">
+                        <label className="block text-sm font-medium text-gray-700">
+                          Emergency Contact Phone
+                        </label>
+                        <div className="flex gap-2">
+                          <select
+                            name="emergencyContact.phone.countryCode"
+                            value={formData.emergencyContact.phone.countryCode}
+                            onChange={handleInputChange}
+                            className="mt-1 block w-24 border border-gray-300 rounded-md shadow-sm p-2"
+                          >
+                            <option value="+1">+1</option>
+                            <option value="+44">+44</option>
+                            <option value="+46">+46</option>
+                          </select>
+                          <input
+                            type="tel"
+                            name="emergencyContact.phone.number"
+                            value={formData.emergencyContact.phone.number}
+                            onChange={handleInputChange}
+                            placeholder="Phone Number"
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                   {!editingStaff && (
                     <React.Fragment key="password-fields">
                       <div key="password">
@@ -477,6 +712,13 @@ const StaffPage: React.FC = () => {
                   Position
                 </th>
                 <th
+                  key="status-header"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                  onClick={() => handleSort('isActive')}
+                >
+                  Status
+                </th>
+                <th
                   key="actions-header"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
@@ -504,6 +746,20 @@ const StaffPage: React.FC = () => {
                     className="px-6 py-4 whitespace-nowrap"
                   >
                     {member.position}
+                  </td>
+                  <td
+                    key={`${member.id}-status-${index}`}
+                    className="px-6 py-4 whitespace-nowrap"
+                  >
+                    <span
+                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        member.isActive
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-red-100 text-red-800'
+                      }`}
+                    >
+                      {member.isActive ? 'Active' : 'Inactive'}
+                    </span>
                   </td>
                   <td
                     key={`${member.id}-actions-${index}`}

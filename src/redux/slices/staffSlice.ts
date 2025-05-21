@@ -37,6 +37,7 @@ export interface StaffMember {
   dateOfBirth: string;
   address: Address;
   startDate: string;
+  endDate?: string;
   position: string;
   isActive: boolean;
   role: UserRole;

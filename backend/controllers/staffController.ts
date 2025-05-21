@@ -116,6 +116,7 @@ export const staffController = {
         role: role as UserRole,
         password: hashedPassword,
         isActive: true,
+        endDate: undefined,
         emergencyContact: {
           name: '',
           relationship: '',
@@ -204,6 +205,7 @@ export const staffController = {
         position,
         role: role as UserRole | undefined,
         isActive,
+        endDate: isActive ? undefined : req.body.endDate,
         updatedAt: new Date(),
       };
 
