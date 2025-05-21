@@ -630,59 +630,61 @@ const StaffPage: React.FC = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Staff Management</h1>
-          <button
-            onClick={() => {
-              setEditingStaff(null);
-              setFormData({
-                firstName: '',
-                lastName: '',
-                email: '',
-                phone: {
-                  countryCode: '+1',
-                  number: '',
-                },
-                emergencyContact: {
-                  name: '',
-                  relationship: '',
+        </div>
+
+        {/* Search and filter controls */}
+        <div className="mb-6 space-y-4">
+          <div className="flex justify-between items-center gap-4">
+            <input
+              type="text"
+              placeholder="Search staff..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="form-input w-full md:w-96 px-4 py-2 rounded-md border-2 border-black bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition-colors duration-200"
+            />
+            <button
+              onClick={() => {
+                setEditingStaff(null);
+                setFormData({
+                  firstName: '',
+                  lastName: '',
+                  email: '',
                   phone: {
                     countryCode: '+1',
                     number: '',
                   },
-                },
-                employmentType: 'FULL_TIME',
-                age: 0,
-                gender: 'OTHER',
-                dateOfBirth: '',
-                address: {
-                  street: '',
-                  city: '',
-                  state: '',
-                  postalCode: '',
-                  country: '',
-                },
-                startDate: '',
-                position: '',
-                isActive: true,
-                role: 'STAFF',
-                password: '',
-              });
-              setIsModalOpen(true);
-            }}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          >
-            Add Staff Member
-          </button>
-        </div>
-
-        {/* Search and filter controls */}
-        <div className="mb-4">
-          <input
-            type="text"
-            placeholder="Search staff..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="border p-2 rounded w-full md:w-64"
-          />
+                  emergencyContact: {
+                    name: '',
+                    relationship: '',
+                    phone: {
+                      countryCode: '+1',
+                      number: '',
+                    },
+                  },
+                  employmentType: 'FULL_TIME',
+                  age: 0,
+                  gender: 'OTHER',
+                  dateOfBirth: '',
+                  address: {
+                    street: '',
+                    city: '',
+                    state: '',
+                    postalCode: '',
+                    country: '',
+                  },
+                  startDate: '',
+                  position: '',
+                  isActive: true,
+                  role: 'STAFF',
+                  password: '',
+                });
+                setIsModalOpen(true);
+              }}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Add Staff Member
+            </button>
+          </div>
         </div>
 
         {/* Staff table */}

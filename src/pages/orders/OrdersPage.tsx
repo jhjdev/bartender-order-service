@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import InfoCard from '../../components/InfoCard';
+import InfoCard from '../../components/ui/InfoCard';
 import { RootState } from '../../redux/store';
 import { fetchOrders } from '../../redux/slices/orderSlice';
 import OrderList from '../../components/orders/OrderList';

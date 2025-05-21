@@ -8,8 +8,22 @@ import {
   getCurrentUser,
 } from '../../redux/slices/authSlice';
 import { User } from '../../types/user';
+import defaultProfileImage from '../../assets/default-profile.svg';
 
-interface FormData extends Omit<User, 'id' | 'createdAt' | 'updatedAt'> {}
+interface FormData extends Omit<User, 'id' | 'createdAt' | 'updatedAt'> {
+  profilePicture?: string;
+  phone?: {
+    countryCode: string;
+    number: string;
+  };
+  address?: {
+    street: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+  };
+}
 
 const ProfilePage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -27,10 +41,20 @@ const ProfilePage: React.FC = () => {
     name: '',
     role: 'staff',
     active: true,
+    phone: {
+      countryCode: '+1',
+      number: '',
+    },
+    address: {
+      street: '',
+      city: '',
+      state: '',
+      postalCode: '',
+      country: '',
+    },
   });
 
   useEffect(() => {
-    // Try to get the current user if we don't have one
     if (!user && !loading) {
       dispatch(getCurrentUser());
     }
@@ -43,6 +67,18 @@ const ProfilePage: React.FC = () => {
         name: user.name || '',
         role: user.role || 'staff',
         active: user.active || true,
+        phone: user.phone || {
+          countryCode: '+1',
+          number: '',
+        },
+        address: user.address || {
+          street: '',
+          city: '',
+          state: '',
+          postalCode: '',
+          country: '',
+        },
+        profilePicture: user.profilePicture,
       });
     }
   }, [user]);
@@ -51,10 +87,41 @@ const ProfilePage: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    if (name.includes('.')) {
+      const [parent, child] = name.split('.');
+      setFormData((prev) => {
+        const parentValue = prev[parent as keyof FormData];
+        if (parentValue && typeof parentValue === 'object') {
+          return {
+            ...prev,
+            [parent]: {
+              ...parentValue,
+              [child]: value,
+            },
+          };
+        }
+        return prev;
+      });
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({
+          ...prev,
+          profilePicture: reader.result as string,
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -78,6 +145,18 @@ const ProfilePage: React.FC = () => {
         name: user.name || '',
         role: user.role || 'staff',
         active: user.active || true,
+        phone: user.phone || {
+          countryCode: '+1',
+          number: '',
+        },
+        address: user.address || {
+          street: '',
+          city: '',
+          state: '',
+          postalCode: '',
+          country: '',
+        },
+        profilePicture: user.profilePicture,
       });
     }
     setIsEditing(false);
@@ -90,7 +169,6 @@ const ProfilePage: React.FC = () => {
       navigate('/login');
     } catch (err) {
       console.error('Logout failed:', err);
-      // Force navigation even if logout fails
       navigate('/login');
     }
   };
@@ -149,14 +227,27 @@ const ProfilePage: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-900">Profile</h1>
           {!isEditing && (
             <button
               onClick={() => setIsEditing(true)}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+              className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded transition-colors duration-200 flex items-center gap-2"
             >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                />
+              </svg>
               Edit Profile
             </button>
           )}
@@ -208,92 +299,317 @@ const ProfilePage: React.FC = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Profile Image Section */}
+          <div className="flex flex-col items-center space-y-4">
+            <div className="relative">
+              <img
+                src={formData.profilePicture || defaultProfileImage}
+                alt="Profile"
+                className="w-32 h-32 rounded-full object-cover border-4 border-gray-200 shadow-md"
+              />
+              {isEditing && (
+                <label
+                  htmlFor="profile-picture"
+                  className="absolute bottom-0 right-0 bg-gray-800 text-white p-2 rounded-full cursor-pointer hover:bg-gray-700 transition-colors duration-200 shadow-lg"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                </label>
+              )}
+              <input
+                type="file"
+                id="profile-picture"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="hidden"
+                disabled={!isEditing}
+              />
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Name
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                disabled={!isEditing}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
+            {/* Basic Information */}
+            <div className="space-y-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
+                Basic Information
+              </h2>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  disabled={!isEditing}
+                  className={`mt-1 block w-full rounded-md shadow-sm focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${
+                    isEditing
+                      ? 'border-gray-300 focus:border-gray-800 focus:ring-gray-800'
+                      : 'border-gray-200 bg-gray-100 text-gray-500'
+                  }`}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  disabled={!isEditing}
+                  className={`mt-1 block w-full rounded-md shadow-sm focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${
+                    isEditing
+                      ? 'border-gray-300 focus:border-gray-800 focus:ring-gray-800'
+                      : 'border-gray-200 bg-gray-100 text-gray-500'
+                  }`}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Role
+                </label>
+                <select
+                  name="role"
+                  value={formData.role}
+                  onChange={handleInputChange}
+                  disabled={!isEditing}
+                  className={`mt-1 block w-full rounded-md shadow-sm focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${
+                    isEditing
+                      ? 'border-gray-300 focus:border-gray-800 focus:ring-gray-800'
+                      : 'border-gray-200 bg-gray-100 text-gray-500'
+                  }`}
+                >
+                  <option value="admin">Admin</option>
+                  <option value="staff">Staff</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Status
+                </label>
+                <select
+                  name="active"
+                  value={formData.active ? 'true' : 'false'}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      active: e.target.value === 'true',
+                    }))
+                  }
+                  disabled={!isEditing}
+                  className={`mt-1 block w-full rounded-md shadow-sm focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${
+                    isEditing
+                      ? 'border-gray-300 focus:border-gray-800 focus:ring-gray-800'
+                      : 'border-gray-200 bg-gray-100 text-gray-500'
+                  }`}
+                >
+                  <option value="true">Active</option>
+                  <option value="false">Inactive</option>
+                </select>
+              </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Email
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                disabled={!isEditing}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
+            {/* Contact Information */}
+            <div className="space-y-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
+                Contact Information
+              </h2>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Phone Number
+                </label>
+                <div className="flex gap-2">
+                  <select
+                    name="phone.countryCode"
+                    value={formData.phone?.countryCode}
+                    onChange={handleInputChange}
+                    disabled={!isEditing}
+                    className={`mt-1 block w-24 rounded-md shadow-sm focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${
+                      isEditing
+                        ? 'border-gray-300 focus:border-gray-800 focus:ring-gray-800'
+                        : 'border-gray-200 bg-gray-100 text-gray-500'
+                    }`}
+                  >
+                    <option value="+1">+1</option>
+                    <option value="+44">+44</option>
+                    <option value="+46">+46</option>
+                  </select>
+                  <input
+                    type="tel"
+                    name="phone.number"
+                    value={formData.phone?.number}
+                    onChange={handleInputChange}
+                    disabled={!isEditing}
+                    className={`mt-1 block w-full rounded-md shadow-sm focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${
+                      isEditing
+                        ? 'border-gray-300 focus:border-gray-800 focus:ring-gray-800'
+                        : 'border-gray-200 bg-gray-100 text-gray-500'
+                    }`}
+                  />
+                </div>
+              </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Role
-              </label>
-              <select
-                name="role"
-                value={formData.role}
-                onChange={handleInputChange}
-                disabled={!isEditing}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              >
-                <option value="admin">Admin</option>
-                <option value="staff">Staff</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Status
-              </label>
-              <select
-                name="active"
-                value={formData.active ? 'true' : 'false'}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    active: e.target.value === 'true',
-                  }))
-                }
-                disabled={!isEditing}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              >
-                <option value="true">Active</option>
-                <option value="false">Inactive</option>
-              </select>
+            {/* Address Information */}
+            <div className="md:col-span-2 space-y-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
+                Address
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Street
+                  </label>
+                  <input
+                    type="text"
+                    name="address.street"
+                    value={formData.address?.street}
+                    onChange={handleInputChange}
+                    disabled={!isEditing}
+                    className={`mt-1 block w-full rounded-md shadow-sm focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${
+                      isEditing
+                        ? 'border-gray-300 focus:border-gray-800 focus:ring-gray-800'
+                        : 'border-gray-200 bg-gray-100 text-gray-500'
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    City
+                  </label>
+                  <input
+                    type="text"
+                    name="address.city"
+                    value={formData.address?.city}
+                    onChange={handleInputChange}
+                    disabled={!isEditing}
+                    className={`mt-1 block w-full rounded-md shadow-sm focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${
+                      isEditing
+                        ? 'border-gray-300 focus:border-gray-800 focus:ring-gray-800'
+                        : 'border-gray-200 bg-gray-100 text-gray-500'
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    State
+                  </label>
+                  <input
+                    type="text"
+                    name="address.state"
+                    value={formData.address?.state}
+                    onChange={handleInputChange}
+                    disabled={!isEditing}
+                    className={`mt-1 block w-full rounded-md shadow-sm focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${
+                      isEditing
+                        ? 'border-gray-300 focus:border-gray-800 focus:ring-gray-800'
+                        : 'border-gray-200 bg-gray-100 text-gray-500'
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Postal Code
+                  </label>
+                  <input
+                    type="text"
+                    name="address.postalCode"
+                    value={formData.address?.postalCode}
+                    onChange={handleInputChange}
+                    disabled={!isEditing}
+                    className={`mt-1 block w-full rounded-md shadow-sm focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${
+                      isEditing
+                        ? 'border-gray-300 focus:border-gray-800 focus:ring-gray-800'
+                        : 'border-gray-200 bg-gray-100 text-gray-500'
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Country
+                  </label>
+                  <input
+                    type="text"
+                    name="address.country"
+                    value={formData.address?.country}
+                    onChange={handleInputChange}
+                    disabled={!isEditing}
+                    className={`mt-1 block w-full rounded-md shadow-sm focus:ring-2 focus:ring-offset-2 transition-colors duration-200 ${
+                      isEditing
+                        ? 'border-gray-300 focus:border-gray-800 focus:ring-gray-800'
+                        : 'border-gray-200 bg-gray-100 text-gray-500'
+                    }`}
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
           {isEditing && (
-            <div className="mt-6 flex justify-end space-x-4">
+            <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
               <button
                 type="button"
                 onClick={handleCancel}
-                className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded"
+                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors duration-200"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+                className="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition-colors duration-200"
               >
                 Save Changes
               </button>
             </div>
           )}
         </form>
+
+        {/* Logout Button */}
+        <div className="mt-8 pt-6 border-t border-gray-200">
+          <button
+            onClick={handleLogout}
+            className="w-full px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200 flex items-center justify-center gap-2"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+              />
+            </svg>
+            Sign Out
+          </button>
+        </div>
       </div>
     </div>
   );

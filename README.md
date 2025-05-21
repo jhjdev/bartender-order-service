@@ -1,89 +1,187 @@
-# A Bartender Service Dashboard
+# Bar Manager Dashboard
 
-A simple bartender order service dashboard where you can send drink orders to a NodeJS API, and then view all sent orders in a ReactJS frontend.
+A comprehensive bar management system built with modern web technologies. This application helps bar managers handle orders, inventory, staff scheduling, and reporting in one centralized platform.
 
-## Run Locally
+## Technologies Used
 
-Clone the project
+### Frontend
+
+- React 18
+- TypeScript
+- Redux Toolkit for state management
+- React Router for navigation
+- Tailwind CSS for styling
+- D3.js for data visualization (planned)
+- React-Toastify for notifications (planned)
+- Playwright for E2E testing (planned)
+- Vitest for unit testing (planned)
+
+### Backend
+
+- Node.js
+- Express.js
+- TypeScript
+- MongoDB with Mongoose
+- JWT for authentication
+- Bcrypt for password hashing
+- Swagger for API documentation (planned)
+
+### Development Tools
+
+- Vite for build tooling
+- ESLint for code linting
+- Prettier for code formatting
+- GitHub Actions for CI/CD (planned)
+
+## Prerequisites
+
+- Node.js (v18 or higher)
+- npm or yarn
+- MongoDB Atlas account (or local MongoDB instance)
+
+## Installation
+
+1. Clone the repository:
 
 ```bash
-  git clone https://github.com/jhjdev/bartender-order-service/
+git clone https://github.com/yourusername/bar-manager-dashboard.git
+cd bar-manager-dashboard
 ```
 
-Go to the project directory
+2. Install dependencies:
 
 ```bash
-  cd bartender-order-service
+npm install
+# or
+yarn install
 ```
 
-Install dependencies
+3. Create a `.env` file in the root directory with the following variables:
+
+```env
+# Server Configuration
+PORT=3000
+NODE_ENV=development
+
+# MongoDB Configuration
+MONGODB_URI=your_mongodb_connection_string
+
+# JWT Configuration
+JWT_SECRET=your_jwt_secret_key
+JWT_EXPIRES_IN=24h
+
+# Email Configuration (if needed)
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=your_email@example.com
+SMTP_PASS=your_email_password
+
+# Other Configuration
+API_URL=http://localhost:3000
+```
+
+4. Start the development server:
 
 ```bash
-yarn
+npm run dev
+# or
+yarn dev
 ```
 
-Start the server
+The application will be available at `http://localhost:3000`
+
+## Database Seeding
+
+To seed the database with initial data:
+
+1. Ensure your MongoDB connection is properly configured in the `.env` file
+2. Run the seeding script:
 
 ```bash
-yarn start
+npm run seed
+# or
+yarn seed
 ```
 
-**Yarn start will also start the NodeJS backend on port 4000.**
+This will populate your database with:
 
-## Features and requirements:
+- Admin user
+- Sample staff members
+- Initial menu items
+- Sample orders
+- Basic schedule data
 
-- The service accepts a POST requests with customer number and drink type (BEER|DRINK) and:
-  - Responds with 200 code when ordered drink will be served.
-  - Responds with 429 code when order is not accepted at the moment.
-  - Responds with 409 code if a customer number already exists.
-- When a post request is made, it is stored in the API.
-- The NodeJS Typescript API is separated into:
-  - index.ts (NodeJS server)
-  - orderController.ts (controller)
-  - order.ts (modal)
-- The ReactJS Typescript Dashboard includes two page components at the moment:
+## Project Structure
 
-  - AddOrder.tsx (where you can create a new order).
-  - Orders.tsx (where you can view orders that have been created).
+```
+bar-manager-dashboard/
+├── src/
+│   ├── components/     # Reusable UI components
+│   ├── pages/         # Page components
+│   ├── redux/         # Redux store and slices
+│   ├── services/      # API services
+│   ├── types/         # TypeScript type definitions
+│   ├── utils/         # Utility functions
+│   └── App.tsx        # Root component
+├── public/            # Static assets
+├── tests/             # Test files
+└── package.json       # Project dependencies
+```
 
-- The barman can prepare at once 2 beers (drinks of BEER type) or 1 drink (DRINK type)
-- Preparing one drink takes X seconds (5 by default) regardless of drink type.
-- Drink requess get the response as soon as barman starts to prepare a drink, and is not delayed for the time of the drink preparation.
-- Each drink order contains a customer number, a drink type, and number of drinks ordered.
-- Each order is grouped in a from request that posts the order to the API.
-- Each order can either include 1 or two drinks of type BEER, or 1 drink of type DRINK. but never both types. You can choose drink of type BEER 2 times.
-- Customer numbers must be unique. If you try to enter the same customer number twice, a message with the status code 409 will appear.
+## TO-DO List
 
-#### See the Roadmap section for list of improvements and changes.
+### High Priority
 
-## Roadmap
+- [ ] Improve theming and start to use it consistently throughout the app
+- [ ] Finish Add New Order and the Order Overview, and overhaul Orders endpoint
+- [ ] Seed the Orders in our hosted MongoDB to give us data for the Reporting tool
+- [ ] Update admin profile and seed more staff members
+- [ ] Finish the file management interface
+- [ ] Implement i18next for text and language management
+- [ ] Add more text throughout the app
+- [ ] Add tooltips throughout the app
 
-- Full CRUD implementation, with update and delete functionality as well.
+### Medium Priority
 
-- Add price option to each order that will be stored in the API.
+- [ ] Map out and draw how I want the inventory management to look like and function
+- [ ] Finish the schedule system and seed it with data (using D3)
+- [ ] Finish the reports tool (using D3)
+- [ ] Start the architecture for the mobile app, and map out the functionality
+- [ ] Start on mobile app API expansion on our current API endpoints
+- [ ] Start work on the mobile app
 
-- Add total price of all orders in the info cards at the top.
+### Low Priority
 
-- Add total amount of all drink orders to API.
+- [ ] Implement Jest and Maestro for testing for the mobile app
+- [ ] Implement a notification tool that will work with both the web app and the mobile app
+- [ ] Add Github actions for the project
+- [ ] Clean up unused clusters in our hosted MongoDB
+- [ ] Add Swagger to the web app project
+- [ ] Add tests with Vitest and Playwright for the web app
+- [ ] Use Toastify for all success messages
+- [ ] Use HTTP status codes like 429 where it gives meaning
+- [ ] Implement ErrorBoundry for both web app and mobile app
+- [ ] Update the PageNotFound component with a way to go to the home page or go back
+- [ ] Implement the PageNotFound component when we have a 404
+- [ ] Add features like current day, weather, some other nice to have information in header or below header.
 
-- Add total amount of all drink ordres in the info cards at at the top.
+### Next Steps
 
-- Move the form into orderForm component
+1. Test existing functionality in the web app and clean up MongoDB
+2. Start working on the Orders overview and order management
 
-- Add tests.
+## Contributing
 
-- Cleanup Tailwind CSS classes
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-- Add a notification service that will display when an order is created, updated or deleted.
+## License
 
-- Add a login page with JWT authentication.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-- Add a settings page where you can:
-  - Adjust the amount of drinks of types BEER and DRINK per order (currently set to max 2 of drink type BEER or 1 of drink tyoe DRINK)
-  - Add configuration for preparation time (currently set to 5 by default).
+## Support
 
-## Tech Stack
-
-**Client:** TypeScript, React
-
-**Server:** Node, Express
+For support, email support@barmanager.com or open an issue in the GitHub repository.

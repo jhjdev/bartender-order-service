@@ -3,7 +3,7 @@ interface InfoCardProps {
   text: string | number;
 }
 
-const SumComponent = ({ headline, text }: InfoCardProps) => {
+const InfoCard = ({ headline, text }: InfoCardProps) => {
   return (
     <>
       <div className="w-full px-4 py-5 bg-white border-cyan-700 border-2 shadow-cyan-700/50 rounded-lg shadow">
@@ -16,4 +16,4 @@ const SumComponent = ({ headline, text }: InfoCardProps) => {
   );
 };
 
-export default SumComponent;
+export default InfoCard;

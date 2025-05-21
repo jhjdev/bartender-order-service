@@ -15,7 +15,18 @@
     "dev": "concurrently \"cd backend && npx tsx watch index.ts\" \"vite --host\"",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "seed:admin": "cd backend && npx tsx scripts/seedAdmin.ts",
+    "seed:staff": "cd backend && npx tsx scripts/seedStaff.ts",
+    "seed:drinks": "cd backend && npx tsx scripts/seedDrinks.ts",
+    "seed:images": "cd backend && npx tsx scripts/seedImages.ts",
+    "seed:all": "yarn seed:admin && yarn seed:staff && yarn seed:drinks && yarn seed:images",
+    "check:admin": "cd backend && npx tsx scripts/checkAdmin.ts",
+    "check:image": "cd backend && npx tsx scripts/checkImage.ts",
+    "list:images": "cd backend && npx tsx scripts/listImages.ts",
+    "clear:images": "cd backend && npx tsx scripts/clearImages.ts",
+    "download:images": "cd backend && npx tsx scripts/downloadImages.ts",
+    "upload:images": "cd backend && npx tsx scripts/uploadImages.ts"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.5",

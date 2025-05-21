@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import Button from '../../components/Button';
-import InfoCard from '../../components/InfoCard';
+import Button from '../../components/ui/Button';
+import InfoCard from '../../components/ui/InfoCard';
 import { createOrder, fetchOrders } from '../../redux/slices/orderSlice';
 import { RootState } from '../../redux/store';
 import { Order } from '../../types/order';

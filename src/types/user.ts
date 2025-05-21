@@ -6,4 +6,16 @@ export interface User {
   active: boolean;
   createdAt: string;
   updatedAt: string;
+  profilePicture?: string;
+  phone?: {
+    countryCode: string;
+    number: string;
+  };
+  address?: {
+    street: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+  };
 }

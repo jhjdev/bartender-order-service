@@ -194,6 +194,23 @@ const ProfileIcon = () => (
   </svg>
 );
 
+const InventoryIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+    className="w-5 h-5"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"
+    />
+  </svg>
+);
+
 interface NavItemProps {
   to: string;
   icon: React.FC;
@@ -329,6 +346,14 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
           >
             Add Order
           </NavItem>
+          <NavItem
+            to="/tables"
+            icon={TablesIcon}
+            onClick={onClose}
+            isCollapsed={isCollapsed}
+          >
+            Tables
+          </NavItem>
         </div>
 
         <div className="space-y-1">
@@ -354,12 +379,12 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
             Schedule
           </NavItem>
           <NavItem
-            to="/tables"
-            icon={TablesIcon}
+            to="/inventory"
+            icon={InventoryIcon}
             onClick={onClose}
             isCollapsed={isCollapsed}
           >
-            Tables
+            Inventory
           </NavItem>
         </div>
 

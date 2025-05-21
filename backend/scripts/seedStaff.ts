@@ -1,5 +1,6 @@
 import { MongoClient } from 'mongodb';
 import { v4 as uuidv4 } from 'uuid';
+import bcrypt from 'bcryptjs';
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017';
 const DB_NAME = 'bartender-order-service';
@@ -34,8 +35,12 @@ const staffData = [
       country: 'USA',
     },
     startDate: '2023-01-15',
+    endDate: null,
     position: 'Bartender',
     isActive: true,
+    role: 'STAFF',
+    leaveType: null,
+    password: bcrypt.hashSync('password123', 10),
   },
   {
     id: uuidv4(),
@@ -66,8 +71,12 @@ const staffData = [
       country: 'USA',
     },
     startDate: '2023-03-01',
+    endDate: null,
     position: 'Waitress',
     isActive: true,
+    role: 'STAFF',
+    leaveType: null,
+    password: bcrypt.hashSync('password123', 10),
   },
   {
     id: uuidv4(),
@@ -98,8 +107,48 @@ const staffData = [
       country: 'USA',
     },
     startDate: '2022-11-15',
+    endDate: null,
     position: 'Bar Manager',
     isActive: true,
+    role: 'STAFF',
+    leaveType: null,
+    password: bcrypt.hashSync('password123', 10),
+  },
+  {
+    id: uuidv4(),
+    firstName: 'Emma',
+    lastName: 'Wilson',
+    email: 'emma.wilson@example.com',
+    phone: {
+      countryCode: '+1',
+      number: '555-0129',
+    },
+    emergencyContact: {
+      name: 'David Wilson',
+      relationship: 'Spouse',
+      phone: {
+        countryCode: '+1',
+        number: '555-0130',
+      },
+    },
+    employmentType: 'FULL_TIME',
+    age: 29,
+    gender: 'FEMALE',
+    dateOfBirth: '1994-03-25',
+    address: {
+      street: '321 Elm St',
+      city: 'Boston',
+      state: 'MA',
+      postalCode: '02108',
+      country: 'USA',
+    },
+    startDate: '2023-02-01',
+    endDate: '2024-01-31',
+    position: 'Bartender',
+    isActive: false,
+    role: 'STAFF',
+    leaveType: 'MATERNITY',
+    password: bcrypt.hashSync('password123', 10),
   },
 ];
 

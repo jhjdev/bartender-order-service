@@ -12,6 +12,7 @@ import TablesPage from '../pages/tables/TablesPage';
 import ReportsPage from '../pages/reports/ReportsPage';
 import FilesPage from '../pages/files/FilesPage';
 import SchedulePage from '../pages/schedule/SchedulePage';
+import InventoryPage from '../pages/inventory/InventoryPage';
 
 const AppRoutes: React.FC = () => {
   return (
@@ -62,6 +63,14 @@ const AppRoutes: React.FC = () => {
         element={
           <ProtectedRoute>
             <TablesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/inventory"
+        element={
+          <ProtectedRoute>
+            <InventoryPage />
           </ProtectedRoute>
         }
       />
