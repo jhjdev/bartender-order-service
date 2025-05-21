@@ -21,7 +21,7 @@ A comprehensive bar management system built with modern web technologies. This a
 - Node.js
 - Express.js
 - TypeScript
-- MongoDB with Mongoose
+- MongoDB (using native MongoDB driver)
 - JWT for authentication
 - Bcrypt for password hashing
 - Swagger for API documentation (planned)
