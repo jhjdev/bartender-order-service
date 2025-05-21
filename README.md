@@ -60,6 +60,7 @@ yarn install
 
 ```env
 # Server Configuration
+# Frontend runs on port 3000
 PORT=3000
 NODE_ENV=development
 
@@ -77,6 +78,7 @@ SMTP_USER=your_email@example.com
 SMTP_PASS=your_email_password
 
 # Other Configuration
+# Backend API runs on port 4000
 API_URL=http://localhost:4000
 ```
 
@@ -88,7 +90,7 @@ npm run dev
 yarn dev
 ```
 
-The application will be available at `http://localhost:3000`
+The frontend application will be available at `http://localhost:3000`. The backend API runs on port 4000 and is automatically proxied through the frontend server.
 
 ## Database Seeding
 
