@@ -2,7 +2,7 @@ import { MongoClient, ObjectId } from 'mongodb';
 import { DrinkCategory } from '../types/drink';
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017';
-const DB_NAME = 'bartender-order-service';
+const DB_NAME = 'bartender';
 
 const drinksData = [
   // Beers

@@ -60,9 +60,7 @@ yarn install
 
 ```env
 # Server Configuration
-# Frontend runs on port 3000
-PORT=3000
-NODE_ENV=development
+PORT=4000
 
 # MongoDB Configuration
 MONGODB_URI=your_mongodb_connection_string
@@ -77,10 +75,12 @@ SMTP_PORT=587
 SMTP_USER=your_email@example.com
 SMTP_PASS=your_email_password
 
-# Other Configuration
-# Backend API runs on port 4000
-API_URL=http://localhost:4000
+# Pexels API Configuration (Optional)
+# Only needed if you want to use the image download feature
+PEXELS_API_KEY=your_pexels_api_key
 ```
+
+> Note: The Pexels API key is optional and is only required if you want to use the image download feature. You can get a free API key from [Pexels](https://www.pexels.com/api/).
 
 4. Start the development server:
 
@@ -90,7 +90,7 @@ npm run dev
 yarn dev
 ```
 
-The frontend application will be available at `http://localhost:3000`. The backend API runs on port 4000 and is automatically proxied through the frontend server.
+The backend API runs on port 4000.
 
 ## Database Seeding
 
