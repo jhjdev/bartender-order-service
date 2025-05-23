@@ -61,6 +61,7 @@ yarn install
 ```env
 # Server Configuration
 PORT=4000
+VITE_API_URL=http://localhost:4000
 
 # MongoDB Configuration
 MONGODB_URI=your_mongodb_connection_string
