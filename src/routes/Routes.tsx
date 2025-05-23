@@ -13,6 +13,7 @@ import ReportsPage from '../pages/reports/ReportsPage';
 import FilesPage from '../pages/files/FilesPage';
 import SchedulePage from '../pages/schedule/SchedulePage';
 import InventoryPage from '../pages/inventory/InventoryPage';
+import ErrorPage from '../pages/ErrorPage';
 
 const AppRoutes: React.FC = () => {
   return (
@@ -114,7 +115,15 @@ const AppRoutes: React.FC = () => {
           </ProtectedRoute>
         }
       />
-      <Route path="*" element={<Navigate to="/profile" replace />} />
+      <Route
+        path="*"
+        element={
+          <ErrorPage
+            title="Page not found"
+            message="Sorry, we couldn't find the page you're looking for."
+          />
+        }
+      />
     </Routes>
   );
 };

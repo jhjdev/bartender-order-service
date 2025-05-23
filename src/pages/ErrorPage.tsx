@@ -1,35 +1,78 @@
-import { PageNotFoundArt } from "../assets/svg/PageNotFoundArt";
-import { PageNotFoundBtn } from "../assets/svg/PageNotFoundBtn";
+import { PageNotFoundArt } from '../assets/svg/PageNotFoundArt';
+import { Link } from 'react-router-dom';
 
-const ErrorMessage = () => {
+interface ErrorPageProps {
+  title?: string;
+  message?: string;
+}
+
+export const ErrorPage = ({
+  title = 'Page not found',
+  message = "Sorry, we couldn't find the page you're looking for.",
+}: ErrorPageProps) => {
   return (
-    <>
-      <div className="h-screen w-full flex">
-        <div className="flex flex-col justify-center mx-auto">
-          <div className="flex-col items-center justify-center">
+    <div className="min-h-screen bg-white">
+      <div className="max-w-3xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+            {title}
+          </h1>
+          <p className="mt-4 text-base text-gray-500">{message}</p>
+        </div>
+
+        <div className="mt-6 flex items-center justify-center">
+          <div className="w-full max-w-[600px] mb-8">
             <PageNotFoundArt />
           </div>
+        </div>
 
-          <div className=" w-1/2 md:2/3 lg:w-3/4 flex flex-col items-center justify-center">
-            <p className="text-3xl md:text-4xl lg:text-5xl text-gray-800 mt-12 dark:text-white">
-              Page Not Found
-            </p>
-            <p className="md:text-lg lg:text-xl text-gray-600 mt-8 dark:text-gray-400">
-              Sorry, the page you are looking for could not be found.
-            </p>
-            <a
-              href="/"
-              className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-gray-100 px-4 py-2 mt-12 rounded transition duration-150"
-              title="Return Home"
+        <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+          <button
+            onClick={() => window.history.back()}
+            className="inline-flex items-center justify-center px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors min-w-[200px]"
+            title="Go to previous page"
+          >
+            <svg
+              className="w-5 h-5 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <PageNotFoundBtn />
-              <span>Return Home</span>
-            </a>
-          </div>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+            <span className="whitespace-nowrap">Go to Previous Page</span>
+          </button>
+          <Link
+            to="/"
+            className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors min-w-[200px]"
+            title="Go to home page"
+          >
+            <svg
+              className="w-5 h-5 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+              />
+            </svg>
+            <span className="whitespace-nowrap">Go to Home Page</span>
+          </Link>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
-export default ErrorMessage;
+export default ErrorPage;
