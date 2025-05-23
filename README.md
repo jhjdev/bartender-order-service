@@ -164,8 +164,8 @@ bar-manager-dashboard/
 - [ ] Use Toastify for all success messages
 - [ ] Use HTTP status codes like 429 where it gives meaning
 - [ ] Implement ErrorBoundry for both web app and mobile app
-      ~~Update the PageNotFound component with a way to go to the home page or go back~~
-      ~~Implement the PageNotFound component when we have a 404~~
+- [x] ~~Update the PageNotFound component with a way to go to the home page or go back~~
+- [x] ~~Implement the PageNotFound component when we have a 404~~
 - [ ] Add features like current day, weather, some other nice to have information in header or below header.
 
 ### Next Steps
