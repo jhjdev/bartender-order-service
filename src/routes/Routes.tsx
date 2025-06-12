@@ -28,7 +28,7 @@ const AppRoutes: React.FC = () => {
         }
       />
       <Route
-        path="/menu/drinks"
+        path=":lang/menu/drinks"
         element={
           <ProtectedRoute>
             <DrinksPage />
@@ -36,7 +36,7 @@ const AppRoutes: React.FC = () => {
         }
       />
       <Route
-        path="/menu/cocktails"
+        path=":lang/menu/cocktails"
         element={
           <ProtectedRoute>
             <CocktailsPage />
@@ -44,7 +44,7 @@ const AppRoutes: React.FC = () => {
         }
       />
       <Route
-        path="/orders"
+        path=":lang/orders"
         element={
           <ProtectedRoute>
             <OrdersPage />
@@ -52,7 +52,7 @@ const AppRoutes: React.FC = () => {
         }
       />
       <Route
-        path="/add-order"
+        path=":lang/add-order"
         element={
           <ProtectedRoute>
             <AddOrder />
@@ -60,7 +60,7 @@ const AppRoutes: React.FC = () => {
         }
       />
       <Route
-        path="/tables"
+        path=":lang/tables"
         element={
           <ProtectedRoute>
             <TablesPage />
@@ -68,7 +68,7 @@ const AppRoutes: React.FC = () => {
         }
       />
       <Route
-        path="/inventory"
+        path=":lang/inventory"
         element={
           <ProtectedRoute>
             <InventoryPage />
@@ -76,7 +76,7 @@ const AppRoutes: React.FC = () => {
         }
       />
       <Route
-        path="/reports"
+        path=":lang/reports"
         element={
           <ProtectedRoute>
             <ReportsPage />
@@ -84,7 +84,7 @@ const AppRoutes: React.FC = () => {
         }
       />
       <Route
-        path="/schedule"
+        path=":lang/schedule"
         element={
           <ProtectedRoute>
             <SchedulePage />
@@ -92,7 +92,7 @@ const AppRoutes: React.FC = () => {
         }
       />
       <Route
-        path="/profile"
+        path=":lang/profile"
         element={
           <ProtectedRoute>
             <ProfilePage />
@@ -100,7 +100,7 @@ const AppRoutes: React.FC = () => {
         }
       />
       <Route
-        path="/staff"
+        path=":lang/staff"
         element={
           <ProtectedRoute>
             <StaffPage />
@@ -108,7 +108,7 @@ const AppRoutes: React.FC = () => {
         }
       />
       <Route
-        path="/files"
+        path=":lang/files"
         element={
           <ProtectedRoute>
             <FilesPage />

@@ -6,17 +6,17 @@ import { getEnvPath } from '../utils/paths';
 dotenv.config({ path: getEnvPath() });
 
 const MONGODB_URI = process.env.MONGODB_URI;
-const DB_NAME = process.env.DB_NAME || 'bartender';
+const DB_NAME = process.env.DB_NAME || 'bartender-service';
 const MAX_RETRIES = 5;
 const RETRY_DELAY = 5000; // 5 seconds
-
-console.log('--- DATABASE CONFIG ---');
-console.log('MONGODB_URI:', MONGODB_URI);
-console.log('DB_NAME:', DB_NAME);
 
 if (!MONGODB_URI) {
   throw new Error('MONGODB_URI is not defined in environment variables');
 }
+
+console.log('--- DATABASE CONFIG ---');
+console.log('MONGODB_URI:', MONGODB_URI);
+console.log('DB_NAME:', DB_NAME);
 
 const options: MongoClientOptions = {
   // Add any specific MongoDB options here

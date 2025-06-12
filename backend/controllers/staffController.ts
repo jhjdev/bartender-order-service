@@ -47,7 +47,7 @@ export const staffController = {
   },
 
   // Get all staff members
-  getAllStaff: async (req: Request, res: Response): Promise<void> => {
+  getAllStaff: async (_req: Request, res: Response): Promise<void> => {
     try {
       const staff = await staffCollection.find({}).toArray();
       res.json(staff);

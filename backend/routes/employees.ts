@@ -12,9 +12,9 @@ const shifts = client.db().collection('shifts');
 router.get('/', async (req, res) => {
   try {
     const allEmployees = await employees.find().toArray();
-    const employeesWithStringIds = allEmployees.map(emp => ({
+    const employeesWithStringIds = allEmployees.map((emp) => ({
       ...emp,
-      _id: emp._id.toString()
+      _id: emp._id.toString(),
     }));
     res.json(employeesWithStringIds);
   } catch (error) {
@@ -27,17 +27,19 @@ router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     if (!ObjectId.isValid(id)) {
-      return res.status(400).json({ message: 'Invalid employee ID format' });
+      res.status(400).json({ message: 'Invalid employee ID format' });
+      return;
     }
 
     const employee = await employees.findOne({ _id: new ObjectId(id) });
     if (!employee) {
-      return res.status(404).json({ message: 'Employee not found' });
+      res.status(404).json({ message: 'Employee not found' });
+      return;
     }
 
     res.json({
       ...employee,
-      _id: employee._id.toString()
+      _id: employee._id.toString(),
     });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching employee', error });
@@ -50,13 +52,13 @@ router.post('/', async (req, res) => {
     const employee: Omit<Employee, '_id'> = {
       ...req.body,
       active: true,
-      startDate: new Date().toISOString()
+      startDate: new Date().toISOString(),
     };
 
     const result = await employees.insertOne(employee);
     res.status(201).json({
       ...employee,
-      _id: result.insertedId.toString()
+      _id: result.insertedId.toString(),
     });
   } catch (error) {
     res.status(500).json({ message: 'Error creating employee', error });
@@ -68,7 +70,8 @@ router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     if (!ObjectId.isValid(id)) {
-      return res.status(400).json({ message: 'Invalid employee ID format' });
+      res.status(400).json({ message: 'Invalid employee ID format' });
+      return;
     }
 
     const updateData: Partial<Employee> = req.body;
@@ -83,7 +86,7 @@ router.put('/:id', async (req, res) => {
     if (result) {
       res.json({
         ...result,
-        _id: result._id.toString()
+        _id: result._id.toString(),
       });
     } else {
       res.status(404).json({ message: 'Employee not found' });
@@ -98,20 +101,21 @@ router.post('/:id/time-off', async (req, res) => {
   try {
     const { id } = req.params;
     if (!ObjectId.isValid(id)) {
-      return res.status(400).json({ message: 'Invalid employee ID format' });
+      res.status(400).json({ message: 'Invalid employee ID format' });
+      return;
     }
 
     const timeOffRequest: Omit<TimeOff, '_id'> = {
       ...req.body,
       employeeId: id,
       approved: false,
-      requestDate: new Date().toISOString()
+      requestDate: new Date().toISOString(),
     };
 
     const result = await timeOff.insertOne(timeOffRequest);
     res.status(201).json({
       ...timeOffRequest,
-      _id: result.insertedId.toString()
+      _id: result.insertedId.toString(),
     });
   } catch (error) {
     res.status(500).json({ message: 'Error creating time off request', error });
@@ -123,18 +127,21 @@ router.get('/:id/time-off', async (req, res) => {
   try {
     const { id } = req.params;
     if (!ObjectId.isValid(id)) {
-      return res.status(400).json({ message: 'Invalid employee ID format' });
+      res.status(400).json({ message: 'Invalid employee ID format' });
+      return;
     }
 
     const requests = await timeOff.find({ employeeId: id }).toArray();
-    const requestsWithStringIds = requests.map(req => ({
+    const requestsWithStringIds = requests.map((req) => ({
       ...req,
-      _id: req._id.toString()
+      _id: req._id.toString(),
     }));
 
     res.json(requestsWithStringIds);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching time off requests', error });
+    res
+      .status(500)
+      .json({ message: 'Error fetching time off requests', error });
   }
 });
 
@@ -143,18 +150,20 @@ router.post('/:id/shifts', async (req, res) => {
   try {
     const { id } = req.params;
     if (!ObjectId.isValid(id)) {
-      return res.status(400).json({ message: 'Invalid employee ID format' });
+      res.status(400).json({ message: 'Invalid employee ID format' });
+      return;
     }
 
     // Check if employee exists
     const employee = await employees.findOne({ _id: new ObjectId(id) });
     if (!employee) {
-      return res.status(404).json({ message: 'Employee not found' });
+      res.status(404).json({ message: 'Employee not found' });
+      return;
     }
 
     const shift: Omit<Shift, '_id'> = {
       ...req.body,
-      employeeId: id
+      employeeId: id,
     };
 
     // Check for conflicting shifts
@@ -164,23 +173,26 @@ router.post('/:id/shifts', async (req, res) => {
       $or: [
         {
           startTime: { $lte: shift.startTime },
-          endTime: { $gt: shift.startTime }
+          endTime: { $gt: shift.startTime },
         },
         {
           startTime: { $lt: shift.endTime },
-          endTime: { $gte: shift.endTime }
-        }
-      ]
+          endTime: { $gte: shift.endTime },
+        },
+      ],
     });
 
     if (conflictingShift) {
-      return res.status(409).json({ message: 'Shift conflicts with existing schedule' });
+      res
+        .status(409)
+        .json({ message: 'Shift conflicts with existing schedule' });
+      return;
     }
 
     const result = await shifts.insertOne(shift);
     res.status(201).json({
       ...shift,
-      _id: result.insertedId.toString()
+      _id: result.insertedId.toString(),
     });
   } catch (error) {
     res.status(500).json({ message: 'Error assigning shift', error });
@@ -192,13 +204,14 @@ router.get('/:id/shifts', async (req, res) => {
   try {
     const { id } = req.params;
     if (!ObjectId.isValid(id)) {
-      return res.status(400).json({ message: 'Invalid employee ID format' });
+      res.status(400).json({ message: 'Invalid employee ID format' });
+      return;
     }
 
     const employeeShifts = await shifts.find({ employeeId: id }).toArray();
-    const shiftsWithStringIds = employeeShifts.map(shift => ({
+    const shiftsWithStringIds = employeeShifts.map((shift) => ({
       ...shift,
-      _id: shift._id.toString()
+      _id: shift._id.toString(),
     }));
 
     res.json(shiftsWithStringIds);

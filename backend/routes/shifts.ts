@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { ObjectId } from 'mongodb';
 import { client } from '../config/db';
-import { Shift, TimeOff } from '../types/employee';
+import { Shift, JobTitle } from '../types/employee';
 
 const router = Router();
 const shifts = client.db().collection('shifts');
@@ -12,38 +12,47 @@ const employees = client.db().collection('employees');
 router.get('/', async (req, res) => {
   try {
     const { start, end } = req.query;
-    
-    const query: any = {};
+
+    const query: Record<string, unknown> = {};
     if (start && end) {
       query.date = {
         $gte: start as string,
-        $lte: end as string
+        $lte: end as string,
       };
     }
 
     const allShifts = await shifts.find(query).toArray();
-    
+
     // Get all relevant employee data in one query
-    const employeeIds = [...new Set(allShifts.map(shift => shift.employeeId))];
-    const employeesData = await employees.find({
-      _id: { $in: employeeIds.map(id => new ObjectId(id)) }
-    }).toArray();
+    const employeeIds = [
+      ...new Set(allShifts.map((shift) => shift.employeeId)),
+    ];
+    const employeesData = await employees
+      .find({
+        _id: { $in: employeeIds.map((id) => new ObjectId(id)) },
+      })
+      .toArray();
 
     // Create employee lookup map
-    const employeeMap = employeesData.reduce((acc, emp) => {
+    const employeeMap = employeesData.reduce<
+      Record<
+        string,
+        { firstName: string; lastName: string; jobTitle: JobTitle }
+      >
+    >((acc, emp) => {
       acc[emp._id.toString()] = {
         firstName: emp.firstName,
         lastName: emp.lastName,
-        jobTitle: emp.jobTitle
+        jobTitle: emp.jobTitle,
       };
       return acc;
-    }, {} as Record<string, any>);
+    }, {});
 
     // Combine shift data with employee details
-    const shiftsWithEmployeeInfo = allShifts.map(shift => ({
+    const shiftsWithEmployeeInfo = allShifts.map((shift) => ({
       ...shift,
       _id: shift._id.toString(),
-      employee: employeeMap[shift.employeeId]
+      employee: employeeMap[shift.employeeId],
     }));
 
     res.json(shiftsWithEmployeeInfo);
@@ -57,26 +66,35 @@ router.get('/date/:date', async (req, res) => {
   try {
     const { date } = req.params;
     const dayShifts = await shifts.find({ date }).toArray();
-    
-    // Get employee details
-    const employeeIds = [...new Set(dayShifts.map(shift => shift.employeeId))];
-    const employeesData = await employees.find({
-      _id: { $in: employeeIds.map(id => new ObjectId(id)) }
-    }).toArray();
 
-    const employeeMap = employeesData.reduce((acc, emp) => {
+    // Get employee details
+    const employeeIds = [
+      ...new Set(dayShifts.map((shift) => shift.employeeId)),
+    ];
+    const employeesData = await employees
+      .find({
+        _id: { $in: employeeIds.map((id) => new ObjectId(id)) },
+      })
+      .toArray();
+
+    const employeeMap = employeesData.reduce<
+      Record<
+        string,
+        { firstName: string; lastName: string; jobTitle: JobTitle }
+      >
+    >((acc, emp) => {
       acc[emp._id.toString()] = {
         firstName: emp.firstName,
         lastName: emp.lastName,
-        jobTitle: emp.jobTitle
+        jobTitle: emp.jobTitle,
       };
       return acc;
-    }, {} as Record<string, any>);
+    }, {});
 
-    const shiftsWithEmployeeInfo = dayShifts.map(shift => ({
+    const shiftsWithEmployeeInfo = dayShifts.map((shift) => ({
       ...shift,
       _id: shift._id.toString(),
-      employee: employeeMap[shift.employeeId]
+      employee: employeeMap[shift.employeeId],
     }));
 
     res.json(shiftsWithEmployeeInfo);
@@ -89,7 +107,7 @@ router.get('/date/:date', async (req, res) => {
 router.post('/bulk', async (req, res) => {
   try {
     const shifts_data: Omit<Shift, '_id'>[] = req.body.shifts;
-    
+
     // Validate shifts for conflicts
     for (const shift of shifts_data) {
       const conflictingShift = await shifts.findOne({
@@ -98,36 +116,39 @@ router.post('/bulk', async (req, res) => {
         $or: [
           {
             startTime: { $lte: shift.startTime },
-            endTime: { $gt: shift.startTime }
+            endTime: { $gt: shift.startTime },
           },
           {
             startTime: { $lt: shift.endTime },
-            endTime: { $gte: shift.endTime }
-          }
-        ]
+            endTime: { $gte: shift.endTime },
+          },
+        ],
       });
 
       if (conflictingShift) {
-        return res.status(409).json({
+        res.status(409).json({
           message: 'Shift conflict detected',
           conflictingShift: {
             ...conflictingShift,
-            _id: conflictingShift._id.toString()
-          }
+            _id: conflictingShift._id.toString(),
+          },
         });
+        return;
       }
     }
 
     const result = await shifts.insertMany(shifts_data);
-    
-    const insertedShifts = await shifts.find({
-      _id: { $in: Object.values(result.insertedIds) }
-    }).toArray();
+
+    const insertedShifts = await shifts
+      .find({
+        _id: { $in: Object.values(result.insertedIds) },
+      })
+      .toArray();
 
     res.status(201).json(
-      insertedShifts.map(shift => ({
+      insertedShifts.map((shift) => ({
         ...shift,
-        _id: shift._id.toString()
+        _id: shift._id.toString(),
       }))
     );
   } catch (error) {
@@ -140,7 +161,8 @@ router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     if (!ObjectId.isValid(id)) {
-      return res.status(400).json({ message: 'Invalid shift ID format' });
+      res.status(400).json({ message: 'Invalid shift ID format' });
+      return;
     }
 
     const updateData: Partial<Shift> = req.body;
@@ -149,24 +171,40 @@ router.put('/:id', async (req, res) => {
     // Check for conflicts if time is being updated
     if (updateData.startTime || updateData.endTime) {
       const existingShift = await shifts.findOne({ _id: new ObjectId(id) });
-      const conflictingShift = await shifts.findOne({
-        _id: { $ne: new ObjectId(id) },
+      if (!existingShift) {
+        res.status(404).json({ message: 'Shift not found' });
+        return;
+      }
+
+      const updateDataObj = {
         employeeId: existingShift.employeeId,
         date: updateData.date || existingShift.date,
+        startTime: updateData.startTime || existingShift.startTime,
+        endTime: updateData.endTime || existingShift.endTime,
+      };
+
+      // Check for overlapping shifts
+      const overlappingShift = await shifts.findOne({
+        _id: { $ne: new ObjectId(id) },
+        employeeId: updateDataObj.employeeId,
+        date: updateDataObj.date,
         $or: [
           {
-            startTime: { $lte: updateData.startTime || existingShift.startTime },
-            endTime: { $gt: updateData.startTime || existingShift.startTime }
+            startTime: { $lte: updateDataObj.startTime },
+            endTime: { $gt: updateDataObj.startTime },
           },
           {
-            startTime: { $lt: updateData.endTime || existingShift.endTime },
-            endTime: { $gte: updateData.endTime || existingShift.endTime }
-          }
-        ]
+            startTime: { $lt: updateDataObj.endTime },
+            endTime: { $gte: updateDataObj.endTime },
+          },
+        ],
       });
 
-      if (conflictingShift) {
-        return res.status(409).json({ message: 'Shift conflicts with existing schedule' });
+      if (overlappingShift) {
+        res
+          .status(409)
+          .json({ message: 'Shift conflicts with existing schedule' });
+        return;
       }
     }
 
@@ -179,7 +217,7 @@ router.put('/:id', async (req, res) => {
     if (result) {
       res.json({
         ...result,
-        _id: result._id.toString()
+        _id: result._id.toString(),
       });
     } else {
       res.status(404).json({ message: 'Shift not found' });
@@ -194,7 +232,8 @@ router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     if (!ObjectId.isValid(id)) {
-      return res.status(400).json({ message: 'Invalid shift ID format' });
+      res.status(400).json({ message: 'Invalid shift ID format' });
+      return;
     }
 
     const result = await shifts.deleteOne({ _id: new ObjectId(id) });
@@ -212,44 +251,52 @@ router.delete('/:id', async (req, res) => {
 router.get('/time-off', async (req, res) => {
   try {
     const { start, end } = req.query;
-    
-    const query: any = {};
+
+    const query: Record<string, unknown> = {};
     if (start && end) {
       query.$or = [
         {
-          startDate: { $gte: start as string, $lte: end as string }
+          startDate: { $gte: start as string, $lte: end as string },
         },
         {
-          endDate: { $gte: start as string, $lte: end as string }
-        }
+          endDate: { $gte: start as string, $lte: end as string },
+        },
       ];
     }
 
     const timeOffRequests = await timeOff.find(query).toArray();
-    
-    // Get employee details
-    const employeeIds = [...new Set(timeOffRequests.map(req => req.employeeId))];
-    const employeesData = await employees.find({
-      _id: { $in: employeeIds.map(id => new ObjectId(id)) }
-    }).toArray();
 
-    const employeeMap = employeesData.reduce((acc, emp) => {
+    // Get employee details
+    const employeeIds = [
+      ...new Set(timeOffRequests.map((req) => req.employeeId)),
+    ];
+    const employeesData = await employees
+      .find({
+        _id: { $in: employeeIds.map((id) => new ObjectId(id)) },
+      })
+      .toArray();
+
+    const employeeMap = employeesData.reduce<
+      Record<string, { firstName: string; lastName: string }>
+    >((acc, emp) => {
       acc[emp._id.toString()] = {
         firstName: emp.firstName,
-        lastName: emp.lastName
+        lastName: emp.lastName,
       };
       return acc;
-    }, {} as Record<string, any>);
+    }, {});
 
-    const timeOffWithEmployeeInfo = timeOffRequests.map(request => ({
+    const timeOffWithEmployeeInfo = timeOffRequests.map((request) => ({
       ...request,
       _id: request._id.toString(),
-      employee: employeeMap[request.employeeId]
+      employee: employeeMap[request.employeeId],
     }));
 
     res.json(timeOffWithEmployeeInfo);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching time off requests', error });
+    res
+      .status(500)
+      .json({ message: 'Error fetching time off requests', error });
   }
 });
 

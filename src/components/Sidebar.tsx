@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectSidebarCollapsed, toggleSidebar } from '../redux/slices/uiSlice';
+import { useTranslation } from 'react-i18next';
 
 interface SidebarProps {
   onClose?: () => void;
@@ -273,6 +274,8 @@ const NavItem = ({
 const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
   const dispatch = useDispatch();
   const isCollapsed = useSelector(selectSidebarCollapsed);
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
 
   const toggleCollapse = () => {
     dispatch(toggleSidebar());
@@ -286,7 +289,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
     >
       <div className="flex items-center justify-between p-4 border-b border-gray-700">
         {!isCollapsed && (
-          <h1 className="text-xl font-bold">Bar Manager Dashboard</h1>
+          <h1 className="text-xl font-bold">{t('navigation.menu')}</h1>
         )}
         <button
           onClick={toggleCollapse}
@@ -303,112 +306,112 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
         <div className="space-y-1">
           {!isCollapsed && (
             <h2 className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 transition-opacity duration-300">
-              Menu
+              {t('navigation.menu')}
             </h2>
           )}
           <NavItem
-            to="/menu/drinks"
+            to={`/${lang}/menu/drinks`}
             icon={DrinksIcon}
             onClick={onClose}
             isCollapsed={isCollapsed}
           >
-            Drinks
+            {t('navigation.drinks')}
           </NavItem>
           <NavItem
-            to="/menu/cocktails"
+            to={`/${lang}/menu/cocktails`}
             icon={CocktailsIcon}
             onClick={onClose}
             isCollapsed={isCollapsed}
           >
-            Cocktails
+            {t('navigation.cocktails')}
           </NavItem>
         </div>
 
         <div className="space-y-1">
           {!isCollapsed && (
             <h2 className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 transition-opacity duration-300">
-              Orders
+              {t('navigation.orders')}
             </h2>
           )}
           <NavItem
-            to="/orders"
+            to={`/${lang}/orders`}
             icon={OrdersIcon}
             onClick={onClose}
             isCollapsed={isCollapsed}
           >
-            Orders Overview
+            {t('navigation.ordersOverview')}
           </NavItem>
           <NavItem
-            to="/add-order"
+            to={`/${lang}/add-order`}
             icon={AddIcon}
             onClick={onClose}
             isCollapsed={isCollapsed}
           >
-            Add Order
+            {t('navigation.addOrder')}
           </NavItem>
           <NavItem
-            to="/tables"
+            to={`/${lang}/tables`}
             icon={TablesIcon}
             onClick={onClose}
             isCollapsed={isCollapsed}
           >
-            Tables
+            {t('navigation.tables')}
           </NavItem>
         </div>
 
         <div className="space-y-1">
           {!isCollapsed && (
             <h2 className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 transition-opacity duration-300">
-              Management
+              {t('navigation.management')}
             </h2>
           )}
           <NavItem
-            to="/staff"
+            to={`/${lang}/staff`}
             icon={StaffIcon}
             onClick={onClose}
             isCollapsed={isCollapsed}
           >
-            Staff
+            {t('navigation.staff')}
           </NavItem>
           <NavItem
-            to="/schedule"
+            to={`/${lang}/schedule`}
             icon={ScheduleIcon}
             onClick={onClose}
             isCollapsed={isCollapsed}
           >
-            Schedule
+            {t('navigation.schedule')}
           </NavItem>
           <NavItem
-            to="/inventory"
+            to={`/${lang}/inventory`}
             icon={InventoryIcon}
             onClick={onClose}
             isCollapsed={isCollapsed}
           >
-            Inventory
+            {t('navigation.inventory')}
           </NavItem>
         </div>
 
         <div className="space-y-1">
           {!isCollapsed && (
             <h2 className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 transition-opacity duration-300">
-              Other
+              {t('navigation.other')}
             </h2>
           )}
           <NavItem
-            to="/reports"
+            to={`/${lang}/reports`}
             icon={ReportsIcon}
             onClick={onClose}
             isCollapsed={isCollapsed}
           >
-            Reports
+            {t('navigation.reports')}
           </NavItem>
           <NavItem
-            to="/files"
+            to={`/${lang}/files`}
             icon={FilesIcon}
             onClick={onClose}
             isCollapsed={isCollapsed}
           >
-            Files
+            {t('navigation.files')}
           </NavItem>
         </div>
       </nav>
@@ -419,12 +422,12 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
         } border-t border-gray-700 transition-all duration-300`}
       >
         <NavItem
-          to="/profile"
+          to={`/${lang}/profile`}
           icon={ProfileIcon}
           onClick={onClose}
           isCollapsed={isCollapsed}
         >
-          Profile
+          {t('navigation.profile')}
         </NavItem>
       </div>
     </div>

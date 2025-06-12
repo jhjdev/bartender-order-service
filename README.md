@@ -65,6 +65,7 @@ VITE_API_URL=http://localhost:4000
 
 # MongoDB Configuration
 MONGODB_URI=your_mongodb_connection_string
+DB_NAME=bartender
 
 # JWT Configuration
 JWT_SECRET=your_jwt_secret_key
@@ -113,6 +114,36 @@ This will populate your database with:
 - Initial menu items
 - Sample orders
 - Basic schedule data
+
+## Creating an Admin User
+
+To create an initial admin user, follow these steps:
+
+1. Make sure your MongoDB connection is set up in your `.env` file:
+
+   ```
+   MONGODB_URI=your_mongodb_connection_string
+   DB_NAME=bartender
+   ```
+
+2. Run the seed script:
+
+   ```bash
+   # From the project root
+   cd backend
+   npx ts-node scripts/seedAdmin.ts
+   ```
+
+3. The script will create an admin user with the following default credentials:
+
+   - Email: admin@bartender.com
+   - Password: (randomly generated, will be displayed in the console)
+
+4. Save the credentials displayed in the console. You can use these to log in to the system.
+
+5. For security reasons, make sure to change the password after your first login.
+
+Note: If you run the script multiple times, it will update the password of the existing admin user instead of creating a new one.
 
 ## Project Structure
 

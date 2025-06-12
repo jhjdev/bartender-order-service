@@ -1,0 +1,153 @@
+{
+  "staff": {
+    "title": "Personaleadministration",
+    "addStaff": "Tilføj medarbejder",
+    "search": "Søg i personale...",
+    "rowsPerPage": "Rækker per side",
+    "table": {
+      "name": "Navn",
+      "email": "E-mail",
+      "position": "Stilling",
+      "status": "Status",
+      "actions": "Handlinger",
+      "edit": "Rediger",
+      "delete": "Slet"
+    },
+    "form": {
+      "title": {
+        "add": "Tilføj medarbejder",
+        "edit": "Rediger medarbejder"
+      },
+      "firstName": "Fornavn",
+      "lastName": "Efternavn",
+      "email": "E-mail",
+      "position": "Stilling",
+      "phone": "Telefonnummer",
+      "employmentType": "Ansættelsestype",
+      "startDate": "Startdato",
+      "role": "Rolle",
+      "status": "Status",
+      "password": "Adgangskode",
+      "confirmPassword": "Bekræft adgangskode",
+      "submit": {
+        "add": "Opret",
+        "edit": "Opdater"
+      },
+      "cancel": "Annuller"
+    },
+    "status": {
+      "active": "Aktiv",
+      "inactive": "Inaktiv"
+    },
+    "employmentTypes": {
+      "FULL_TIME": "Fuld tid",
+      "PART_TIME": "Deltid",
+      "CONTRACT": "Kontrakt",
+      "INTERN": "Praktikant"
+    },
+    "roles": {
+      "STAFF": "Medarbejder",
+      "MANAGER": "Manager",
+      "ADMIN": "Administrator"
+    }
+  },
+  "common": {
+    "loading": "Indlæser...",
+    "error": "Fejl",
+    "success": "Succes",
+    "confirm": "Bekræft",
+    "cancel": "Annuller",
+    "save": "Gem",
+    "delete": "Slet",
+    "edit": "Rediger",
+    "add": "Tilføj",
+    "search": "Søg",
+    "filter": "Filtrer",
+    "sort": "Sorter",
+    "pagination": {
+      "previous": "Forrige",
+      "next": "Næste",
+      "showing": "Viser",
+      "to": "til",
+      "of": "af",
+      "results": "resultater"
+    }
+  },
+  "drinks": {
+    "title": "Drikkevarer",
+    "addDrink": "Tilføj drikkevare",
+    "search": "Søg drikkevarer...",
+    "categories": {
+      "all": "Alle",
+      "draftBeer": "Fadøl",
+      "bottledBeer": "Flasker",
+      "wine": "Vin",
+      "spirit": "Spiritus",
+      "cocktail": "Cocktails",
+      "nonAlcoholic": "Alkoholfri"
+    },
+    "form": {
+      "title": {
+        "add": "Tilføj drikkevare",
+        "edit": "Rediger drikkevare"
+      },
+      "name": "Navn",
+      "category": "Kategori",
+      "price": "Pris",
+      "description": "Beskrivelse",
+      "isAvailable": "Tilgængelig",
+      "beer": {
+        "type": "Øltype",
+        "alcoholContent": "Alkoholindhold",
+        "brewery": "Bryggeri",
+        "origin": "Oprindelse"
+      },
+      "wine": {
+        "type": "Vintype",
+        "vintage": "Årgang",
+        "region": "Region",
+        "grapeVariety": "Druesort"
+      },
+      "spirits": {
+        "type": "Spiritustype",
+        "alcoholContent": "Alkoholindhold",
+        "distillery": "Destilleri",
+        "origin": "Oprindelse"
+      },
+      "submit": {
+        "add": "Tilføj drikkevare",
+        "edit": "Opdater drikkevare"
+      },
+      "cancel": "Annuller"
+    },
+    "table": {
+      "name": "Navn",
+      "category": "Kategori",
+      "price": "Pris",
+      "description": "Beskrivelse",
+      "status": "Status",
+      "actions": "Handlinger"
+    },
+    "status": {
+      "available": "Tilgængelig",
+      "unavailable": "Ikke tilgængelig"
+    }
+  },
+  "navigation": {
+    "menu": "Menu",
+    "drinks": "Drikkevarer",
+    "cocktails": "Cocktails",
+    "orders": "Ordrer",
+    "ordersOverview": "Ordreoversigt",
+    "addOrder": "Tilføj ordre",
+    "tables": "Borde",
+    "management": "Administration",
+    "staff": "Personale",
+    "schedule": "Tidsplan",
+    "inventory": "Lager",
+    "other": "Andet",
+    "reports": "Rapporter",
+    "files": "Filer",
+    "profile": "Profil"
+  }
+}

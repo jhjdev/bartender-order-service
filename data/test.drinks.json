@@ -1,0 +1,463 @@
+[{
+  "_id": {
+    "$oid": "6827cdfd6902b40dc93b6acd"
+  },
+  "name": "Pilsner Urquell",
+  "category": "DRAFT_BEER",
+  "price": 8.5,
+  "description": "The world's first golden pilsner beer with a crisp, refreshing taste.",
+  "isAvailable": true,
+  "imageData": {
+    "_id": {
+      "$oid": "6827e1119aded6835116d78d"
+    },
+    "url": "/api/images/6827e1119aded6835116d78d",
+    "name": "pilsner_urquell-6827cdfd6902b40dc93b6acd.jpg"
+  },
+  "imageUrl": "/Users/jonhnefilljakobsson/Repos/bartender-order-service/uploads/pilsner_urquell-6827cdfd6902b40dc93b6acd.jpg"
+},
+{
+  "_id": {
+    "$oid": "6827cdfd6902b40dc93b6ace"
+  },
+  "name": "Guinness Draught",
+  "category": "DRAFT_BEER",
+  "price": 9,
+  "description": "A rich, creamy stout with a smooth, balanced flavor.",
+  "isAvailable": true,
+  "imageData": {
+    "_id": {
+      "$oid": "6827e1109aded6835116d782"
+    },
+    "url": "/api/images/6827e1109aded6835116d782",
+    "name": "guinness_draught-6827cdfd6902b40dc93b6ace.jpg"
+  },
+  "imageUrl": "/Users/jonhnefilljakobsson/Repos/bartender-order-service/uploads/guinness_draught-6827cdfd6902b40dc93b6ace.jpg"
+},
+{
+  "_id": {
+    "$oid": "6827cdfd6902b40dc93b6acf"
+  },
+  "name": "Sierra Nevada Pale Ale",
+  "category": "DRAFT_BEER",
+  "price": 8.5,
+  "description": "A classic American pale ale with cascade hops and a pine-citrus flavor profile.",
+  "isAvailable": true,
+  "imageData": {
+    "_id": {
+      "$oid": "6827e1119aded6835116d791"
+    },
+    "url": "/api/images/6827e1119aded6835116d791",
+    "name": "sierra_nevada_pale_ale-6827cdfd6902b40dc93b6acf.jpg"
+  },
+  "imageUrl": "/Users/jonhnefilljakobsson/Repos/bartender-order-service/uploads/sierra_nevada_pale_ale-6827cdfd6902b40dc93b6acf.jpg"
+},
+{
+  "_id": {
+    "$oid": "6827cdfd6902b40dc93b6ad0"
+  },
+  "name": "Stella Artois",
+  "category": "DRAFT_BEER",
+  "price": 8,
+  "description": "A premium Belgian lager with a crisp, refreshing taste.",
+  "isAvailable": true,
+  "imageData": {
+    "_id": {
+      "$oid": "6827e1119aded6835116d793"
+    },
+    "url": "/api/images/6827e1119aded6835116d793",
+    "name": "stella_artois-6827cdfd6902b40dc93b6ad0.jpg"
+  },
+  "imageUrl": "/Users/jonhnefilljakobsson/Repos/bartender-order-service/uploads/stella_artois-6827cdfd6902b40dc93b6ad0.jpg"
+},
+{
+  "_id": {
+    "$oid": "6827cdfd6902b40dc93b6ad1"
+  },
+  "name": "Blue Moon",
+  "category": "DRAFT_BEER",
+  "price": 8.5,
+  "description": "A Belgian-style wheat ale brewed with orange peel for a subtle sweetness.",
+  "isAvailable": true,
+  "imageData": {
+    "_id": {
+      "$oid": "6827e10f9aded6835116d775"
+    },
+    "url": "/api/images/6827e10f9aded6835116d775",
+    "name": "blue_moon-6827cdfd6902b40dc93b6ad1.jpg"
+  },
+  "imageUrl": "/Users/jonhnefilljakobsson/Repos/bartender-order-service/uploads/blue_moon-6827cdfd6902b40dc93b6ad1.jpg"
+},
+{
+  "_id": {
+    "$oid": "6827cdfd6902b40dc93b6ad2"
+  },
+  "name": "Corona Extra",
+  "category": "BOTTLED_BEER",
+  "price": 7,
+  "description": "A light, crisp lager with a refreshing taste, traditionally served with a lime wedge.",
+  "isAvailable": true,
+  "imageData": {
+    "_id": {
+      "$oid": "6827e1109aded6835116d77b"
+    },
+    "url": "/api/images/6827e1109aded6835116d77b",
+    "name": "corona_extra-6827cdfd6902b40dc93b6ad2.jpg"
+  },
+  "imageUrl": "/Users/jonhnefilljakobsson/Repos/bartender-order-service/uploads/corona_extra-6827cdfd6902b40dc93b6ad2.jpg"
+},
+{
+  "_id": {
+    "$oid": "6827cdfd6902b40dc93b6ad3"
+  },
+  "name": "Heineken",
+  "category": "BOTTLED_BEER",
+  "price": 7.5,
+  "description": "A pale lager beer with a mildly bitter taste and a balanced hop aroma.",
+  "isAvailable": true,
+  "imageData": {
+    "_id": {
+      "$oid": "6827e1109aded6835116d783"
+    },
+    "url": "/api/images/6827e1109aded6835116d783",
+    "name": "heineken-6827cdfd6902b40dc93b6ad3.jpg"
+  },
+  "imageUrl": "/Users/jonhnefilljakobsson/Repos/bartender-order-service/uploads/heineken-6827cdfd6902b40dc93b6ad3.jpg"
+},
+{
+  "_id": {
+    "$oid": "6827cdfd6902b40dc93b6ad4"
+  },
+  "name": "Duvel",
+  "category": "BOTTLED_BEER",
+  "price": 9.5,
+  "description": "A strong golden ale with a pronounced hop character and fruity, dry flavor.",
+  "isAvailable": true,
+  "imageData": {
+    "_id": {
+      "$oid": "6827e1109aded6835116d77e"
+    },
+    "url": "/api/images/6827e1109aded6835116d77e",
+    "name": "duvel-6827cdfd6902b40dc93b6ad4.jpg"
+  },
+  "imageUrl": "/Users/jonhnefilljakobsson/Repos/bartender-order-service/uploads/duvel-6827cdfd6902b40dc93b6ad4.jpg"
+},
+{
+  "_id": {
+    "$oid": "6827cdfd6902b40dc93b6ad5"
+  },
+  "name": "Chimay Blue",
+  "category": "BOTTLED_BEER",
+  "price": 10,
+  "description": "A dark, strong Belgian ale with rich flavors of dark fruit and spice.",
+  "isAvailable": true,
+  "imageData": {
+    "_id": {
+      "$oid": "6827e1109aded6835116d779"
+    },
+    "url": "/api/images/6827e1109aded6835116d779",
+    "name": "chimay_blue-6827cdfd6902b40dc93b6ad5.jpg"
+  },
+  "imageUrl": "/Users/jonhnefilljakobsson/Repos/bartender-order-service/uploads/chimay_blue-6827cdfd6902b40dc93b6ad5.jpg"
+},
+{
+  "_id": {
+    "$oid": "6827cdfd6902b40dc93b6ad6"
+  },
+  "name": "Leffe Blonde",
+  "category": "BOTTLED_BEER",
+  "price": 8.5,
+  "description": "A smooth, fruity Belgian abbey beer with a hint of vanilla.",
+  "isAvailable": true,
+  "imageData": {
+    "_id": {
+      "$oid": "6827e1109aded6835116d786"
+    },
+    "url": "/api/images/6827e1109aded6835116d786",
+    "name": "leffe_blonde-6827cdfd6902b40dc93b6ad6.jpg"
+  },
+  "imageUrl": "/Users/jonhnefilljakobsson/Repos/bartender-order-service/uploads/leffe_blonde-6827cdfd6902b40dc93b6ad6.jpg"
+},
+{
+  "_id": {
+    "$oid": "6827cdfd6902b40dc93b6ad7"
+  },
+  "name": "Cabernet Sauvignon",
+  "category": "WINE",
+  "price": 12,
+  "description": "A full-bodied red wine with rich flavors of blackcurrant, cedar, and spice.",
+  "isAvailable": true,
+  "imageData": {
+    "_id": {
+      "$oid": "6827e1109aded6835116d777"
+    },
+    "url": "/api/images/6827e1109aded6835116d777",
+    "name": "cabernet_sauvignon-6827cdfd6902b40dc93b6ad7.jpg"
+  },
+  "imageUrl": "/Users/jonhnefilljakobsson/Repos/bartender-order-service/uploads/cabernet_sauvignon-6827cdfd6902b40dc93b6ad7.jpg"
+},
+{
+  "_id": {
+    "$oid": "6827cdfd6902b40dc93b6ad8"
+  },
+  "name": "Chardonnay",
+  "category": "WINE",
+  "price": 11,
+  "description": "A crisp, medium to full-bodied white wine with notes of apple, pear, and vanilla.",
+  "isAvailable": true,
+  "imageData": {
+    "_id": {
+      "$oid": "6827e1109aded6835116d778"
+    },
+    "url": "/api/images/6827e1109aded6835116d778",
+    "name": "chardonnay-6827cdfd6902b40dc93b6ad8.jpg"
+  },
+  "imageUrl": "/Users/jonhnefilljakobsson/Repos/bartender-order-service/uploads/chardonnay-6827cdfd6902b40dc93b6ad8.jpg"
+},
+{
+  "_id": {
+    "$oid": "6827cdfd6902b40dc93b6ad9"
+  },
+  "name": "Provence Rosé",
+  "category": "WINE",
+  "price": 10.5,
+  "description": "A light and refreshing rosé with delicate notes of strawberry, melon, and citrus.",
+  "isAvailable": true,
+  "imageData": {
+    "_id": "6827dd4a3877d114e326de25",
+    "url": "/api/images/6827dd4a3877d114e326de25",
+    "name": "provence_ros_-6827cdfd6902b40dc93b6ad9.jpg"
+  },
+  "imageUrl": "/Users/jonhnefilljakobsson/Repos/bartender-order-service/uploads/provence_ros_-6827cdfd6902b40dc93b6ad9.jpg"
+},
+{
+  "_id": {
+    "$oid": "6827cdfd6902b40dc93b6ada"
+  },
+  "name": "Pinot Noir",
+  "category": "WINE",
+  "price": 13,
+  "description": "A light-bodied red wine with flavors of cherry, raspberry, and earthy notes.",
+  "isAvailable": true,
+  "imageData": {
+    "_id": {
+      "$oid": "6827e1119aded6835116d78e"
+    },
+    "url": "/api/images/6827e1119aded6835116d78e",
+    "name": "pinot_noir-6827cdfd6902b40dc93b6ada.jpg"
+  },
+  "imageUrl": "/Users/jonhnefilljakobsson/Repos/bartender-order-service/uploads/pinot_noir-6827cdfd6902b40dc93b6ada.jpg"
+},
+{
+  "_id": {
+    "$oid": "6827cdfd6902b40dc93b6adb"
+  },
+  "name": "Sauvignon Blanc",
+  "category": "WINE",
+  "price": 11.5,
+  "description": "A crisp, aromatic white wine with notes of citrus, green apple, and herbs.",
+  "isAvailable": true,
+  "imageData": {
+    "_id": {
+      "$oid": "6827e1119aded6835116d790"
+    },
+    "url": "/api/images/6827e1119aded6835116d790",
+    "name": "sauvignon_blanc-6827cdfd6902b40dc93b6adb.jpg"
+  },
+  "imageUrl": "/Users/jonhnefilljakobsson/Repos/bartender-order-service/uploads/sauvignon_blanc-6827cdfd6902b40dc93b6adb.jpg"
+},
+{
+  "_id": {
+    "$oid": "6827cdfd6902b40dc93b6adc"
+  },
+  "name": "Macallan 12",
+  "category": "SPIRIT",
+  "price": 15,
+  "description": "A single malt Scotch whisky with rich notes of dried fruit, wood spice, and vanilla.",
+  "isAvailable": true,
+  "imageData": {
+    "_id": {
+      "$oid": "6827e1109aded6835116d788"
+    },
+    "url": "/api/images/6827e1109aded6835116d788",
+    "name": "macallan_12-6827cdfd6902b40dc93b6adc.jpg"
+  },
+  "imageUrl": "/Users/jonhnefilljakobsson/Repos/bartender-order-service/uploads/macallan_12-6827cdfd6902b40dc93b6adc.jpg"
+},
+{
+  "_id": {
+    "$oid": "6827cdfd6902b40dc93b6add"
+  },
+  "name": "Grey Goose Vodka",
+  "category": "SPIRIT",
+  "price": 13,
+  "description": "Premium French vodka made from high-quality winter wheat, offering a smooth, clean taste.",
+  "isAvailable": true,
+  "imageData": {
+    "_id": {
+      "$oid": "6827e1109aded6835116d781"
+    },
+    "url": "/api/images/6827e1109aded6835116d781",
+    "name": "grey_goose_vodka-6827cdfd6902b40dc93b6add.jpg"
+  },
+  "imageUrl": "/Users/jonhnefilljakobsson/Repos/bartender-order-service/uploads/grey_goose_vodka-6827cdfd6902b40dc93b6add.jpg"
+},
+{
+  "_id": {
+    "$oid": "6827cdfd6902b40dc93b6ade"
+  },
+  "name": "Hendrick's Gin",
+  "category": "SPIRIT",
+  "price": 14,
+  "description": "A Scottish gin infused with cucumber and rose petals for a uniquely floral flavor.",
+  "isAvailable": true,
+  "imageData": {
+    "_id": "6827dd493877d114e326de1a",
+    "url": "/api/images/6827dd493877d114e326de1a",
+    "name": "hendrick_s_gin-6827cdfd6902b40dc93b6ade.jpg"
+  },
+  "imageUrl": "/Users/jonhnefilljakobsson/Repos/bartender-order-service/uploads/hendrick_s_gin-6827cdfd6902b40dc93b6ade.jpg"
+},
+{
+  "_id": {
+    "$oid": "6827cdfd6902b40dc93b6adf"
+  },
+  "name": "Bulleit Bourbon",
+  "category": "SPIRIT",
+  "price": 12,
+  "description": "A high-rye bourbon with a bold, spicy character and notes of vanilla and oak.",
+  "isAvailable": true,
+  "imageData": {
+    "_id": {
+      "$oid": "6827e1109aded6835116d776"
+    },
+    "url": "/api/images/6827e1109aded6835116d776",
+    "name": "bulleit_bourbon-6827cdfd6902b40dc93b6adf.jpg"
+  },
+  "imageUrl": "/Users/jonhnefilljakobsson/Repos/bartender-order-service/uploads/bulleit_bourbon-6827cdfd6902b40dc93b6adf.jpg"
+},
+{
+  "_id": {
+    "$oid": "6827cdfd6902b40dc93b6ae0"
+  },
+  "name": "Don Julio Tequila",
+  "category": "SPIRIT",
+  "price": 14,
+  "description": "A premium tequila with smooth, sweet agave notes and a hint of vanilla.",
+  "isAvailable": true,
+  "imageData": {
+    "_id": {
+      "$oid": "6827e1109aded6835116d77d"
+    },
+    "url": "/api/images/6827e1109aded6835116d77d",
+    "name": "don_julio_tequila-6827cdfd6902b40dc93b6ae0.jpg"
+  },
+  "imageUrl": "/Users/jonhnefilljakobsson/Repos/bartender-order-service/uploads/don_julio_tequila-6827cdfd6902b40dc93b6ae0.jpg"
+},
+{
+  "_id": {
+    "$oid": "6827cdfd6902b40dc93b6ae1"
+  },
+  "name": "Virgin Mojito",
+  "category": "NON_ALCOHOLIC",
+  "price": 6,
+  "description": "A refreshing mix of lime, mint, sugar, and soda water. All the flavor without the alcohol.",
+  "isAvailable": true,
+  "imageData": {
+    "_id": {
+      "$oid": "6827e1119aded6835116d794"
+    },
+    "url": "/api/images/6827e1119aded6835116d794",
+    "name": "virgin_mojito-6827cdfd6902b40dc93b6ae1.jpg"
+  },
+  "imageUrl": "/Users/jonhnefilljakobsson/Repos/bartender-order-service/uploads/virgin_mojito-6827cdfd6902b40dc93b6ae1.jpg"
+},
+{
+  "_id": {
+    "$oid": "6827cdfd6902b40dc93b6ae2"
+  },
+  "name": "Sparkling Water",
+  "category": "NON_ALCOHOLIC",
+  "price": 3.5,
+  "description": "Refreshing, effervescent water with natural minerals. Served with a slice of lemon.",
+  "isAvailable": true,
+  "imageData": {
+    "_id": {
+      "$oid": "6827e1119aded6835116d792"
+    },
+    "url": "/api/images/6827e1119aded6835116d792",
+    "name": "sparkling_water-6827cdfd6902b40dc93b6ae2.jpg"
+  },
+  "imageUrl": "/Users/jonhnefilljakobsson/Repos/bartender-order-service/uploads/sparkling_water-6827cdfd6902b40dc93b6ae2.jpg"
+},
+{
+  "_id": {
+    "$oid": "6827cdfd6902b40dc93b6ae3"
+  },
+  "name": "Fresh Orange Juice",
+  "category": "NON_ALCOHOLIC",
+  "price": 5,
+  "description": "Freshly squeezed orange juice, full of vitamin C and natural sweetness.",
+  "isAvailable": true,
+  "imageData": {
+    "_id": {
+      "$oid": "6827e1109aded6835116d780"
+    },
+    "url": "/api/images/6827e1109aded6835116d780",
+    "name": "fresh_orange_juice-6827cdfd6902b40dc93b6ae3.jpg"
+  },
+  "imageUrl": "/Users/jonhnefilljakobsson/Repos/bartender-order-service/uploads/fresh_orange_juice-6827cdfd6902b40dc93b6ae3.jpg"
+},
+{
+  "_id": {
+    "$oid": "6827cdfd6902b40dc93b6ae4"
+  },
+  "name": "Lemonade",
+  "category": "NON_ALCOHOLIC",
+  "price": 4.5,
+  "description": "A sweet and tangy drink made with fresh lemons, sugar, and water.",
+  "isAvailable": true,
+  "imageData": {
+    "_id": {
+      "$oid": "6827e1109aded6835116d787"
+    },
+    "url": "/api/images/6827e1109aded6835116d787",
+    "name": "lemonade-6827cdfd6902b40dc93b6ae4.jpg"
+  },
+  "imageUrl": "/Users/jonhnefilljakobsson/Repos/bartender-order-service/uploads/lemonade-6827cdfd6902b40dc93b6ae4.jpg"
+},
+{
+  "_id": {
+    "$oid": "6827cdfd6902b40dc93b6ae5"
+  },
+  "name": "Iced Tea",
+  "category": "NON_ALCOHOLIC",
+  "price": 4,
+  "description": "A refreshing blend of black tea, lemon, and a hint of sweetness.",
+  "isAvailable": true,
+  "imageData": {
+    "_id": {
+      "$oid": "6827e1109aded6835116d785"
+    },
+    "url": "/api/images/6827e1109aded6835116d785",
+    "name": "iced_tea-6827cdfd6902b40dc93b6ae5.jpg"
+  },
+  "imageUrl": "/Users/jonhnefilljakobsson/Repos/bartender-order-service/uploads/iced_tea-6827cdfd6902b40dc93b6ae5.jpg"
+},
+{
+  "_id": {
+    "$oid": "682b36ff918b0993f222d35b"
+  },
+  "name": "Test Drink",
+  "price": 5,
+  "description": "Test drink",
+  "isAvailable": false,
+  "category": "DRAFT_BEER",
+  "alcoholPercentage": 6,
+  "brewery": "Test brewery",
+  "wineType": "",
+  "region": "",
+  "year": 2025,
+  "distillery": "",
+  "ageStatement": ""
+}]

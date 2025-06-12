@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb';
 import { db } from '../config/db';
 
 export const drinkController = {
-  async getAllDrinks(req: Request, res: Response) {
+  async getAllDrinks(_req: Request, res: Response) {
     try {
       const drinks = await db.collection('drinks').find().toArray();
       res.json(drinks);

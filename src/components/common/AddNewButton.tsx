@@ -1,38 +1,31 @@
-import React from 'react';
+import * as React from 'react';
 
 interface AddNewButtonProps {
   onClick: () => void;
-  label: string;
-  disabled?: boolean;
-  className?: string;
+  title?: string;
+  children?: React.ReactNode;
 }
 
 const AddNewButton: React.FC<AddNewButtonProps> = ({
   onClick,
-  label,
-  disabled = false,
-  className = '',
+  title = 'Add new',
+  children,
 }) => {
   return (
     <button
+      type="button"
       onClick={onClick}
-      disabled={disabled}
-      className={`
-        inline-flex items-center px-4 py-2 rounded-md
-        bg-blue-600 text-white font-medium
-        hover:bg-blue-700 focus:outline-none focus:ring-2
-        focus:ring-blue-500 focus:ring-offset-2
-        transition-colors duration-200
-        disabled:opacity-50 disabled:cursor-not-allowed
-        ${className}
-      `}
+      className="btn-primary flex items-center space-x-2"
+      title={title}
+      aria-label={title}
     >
       <svg
-        className="w-5 h-5 mr-2"
+        className="w-5 h-5"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
         xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
       >
         <path
           strokeLinecap="round"
@@ -41,7 +34,7 @@ const AddNewButton: React.FC<AddNewButtonProps> = ({
           d="M12 4v16m8-8H4"
         />
       </svg>
-      {label}
+      <span>{children || 'Add New'}</span>
     </button>
   );
 };

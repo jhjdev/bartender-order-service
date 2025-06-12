@@ -1,5 +1,7 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import * as React from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { AppDispatch, RootState } from '../../redux/store';
 import {
   fetchStaff,
@@ -11,15 +13,40 @@ import { Staff } from '../../types/staff';
 
 type FormData = Omit<Staff, 'id' | 'createdAt' | 'updatedAt'> & {
   confirmPassword?: string;
-  endDate?: string;
-  leaveType?:
-    | 'MATERNITY'
-    | 'PATERNITY'
-    | 'STUDY'
-    | 'SICK'
-    | 'VACATION'
-    | 'TERMINATED'
-    | 'OTHER';
+};
+
+const initialFormData: FormData = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: {
+    countryCode: '+1',
+    number: '',
+  },
+  emergencyContact: {
+    name: '',
+    relationship: '',
+    phone: {
+      countryCode: '+1',
+      number: '',
+    },
+  },
+  employmentType: 'FULL_TIME',
+  age: 0,
+  gender: 'OTHER',
+  dateOfBirth: '',
+  address: {
+    street: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    country: '',
+  },
+  startDate: '',
+  position: '',
+  isActive: true,
+  role: 'STAFF',
+  password: '',
 };
 
 // Utility function to omit keys from an object
@@ -35,6 +62,7 @@ function omit<T extends object, K extends keyof T>(
 }
 
 const StaffPage: React.FC = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
   const { staff, loading, error } = useSelector(
     (state: RootState) => state.staff
@@ -42,6 +70,7 @@ const StaffPage: React.FC = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingStaff, setEditingStaff] = useState<Staff | null>(null);
+  const [formData, setFormData] = useState<FormData>(initialFormData);
 
   // Add effect to handle body scroll when modal is open
   useEffect(() => {
@@ -54,40 +83,6 @@ const StaffPage: React.FC = () => {
       document.body.style.overflow = 'unset';
     };
   }, [isModalOpen]);
-
-  const [formData, setFormData] = useState<FormData>({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: {
-      countryCode: '+1',
-      number: '',
-    },
-    emergencyContact: {
-      name: '',
-      relationship: '',
-      phone: {
-        countryCode: '+1',
-        number: '',
-      },
-    },
-    employmentType: 'FULL_TIME',
-    age: 0,
-    gender: 'OTHER',
-    dateOfBirth: '',
-    address: {
-      street: '',
-      city: '',
-      state: '',
-      postalCode: '',
-      country: '',
-    },
-    startDate: '',
-    position: '',
-    isActive: true,
-    role: 'STAFF',
-    password: '',
-  });
 
   // Search and filter state
   const [searchTerm, setSearchTerm] = useState('');
@@ -143,53 +138,20 @@ const StaffPage: React.FC = () => {
     }
 
     try {
+      const staffData = { ...formData };
+      delete staffData.confirmPassword;
+
       if (editingStaff) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { confirmPassword, ...staffData } = formData;
         await dispatch(
           updateStaff({ id: editingStaff.id, staffData })
         ).unwrap();
         alert('Staff member updated successfully');
       } else {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { confirmPassword, ...staffData } = formData;
         await dispatch(createStaff(staffData)).unwrap();
         alert('Staff member added successfully');
       }
       setIsModalOpen(false);
-      setFormData({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: {
-          countryCode: '+1',
-          number: '',
-        },
-        emergencyContact: {
-          name: '',
-          relationship: '',
-          phone: {
-            countryCode: '+1',
-            number: '',
-          },
-        },
-        employmentType: 'FULL_TIME',
-        age: 0,
-        gender: 'OTHER',
-        dateOfBirth: '',
-        address: {
-          street: '',
-          city: '',
-          state: '',
-          postalCode: '',
-          country: '',
-        },
-        startDate: '',
-        position: '',
-        isActive: true,
-        role: 'STAFF',
-        password: '',
-      });
+      setFormData(initialFormData);
       setEditingStaff(null);
     } catch (error) {
       alert(error instanceof Error ? error.message : 'An error occurred');
@@ -251,373 +213,662 @@ const StaffPage: React.FC = () => {
     currentPage * rowsPerPage
   );
 
-  const handleSort = (field: keyof Staff) => {
-    if (field === sortField) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDirection('asc');
-    }
-  };
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-red-600">
+          {t('common.error')}: {error}
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <>
-      {/* Modal - Moved outside the main container */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-[9999] bg-black bg-opacity-50">
-          <div className="fixed inset-0 flex items-center justify-center">
-            <div className="bg-white p-6 rounded-lg w-full max-w-2xl mx-4 shadow-lg">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold">
-                  {editingStaff ? 'Edit Staff Member' : 'Add Staff Member'}
-                </h2>
-                <button
-                  onClick={() => setIsModalOpen(false)}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  <svg
-                    className="h-6 w-6"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-              <form
-                onSubmit={handleSubmit}
-                className="overflow-y-auto max-h-[calc(100vh-200px)]"
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">{t('staff.title')}</h1>
+        <button
+          type="button"
+          onClick={() => {
+            setEditingStaff(null);
+            setFormData(initialFormData);
+            setIsModalOpen(true);
+          }}
+          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          aria-label={t('staff.addStaff')}
+          title={t('staff.addStaff')}
+        >
+          <svg
+            className="-ml-1 mr-2 h-5 w-5"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              fillRule="evenodd"
+              d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+              clipRule="evenodd"
+            />
+          </svg>
+          {t('staff.addStaff')}
+        </button>
+      </div>
+
+      <div className="mb-4 flex flex-col sm:flex-row gap-4">
+        <input
+          type="text"
+          placeholder={t('staff.search')}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          aria-label={t('staff.search')}
+          title={t('staff.search')}
+        />
+        <div className="flex gap-4">
+          <select
+            value={rowsPerPage}
+            onChange={(e) => setRowsPerPage(Number(e.target.value))}
+            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            aria-label={t('staff.rowsPerPage')}
+            title={t('staff.rowsPerPage')}
+          >
+            <option value={5}>5 {t('staff.rowsPerPage')}</option>
+            <option value={10}>10 {t('staff.rowsPerPage')}</option>
+            <option value={20}>20 {t('staff.rowsPerPage')}</option>
+            <option value={50}>50 {t('staff.rowsPerPage')}</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                onClick={() => {
+                  setSortField('firstName');
+                  setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+                }}
               >
-                <div className="grid grid-cols-2 gap-4">
-                  <div key="firstName">
-                    <label className="block text-sm font-medium text-gray-700">
-                      First Name
-                    </label>
-                    <input
-                      type="text"
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleInputChange}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                      required
-                    />
+                {t('staff.table.name')}
+              </th>
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                onClick={() => {
+                  setSortField('email');
+                  setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+                }}
+              >
+                {t('staff.table.email')}
+              </th>
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                onClick={() => {
+                  setSortField('position');
+                  setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+                }}
+              >
+                {t('staff.table.position')}
+              </th>
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                onClick={() => {
+                  setSortField('isActive');
+                  setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+                }}
+              >
+                {t('staff.table.status')}
+              </th>
+              <th scope="col" className="relative px-6 py-3">
+                <span className="sr-only">{t('staff.table.actions')}</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {paginatedStaff.map((member) => (
+              <tr key={member.id}>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm font-medium text-gray-900">
+                    {member.firstName} {member.lastName}
                   </div>
-                  <div key="lastName">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Last Name
-                    </label>
-                    <input
-                      type="text"
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleInputChange}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                      required
-                    />
-                  </div>
-                  <div key="email">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                      required
-                    />
-                  </div>
-                  <div key="position">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Position
-                    </label>
-                    <input
-                      type="text"
-                      name="position"
-                      value={formData.position}
-                      onChange={handleInputChange}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                      required
-                    />
-                  </div>
-                  <div key="phone">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Phone Number
-                    </label>
-                    <div className="flex gap-2">
-                      <select
-                        name="phone.countryCode"
-                        value={formData.phone.countryCode}
-                        onChange={handleInputChange}
-                        className="mt-1 block w-24 border border-gray-300 rounded-md shadow-sm p-2"
-                      >
-                        <option value="+1">+1</option>
-                        <option value="+44">+44</option>
-                        <option value="+46">+46</option>
-                      </select>
-                      <input
-                        type="tel"
-                        name="phone.number"
-                        value={formData.phone.number}
-                        onChange={handleInputChange}
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div key="employmentType">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Employment Type
-                    </label>
-                    <select
-                      name="employmentType"
-                      value={formData.employmentType}
-                      onChange={handleInputChange}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                      required
-                    >
-                      <option value="FULL_TIME">Full Time</option>
-                      <option value="PART_TIME">Part Time</option>
-                      <option value="CONTRACT">Contract</option>
-                      <option value="TEMPORARY">Temporary</option>
-                    </select>
-                  </div>
-                  <div key="startDate">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Start Date
-                    </label>
-                    <input
-                      type="date"
-                      name="startDate"
-                      value={formData.startDate}
-                      onChange={handleInputChange}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                      required
-                    />
-                  </div>
-                  <div key="endDate">
-                    <label className="block text-sm font-medium text-gray-700">
-                      End Date
-                    </label>
-                    <input
-                      type="date"
-                      name="endDate"
-                      value={formData.endDate || ''}
-                      onChange={handleInputChange}
-                      disabled={formData.isActive}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 disabled:bg-gray-100"
-                    />
-                  </div>
-                  <div
-                    key="isActive"
-                    className="col-span-2 flex items-center space-x-4 p-4 bg-blue-50 rounded-lg border border-blue-200 mb-4 h-20"
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-500">{member.email}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-500">{member.position}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span
+                    className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                      member.isActive
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-red-100 text-red-800'
+                    }`}
                   >
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        name="isActive"
-                        checked={formData.isActive}
-                        onChange={(e) => {
-                          setFormData((prev) => ({
-                            ...prev,
-                            isActive: e.target.checked,
-                            endDate: e.target.checked ? '' : prev.endDate,
-                          }));
-                        }}
-                        className="h-6 w-6 rounded border-2 border-emerald-500 focus:ring-emerald-500 focus:ring-offset-0 cursor-pointer appearance-none checked:bg-emerald-50 checked:border-emerald-500 checked:bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%2310b981%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M16.707%205.293a1%201%200%20010%201.414l-8%208a1%201%200%2001-1.414%200l-4-4a1%201%200%20011.414-1.414L8%2012.586l7.293-7.293a1%201%200%20011.414%200z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E')] checked:bg-center checked:bg-no-repeat"
-                      />
-                      <label className="ml-3 block text-base font-semibold text-gray-700">
-                        {formData.isActive
-                          ? 'Active Employee'
-                          : 'Inactive Employee'}
-                      </label>
-                    </div>
-                    {!formData.isActive && (
-                      <div className="flex items-center space-x-4">
-                        <select
-                          name="leaveType"
-                          value={formData.leaveType || ''}
-                          onChange={handleInputChange}
-                          className="rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-0"
-                        >
-                          <option value="" className="text-gray-500">
-                            Select Reason
-                          </option>
-                          <option value="MATERNITY" className="text-gray-700">
-                            Maternity Leave
-                          </option>
-                          <option value="PATERNITY" className="text-gray-700">
-                            Paternity Leave
-                          </option>
-                          <option value="STUDY" className="text-gray-700">
-                            Study Leave
-                          </option>
-                          <option value="SICK" className="text-gray-700">
-                            Sick Leave
-                          </option>
-                          <option value="VACATION" className="text-gray-700">
-                            Vacation
-                          </option>
-                          <option value="TERMINATED" className="text-gray-700">
-                            Employment Terminated
-                          </option>
-                          <option value="OTHER" className="text-gray-700">
-                            Other
-                          </option>
-                        </select>
-                        <div className="text-sm text-gray-600">
-                          Set end date above
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <div key="address" className="col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Address
-                    </label>
-                    <div className="grid grid-cols-2 gap-4">
-                      <input
-                        type="text"
-                        name="address.street"
-                        value={formData.address.street}
-                        onChange={handleInputChange}
-                        placeholder="Street"
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                      />
-                      <input
-                        type="text"
-                        name="address.city"
-                        value={formData.address.city}
-                        onChange={handleInputChange}
-                        placeholder="City"
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                      />
-                      <input
-                        type="text"
-                        name="address.state"
-                        value={formData.address.state}
-                        onChange={handleInputChange}
-                        placeholder="State"
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                      />
-                      <input
-                        type="text"
-                        name="address.postalCode"
-                        value={formData.address.postalCode}
-                        onChange={handleInputChange}
-                        placeholder="Postal Code"
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                      />
-                      <input
-                        type="text"
-                        name="address.country"
-                        value={formData.address.country}
-                        onChange={handleInputChange}
-                        placeholder="Country"
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                      />
-                    </div>
-                  </div>
-                  <div key="emergencyContact" className="col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Emergency Contact
-                    </label>
-                    <div className="grid grid-cols-2 gap-4">
-                      <input
-                        type="text"
-                        name="emergencyContact.name"
-                        value={formData.emergencyContact.name}
-                        onChange={handleInputChange}
-                        placeholder="Contact Name"
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                      />
-                      <input
-                        type="text"
-                        name="emergencyContact.relationship"
-                        value={formData.emergencyContact.relationship}
-                        onChange={handleInputChange}
-                        placeholder="Relationship"
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                      />
-                      <div className="col-span-2">
-                        <label className="block text-sm font-medium text-gray-700">
-                          Emergency Contact Phone
-                        </label>
-                        <div className="flex gap-2">
-                          <select
-                            name="emergencyContact.phone.countryCode"
-                            value={formData.emergencyContact.phone.countryCode}
-                            onChange={handleInputChange}
-                            className="mt-1 block w-24 border border-gray-300 rounded-md shadow-sm p-2"
-                          >
-                            <option value="+1">+1</option>
-                            <option value="+44">+44</option>
-                            <option value="+46">+46</option>
-                          </select>
-                          <input
-                            type="tel"
-                            name="emergencyContact.phone.number"
-                            value={formData.emergencyContact.phone.number}
-                            onChange={handleInputChange}
-                            placeholder="Phone Number"
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  {!editingStaff && (
-                    <React.Fragment key="password-fields">
-                      <div key="password">
-                        <label className="block text-sm font-medium text-gray-700">
-                          Password
-                        </label>
-                        <input
-                          type="password"
-                          name="password"
-                          value={formData.password}
-                          onChange={handleInputChange}
-                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                          required
-                        />
-                      </div>
-                      <div key="confirmPassword">
-                        <label className="block text-sm font-medium text-gray-700">
-                          Confirm Password
-                        </label>
-                        <input
-                          type="password"
-                          name="confirmPassword"
-                          value={formData.confirmPassword}
-                          onChange={handleInputChange}
-                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                          required
-                        />
-                      </div>
-                    </React.Fragment>
-                  )}
-                </div>
-                <div className="mt-6 flex justify-end space-x-2">
+                    {member.isActive
+                      ? t('staff.status.active')
+                      : t('staff.status.inactive')}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <button
                     type="button"
-                    onClick={() => setIsModalOpen(false)}
-                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                    onClick={() => handleEdit(member)}
+                    className="text-indigo-600 hover:text-indigo-900 mr-4"
+                    aria-label={t('staff.table.edit')}
+                    title={t('staff.table.edit')}
                   >
-                    Cancel
+                    <span className="sr-only">{t('staff.table.edit')}</span>
+                    <svg
+                      className="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
                   </button>
                   <button
-                    type="submit"
-                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                    type="button"
+                    onClick={() => handleDelete(member.id)}
+                    className="text-red-600 hover:text-red-900"
+                    aria-label={t('staff.table.delete')}
+                    title={t('staff.table.delete')}
                   >
-                    {editingStaff ? 'Update' : 'Add'} Staff Member
+                    <span className="sr-only">{t('staff.table.delete')}</span>
+                    <svg
+                      className="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex items-center justify-between mt-4">
+        <div className="flex-1 flex justify-between sm:hidden">
+          <button
+            type="button"
+            onClick={() => setCurrentPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+            aria-label={t('common.pagination.previous')}
+            title={t('common.pagination.previous')}
+          >
+            {t('common.pagination.previous')}
+          </button>
+          <button
+            type="button"
+            onClick={() => setCurrentPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+            aria-label={t('common.pagination.next')}
+            title={t('common.pagination.next')}
+          >
+            {t('common.pagination.next')}
+          </button>
+        </div>
+        <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm text-gray-700">
+              {t('common.pagination.showing')}{' '}
+              <span className="font-medium">
+                {(currentPage - 1) * rowsPerPage + 1}
+              </span>{' '}
+              {t('common.pagination.to')}{' '}
+              <span className="font-medium">
+                {Math.min(currentPage * rowsPerPage, filteredStaff.length)}
+              </span>{' '}
+              {t('common.pagination.of')}{' '}
+              <span className="font-medium">{filteredStaff.length}</span>{' '}
+              {t('common.pagination.results')}
+            </p>
+          </div>
+          <div>
+            <nav
+              className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+              aria-label="Pagination"
+            >
+              <button
+                type="button"
+                onClick={() => setCurrentPage(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                aria-label={t('common.pagination.previous')}
+                title={t('common.pagination.previous')}
+              >
+                <span className="sr-only">
+                  {t('common.pagination.previous')}
+                </span>
+                <svg
+                  className="h-5 w-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => (
+                  <button
+                    key={page}
+                    type="button"
+                    onClick={() => setCurrentPage(page)}
+                    className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                      currentPage === page
+                        ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
+                        : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                    }`}
+                    aria-label={`${t('common.pagination.showing')} ${page}`}
+                    title={`${t('common.pagination.showing')} ${page}`}
+                  >
+                    {page}
+                  </button>
+                )
+              )}
+              <button
+                type="button"
+                onClick={() => setCurrentPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                aria-label={t('common.pagination.next')}
+                title={t('common.pagination.next')}
+              >
+                <span className="sr-only">{t('common.pagination.next')}</span>
+                <svg
+                  className="h-5 w-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      {/* Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div
+              className="fixed inset-0 transition-opacity"
+              aria-hidden="true"
+            >
+              <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+
+            <span
+              className="hidden sm:inline-block sm:align-middle sm:h-screen"
+              aria-hidden="true"
+            >
+              &#8203;
+            </span>
+
+            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+              <form onSubmit={handleSubmit}>
+                <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                  <div className="sm:flex sm:items-start">
+                    <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                      <h3 className="text-lg leading-6 font-medium text-gray-900">
+                        {editingStaff
+                          ? t('staff.form.title.edit')
+                          : t('staff.form.title.add')}
+                      </h3>
+                      <div className="mt-4 space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label
+                              htmlFor="firstName"
+                              className="block text-sm font-medium text-gray-700"
+                            >
+                              {t('staff.form.firstName')}
+                            </label>
+                            <input
+                              type="text"
+                              id="firstName"
+                              name="firstName"
+                              value={formData.firstName}
+                              onChange={handleInputChange}
+                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                              required
+                              aria-label={t('staff.form.firstName')}
+                              title={t('staff.form.firstName')}
+                              placeholder={t('staff.form.firstName')}
+                            />
+                          </div>
+                          <div>
+                            <label
+                              htmlFor="lastName"
+                              className="block text-sm font-medium text-gray-700"
+                            >
+                              {t('staff.form.lastName')}
+                            </label>
+                            <input
+                              type="text"
+                              id="lastName"
+                              name="lastName"
+                              value={formData.lastName}
+                              onChange={handleInputChange}
+                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                              required
+                              aria-label={t('staff.form.lastName')}
+                              title={t('staff.form.lastName')}
+                              placeholder={t('staff.form.lastName')}
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor="email"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            {t('staff.form.email')}
+                          </label>
+                          <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleInputChange}
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            required
+                            aria-label={t('staff.form.email')}
+                            title={t('staff.form.email')}
+                            placeholder={t('staff.form.email')}
+                          />
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor="position"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            {t('staff.form.position')}
+                          </label>
+                          <input
+                            type="text"
+                            id="position"
+                            name="position"
+                            value={formData.position}
+                            onChange={handleInputChange}
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            required
+                            aria-label={t('staff.form.position')}
+                            title={t('staff.form.position')}
+                            placeholder={t('staff.form.position')}
+                          />
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor="phone.countryCode"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            {t('staff.form.phone')}
+                          </label>
+                          <div className="flex gap-2">
+                            <select
+                              id="phone.countryCode"
+                              name="phone.countryCode"
+                              value={formData.phone.countryCode}
+                              onChange={handleInputChange}
+                              className="mt-1 block w-24 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                              required
+                              aria-label={t('staff.form.phone')}
+                              title={t('staff.form.phone')}
+                            >
+                              <option value="+1">+1</option>
+                              <option value="+44">+44</option>
+                              <option value="+46">+46</option>
+                            </select>
+                            <input
+                              type="tel"
+                              id="phone.number"
+                              name="phone.number"
+                              value={formData.phone.number}
+                              onChange={handleInputChange}
+                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                              required
+                              aria-label={t('staff.form.phone')}
+                              title={t('staff.form.phone')}
+                              placeholder={t('staff.form.phone')}
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor="employmentType"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            {t('staff.form.employmentType')}
+                          </label>
+                          <select
+                            id="employmentType"
+                            name="employmentType"
+                            value={formData.employmentType}
+                            onChange={handleInputChange}
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            required
+                            aria-label={t('staff.form.employmentType')}
+                            title={t('staff.form.employmentType')}
+                          >
+                            <option value="FULL_TIME">
+                              {t('staff.employmentTypes.FULL_TIME')}
+                            </option>
+                            <option value="PART_TIME">
+                              {t('staff.employmentTypes.PART_TIME')}
+                            </option>
+                            <option value="CONTRACT">
+                              {t('staff.employmentTypes.CONTRACT')}
+                            </option>
+                            <option value="INTERN">
+                              {t('staff.employmentTypes.INTERN')}
+                            </option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor="startDate"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            {t('staff.form.startDate')}
+                          </label>
+                          <input
+                            type="date"
+                            id="startDate"
+                            name="startDate"
+                            value={formData.startDate}
+                            onChange={handleInputChange}
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            required
+                            aria-label={t('staff.form.startDate')}
+                            title={t('staff.form.startDate')}
+                          />
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor="role"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            {t('staff.form.role')}
+                          </label>
+                          <select
+                            id="role"
+                            name="role"
+                            value={formData.role}
+                            onChange={handleInputChange}
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            required
+                            aria-label={t('staff.form.role')}
+                            title={t('staff.form.role')}
+                          >
+                            <option value="STAFF">
+                              {t('staff.roles.STAFF')}
+                            </option>
+                            <option value="MANAGER">
+                              {t('staff.roles.MANAGER')}
+                            </option>
+                            <option value="ADMIN">
+                              {t('staff.roles.ADMIN')}
+                            </option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor="isActive"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            {t('staff.form.status')}
+                          </label>
+                          <select
+                            id="isActive"
+                            name="isActive"
+                            value={formData.isActive ? 'true' : 'false'}
+                            onChange={(e) =>
+                              setFormData((prev) => ({
+                                ...prev,
+                                isActive: e.target.value === 'true',
+                              }))
+                            }
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            required
+                            aria-label={t('staff.form.status')}
+                            title={t('staff.form.status')}
+                          >
+                            <option value="true">
+                              {t('staff.status.active')}
+                            </option>
+                            <option value="false">
+                              {t('staff.status.inactive')}
+                            </option>
+                          </select>
+                        </div>
+
+                        {!editingStaff && (
+                          <>
+                            <div>
+                              <label
+                                htmlFor="password"
+                                className="block text-sm font-medium text-gray-700"
+                              >
+                                {t('staff.form.password')}
+                              </label>
+                              <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                value={formData.password}
+                                onChange={handleInputChange}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                required
+                                aria-label={t('staff.form.password')}
+                                title={t('staff.form.password')}
+                                placeholder={t('staff.form.password')}
+                              />
+                            </div>
+                            <div>
+                              <label
+                                htmlFor="confirmPassword"
+                                className="block text-sm font-medium text-gray-700"
+                              >
+                                {t('staff.form.confirmPassword')}
+                              </label>
+                              <input
+                                type="password"
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                value={formData.confirmPassword}
+                                onChange={handleInputChange}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                required
+                                aria-label={t('staff.form.confirmPassword')}
+                                title={t('staff.form.confirmPassword')}
+                                placeholder={t('staff.form.confirmPassword')}
+                              />
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
+                  <button
+                    type="submit"
+                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm"
+                    aria-label={
+                      editingStaff
+                        ? t('staff.form.submit.edit')
+                        : t('staff.form.submit.add')
+                    }
+                    title={
+                      editingStaff
+                        ? t('staff.form.submit.edit')
+                        : t('staff.form.submit.add')
+                    }
+                  >
+                    {editingStaff
+                      ? t('staff.form.submit.edit')
+                      : t('staff.form.submit.add')}
+                  </button>
+                  <button
+                    type="button"
+                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:col-start-1 sm:text-sm"
+                    onClick={() => {
+                      setIsModalOpen(false);
+                      setFormData(initialFormData);
+                      setEditingStaff(null);
+                    }}
+                    aria-label={t('staff.form.cancel')}
+                    title={t('staff.form.cancel')}
+                  >
+                    {t('staff.form.cancel')}
                   </button>
                 </div>
               </form>
@@ -625,210 +876,7 @@ const StaffPage: React.FC = () => {
           </div>
         </div>
       )}
-
-      {/* Main content */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Staff Management</h1>
-        </div>
-
-        {/* Search and filter controls */}
-        <div className="mb-6 space-y-4">
-          <div className="flex justify-between items-center gap-4">
-            <input
-              type="text"
-              placeholder="Search staff..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="form-input w-full md:w-96 px-4 py-2 rounded-md border-2 border-black bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition-colors duration-200"
-            />
-            <button
-              onClick={() => {
-                setEditingStaff(null);
-                setFormData({
-                  firstName: '',
-                  lastName: '',
-                  email: '',
-                  phone: {
-                    countryCode: '+1',
-                    number: '',
-                  },
-                  emergencyContact: {
-                    name: '',
-                    relationship: '',
-                    phone: {
-                      countryCode: '+1',
-                      number: '',
-                    },
-                  },
-                  employmentType: 'FULL_TIME',
-                  age: 0,
-                  gender: 'OTHER',
-                  dateOfBirth: '',
-                  address: {
-                    street: '',
-                    city: '',
-                    state: '',
-                    postalCode: '',
-                    country: '',
-                  },
-                  startDate: '',
-                  position: '',
-                  isActive: true,
-                  role: 'STAFF',
-                  password: '',
-                });
-                setIsModalOpen(true);
-              }}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            >
-              Add Staff Member
-            </button>
-          </div>
-        </div>
-
-        {/* Staff table */}
-        <div className="bg-white shadow-md rounded-lg overflow-hidden">
-          <table className="min-w-full">
-            <thead className="bg-gray-50">
-              <tr key="header-row">
-                <th
-                  key="name-header"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort('firstName')}
-                >
-                  Name
-                </th>
-                <th
-                  key="email-header"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort('email')}
-                >
-                  Email
-                </th>
-                <th
-                  key="position-header"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort('position')}
-                >
-                  Position
-                </th>
-                <th
-                  key="status-header"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort('isActive')}
-                >
-                  Status
-                </th>
-                <th
-                  key="actions-header"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {paginatedStaff.map((member, index) => (
-                <tr key={`${member.id}-${index}`} className="hover:bg-gray-50">
-                  <td
-                    key={`${member.id}-name-${index}`}
-                    className="px-6 py-4 whitespace-nowrap"
-                  >
-                    {member.firstName} {member.lastName}
-                  </td>
-                  <td
-                    key={`${member.id}-email-${index}`}
-                    className="px-6 py-4 whitespace-nowrap"
-                  >
-                    {member.email}
-                  </td>
-                  <td
-                    key={`${member.id}-position-${index}`}
-                    className="px-6 py-4 whitespace-nowrap"
-                  >
-                    {member.position}
-                  </td>
-                  <td
-                    key={`${member.id}-status-${index}`}
-                    className="px-6 py-4 whitespace-nowrap"
-                  >
-                    <span
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        member.isActive
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}
-                    >
-                      {member.isActive ? 'Active' : 'Inactive'}
-                    </span>
-                  </td>
-                  <td
-                    key={`${member.id}-actions-${index}`}
-                    className="px-6 py-4 whitespace-nowrap"
-                  >
-                    <button
-                      key={`${member.id}-edit-${index}`}
-                      onClick={() => handleEdit(member)}
-                      className="text-blue-600 hover:text-blue-900 mr-4"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      key={`${member.id}-delete-${index}`}
-                      onClick={() => handleDelete(member.id)}
-                      className="text-red-600 hover:text-red-900"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination */}
-        <div className="mt-4 flex justify-between items-center">
-          <div>
-            <select
-              value={rowsPerPage}
-              onChange={(e) => setRowsPerPage(Number(e.target.value))}
-              className="border p-2 rounded"
-            >
-              {[5, 10, 20, 50].map((value) => (
-                <option key={`rows-${value}`} value={value}>
-                  {value} per page
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="flex items-center space-x-2">
-            <button
-              key="prev-page"
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="px-3 py-1 border rounded disabled:opacity-50"
-            >
-              Previous
-            </button>
-            <span key="page-info">
-              Page {currentPage} of {totalPages}
-            </span>
-            <button
-              key="next-page"
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              }
-              disabled={currentPage === totalPages}
-              className="px-3 py-1 border rounded disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
-        </div>
-      </div>
-    </>
+    </div>
   );
 };
 

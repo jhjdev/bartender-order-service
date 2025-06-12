@@ -1,11 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import { connectToDatabase } from './db';
-import staffRoutes from './routes/staffRoutes';
-import drinksRoutes from './routes/drinksRoutes';
-import cocktailsRoutes from './routes/cocktailsRoutes';
-import ordersRoutes from './routes/ordersRoutes';
-import authRoutes from './routes/authRoutes';
+import staffRoutes from './routes/staff';
+import drinksRoutes from './routes/drinks';
+import cocktailsRoutes from './routes/cocktails';
+import ordersRoutes from './routes/orders';
+import authRoutes from './routes/auth';
 
 const app = express();
 

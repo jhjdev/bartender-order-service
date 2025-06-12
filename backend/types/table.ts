@@ -1,4 +1,5 @@
 import { Order } from './order';
+import { ObjectId } from 'mongodb';
 
 export interface TablePosition {
   x: number;
@@ -21,18 +22,18 @@ export interface TableStatus {
   isOccupied: boolean;
   isReserved: boolean;
   currentOrderId?: string;
-  serverAssigned?: string;  // Employee ID of assigned server
+  serverAssigned?: string; // Employee ID of assigned server
 }
 
 export interface Table {
-  _id?: string;
+  _id?: ObjectId;
   number: number;
   position: TablePosition;
   dimensions: TableDimensions;
   shape: TableShape;
   capacity: number;
   status: TableStatus;
-  section?: string;  // Optional section/area identifier
+  section?: string; // Optional section/area identifier
 }
 
 export interface TableWithOrders extends Table {
@@ -41,7 +42,7 @@ export interface TableWithOrders extends Table {
 }
 
 export interface TableLayout {
-  _id?: string;
+  _id?: ObjectId;
   name: string;
   tables: Table[];
   lastModified: string;
@@ -49,8 +50,8 @@ export interface TableLayout {
 }
 
 export interface TableSection {
-  _id?: string;
+  _id?: ObjectId;
   name: string;
-  tables: number[];  // Array of table numbers in this section
-  color?: string;    // Optional color for visual distinction
+  tables: number[]; // Array of table numbers in this section
+  color?: string; // Optional color for visual distinction
 }

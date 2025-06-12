@@ -1,12 +1,12 @@
 import express, { Express } from 'express';
 import cors from 'cors';
 import { connectDB } from './config/db';
-import authRoutes from './routes/authRoutes';
-import drinksRoutes from './routes/drinksRoutes';
-import cocktailsRoutes from './routes/cocktailsRoutes';
+import authRoutes from './routes/auth';
+import drinksRoutes from './routes/drinks';
+import cocktailsRoutes from './routes/cocktails';
 import imageRoutes from './routes/images';
-import staffRoutes from './routes/staffRoutes';
-import ordersRoutes from './routes/ordersRoutes';
+import staffRoutes from './routes/staff';
+import ordersRoutes from './routes/orders';
 import * as dotenv from 'dotenv';
 import { getEnvPath } from './utils/paths';
 
@@ -29,7 +29,7 @@ app.use('/api/orders', ordersRoutes);
 app.use('/api/images', imageRoutes);
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (_req, res) => {
   res.json({
     status: 'OK',
     timestamp: new Date().toISOString(),

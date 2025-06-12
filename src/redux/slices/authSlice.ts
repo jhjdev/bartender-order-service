@@ -48,7 +48,14 @@ export const updateProfile = createAsyncThunk(
   'auth/updateProfile',
   async (data: Partial<User>, { rejectWithValue }) => {
     try {
-      return await authService.updateProfile(data);
+      const response = await authService.updateProfile(data);
+      // Combine firstName and lastName into name
+      if (response.firstName || response.lastName) {
+        response.name = `${response.firstName || ''} ${
+          response.lastName || ''
+        }`.trim();
+      }
+      return response;
     } catch (error) {
       return rejectWithValue(
         error instanceof Error ? error.message : 'Failed to update profile'

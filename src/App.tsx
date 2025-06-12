@@ -1,61 +1,65 @@
-import React from 'react';
-import { BrowserRouter as Router, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import type { RootState } from './redux/store';
+import * as React from 'react';
+import { useEffect } from 'react';
+import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { store } from './redux/store';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  getCurrentUser,
+  selectIsAuthenticated,
+} from './redux/slices/authSlice';
+import { AppDispatch } from './redux/store';
+import { useTranslation } from 'react-i18next';
+import './i18n';
+
+// Import components
 import Sidebar from './components/Sidebar';
+import UserMenu from './components/auth/UserMenu';
+import LanguageSwitcher from './components/common/LanguageSwitcher';
+// Import AppRoutes for language-prefixed routing
 import AppRoutes from './routes/Routes';
+// Import styles
+import './App.css';
 
 const AppContent: React.FC = () => {
-  const { isAuthenticated, loading } = useSelector(
-    (state: RootState) => state.auth
-  );
-  const location = useLocation();
-  const isLoginPage = location.pathname === '/login';
+  const dispatch = useDispatch<AppDispatch>();
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const { i18n } = useTranslation();
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="flex flex-col items-center">
-          <svg
-            className="animate-spin h-8 w-8 text-blue-500 mb-2"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            ></circle>
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
-          </svg>
-          <p className="text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
-  }
+  // Debug log
+  console.log('isAuthenticated:', isAuthenticated);
 
-  if (isLoginPage) {
-    return <AppRoutes />;
-  }
+  // Initialize auth state on app load
+  useEffect(() => {
+    dispatch(getCurrentUser());
+  }, [dispatch]);
+
+  // Redirect to language-prefixed URL if not present
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (!path.startsWith(`/${i18n.language}`)) {
+      const newPath =
+        path === '/' ? `/${i18n.language}` : `/${i18n.language}${path}`;
+      window.history.replaceState({}, '', newPath);
+    }
+  }, [i18n.language]);
 
   return (
-    <div className="flex h-screen bg-gray-100 overflow-hidden">
+    <div className="flex h-screen bg-gray-100">
       {isAuthenticated && <Sidebar />}
-      <div className="flex-1 flex flex-col h-screen">
-        {isAuthenticated && (
-          <header className="bg-white shadow-sm h-16 flex items-center px-6">
-            <h1 className="text-xl font-semibold text-gray-800">Bar Manager</h1>
-          </header>
-        )}
-        <main className="flex-1 overflow-y-auto">
+      <div className="flex-1 flex flex-col">
+        <header className="bg-gray-800 text-white shadow-sm z-50 relative">
+          <div
+            className="flex justify-between items-center px-4"
+            style={{ minHeight: '63px' }}
+          >
+            <div className="flex items-center space-x-4">
+              {isAuthenticated && <UserMenu />}
+            </div>
+            <LanguageSwitcher />
+          </div>
+        </header>
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
           <AppRoutes />
         </main>
       </div>
@@ -65,9 +69,11 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <Provider store={store}>
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
+    </Provider>
   );
 };
 

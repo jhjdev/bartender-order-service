@@ -1,41 +1,47 @@
-import { Router } from 'express';
-import { ObjectId } from 'mongodb';
-import { client } from '../config/db';
-import { FileMetadata, FileType } from '../types/file';
+import express, { Request, Response, RequestHandler } from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import { db } from '../config/db';
+import { FileMetadata, FileType } from '../types/file';
 
-const router = Router();
-const files = client.db().collection('files');
+const router = express.Router();
+const files = db.collection<FileMetadata>('files');
 
-// Configure multer for file uploads
+// Configure multer storage
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = './uploads/documents';
+  destination: (
+    _req: Request,
+    _file: Express.Multer.File,
+    cb: (error: Error | null, destination: string) => void
+  ) => {
+    const uploadDir = path.join(__dirname, '../../uploads');
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
     cb(null, uploadDir);
   },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+  filename: (
+    _req: Request,
+    file: Express.Multer.File,
+    cb: (error: Error | null, filename: string) => void
+  ) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     cb(null, uniqueSuffix + path.extname(file.originalname));
-  }
+  },
 });
 
-// File type validation
-const fileFilter = (req: any, file: any, cb: any) => {
-  const allowedTypes: FileType[] = [
-    'application/pdf',
-    'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-  ];
-
-  if (allowedTypes.includes(file.mimetype as FileType)) {
+// File filter
+const fileFilter = (
+  _req: Request,
+  file: Express.Multer.File,
+  cb: multer.FileFilterCallback
+) => {
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+  if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error('Invalid file type. Only PDF and Word documents are allowed.'));
+    cb(new Error('Invalid file type. Only JPEG, PNG and GIF are allowed.'));
   }
 };
 
@@ -43,160 +49,105 @@ const upload = multer({
   storage,
   fileFilter,
   limits: {
-    fileSize: 10 * 1024 * 1024 // 10MB limit
-  }
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
 });
 
 // Upload file
-router.post('/upload', upload.single('file'), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ message: 'No file uploaded' });
+router.post(
+  '/upload',
+  upload.single('file') as unknown as RequestHandler,
+  async (req: Request, res: Response) => {
+    try {
+      if (!req.file) {
+        res.status(400).json({ message: 'No file uploaded' });
+        return;
+      }
+
+      const fileData: FileMetadata = {
+        fileName: req.file.filename,
+        originalName: req.file.originalname,
+        fileType: req.file.mimetype as FileType,
+        size: req.file.size,
+        path: req.file.path,
+        uploadedAt: new Date().toISOString(),
+      };
+
+      const result = await files.insertOne(fileData);
+      res.status(201).json({
+        message: 'File uploaded successfully',
+        fileId: result.insertedId,
+      });
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      res.status(500).json({ message: 'Error uploading file' });
     }
-
-    const fileMetadata: Omit<FileMetadata, '_id'> = {
-      originalName: req.file.originalname,
-      fileName: req.file.filename,
-      fileType: req.file.mimetype as FileType,
-      description: req.body.description || '',
-      uploadedAt: new Date().toISOString(),
-      size: req.file.size,
-      uploadedBy: req.body.userId, // Optional: if you have user authentication
-      path: req.file.path
-    };
-
-    const result = await files.insertOne(fileMetadata);
-    res.status(201).json({
-      ...fileMetadata,
-      _id: result.insertedId.toString()
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Error uploading file', error });
   }
-});
+);
 
-// Get all files metadata
-router.get('/', async (req, res) => {
-  try {
-    const allFiles = await files.find().toArray();
-    const filesWithStringIds = allFiles.map(file => ({
-      ...file,
-      _id: file._id.toString()
-    }));
-    
-    res.json(filesWithStringIds);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching files', error });
-  }
-});
-
-// Get file metadata
-router.get('/:id/metadata', async (req, res) => {
+// Get file by ID
+router.get('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    if (!ObjectId.isValid(id)) {
-      return res.status(400).json({ message: 'Invalid file ID format' });
-    }
+    const file = await files.findOne({ _id: id });
 
-    const file = await files.findOne({ _id: new ObjectId(id) });
     if (!file) {
-      return res.status(404).json({ message: 'File not found' });
+      res.status(404).json({ message: 'File not found' });
+      return;
     }
 
-    res.json({
-      ...file,
-      _id: file._id.toString()
-    });
+    res.json(file);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching file metadata', error });
+    console.error('Error retrieving file:', error);
+    res.status(500).json({ message: 'Error retrieving file' });
   }
 });
 
-// Download file
-router.get('/:id/download', async (req, res) => {
+// Update file metadata
+router.put('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    if (!ObjectId.isValid(id)) {
-      return res.status(400).json({ message: 'Invalid file ID format' });
-    }
+    const { originalName } = req.body;
 
-    const file = await files.findOne({ _id: new ObjectId(id) });
-    if (!file) {
-      return res.status(404).json({ message: 'File not found' });
-    }
-
-    // Check if file exists in filesystem
-    if (!fs.existsSync(file.path)) {
-      return res.status(404).json({ message: 'File not found in storage' });
-    }
-
-    // For PDFs, check if client wants to view in browser
-    const viewInBrowser = req.query.view === 'true';
-    if (viewInBrowser && file.fileType === 'application/pdf') {
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', 'inline');
-    } else {
-      res.setHeader('Content-Disposition', `attachment; filename="${file.originalName}"`);
-    }
-
-    const fileStream = fs.createReadStream(file.path);
-    fileStream.pipe(res);
-  } catch (error) {
-    res.status(500).json({ message: 'Error downloading file', error });
-  }
-});
-
-// Update file metadata (description)
-router.patch('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    if (!ObjectId.isValid(id)) {
-      return res.status(400).json({ message: 'Invalid file ID format' });
-    }
-
-    const { description } = req.body;
     const result = await files.findOneAndUpdate(
-      { _id: new ObjectId(id) },
-      { $set: { description } },
+      { _id: id },
+      { $set: { originalName } },
       { returnDocument: 'after' }
     );
 
-    if (result) {
-      res.json({
-        ...result,
-        _id: result._id.toString()
-      });
-    } else {
+    if (!result) {
       res.status(404).json({ message: 'File not found' });
+      return;
     }
+
+    res.json(result);
   } catch (error) {
-    res.status(500).json({ message: 'Error updating file metadata', error });
+    console.error('Error updating file:', error);
+    res.status(500).json({ message: 'Error updating file' });
   }
 });
 
 // Delete file
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    if (!ObjectId.isValid(id)) {
-      return res.status(400).json({ message: 'Invalid file ID format' });
-    }
+    const file = await files.findOne({ _id: id });
 
-    const file = await files.findOne({ _id: new ObjectId(id) });
     if (!file) {
-      return res.status(404).json({ message: 'File not found' });
+      res.status(404).json({ message: 'File not found' });
+      return;
     }
 
     // Delete file from filesystem
-    if (fs.existsSync(file.path)) {
-      fs.unlinkSync(file.path);
-    }
+    fs.unlinkSync(file.path);
 
-    // Delete metadata from database
-    await files.deleteOne({ _id: new ObjectId(id) });
+    // Delete from database
+    await files.deleteOne({ _id: id });
+
     res.json({ message: 'File deleted successfully' });
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting file', error });
+    console.error('Error deleting file:', error);
+    res.status(500).json({ message: 'Error deleting file' });
   }
 });
 
