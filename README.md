@@ -171,7 +171,7 @@ bar-manager-dashboard/
 - [ ] Seed the Orders in our hosted MongoDB to give us data for the Reporting tool
 - [ ] Update admin profile and seed more staff members
 - [ ] Finish the file management interface
-- [ ] Implement i18next for text and language management
+- [x] ~~Implement i18next for text and language management~~
 - [ ] Add more text throughout the app
 - [ ] Add tooltips throughout the app
 
@@ -183,21 +183,24 @@ bar-manager-dashboard/
 - [ ] Start the architecture for the mobile app, and map out the functionality
 - [ ] Start on mobile app API expansion on our current API endpoints
 - [ ] Start work on the mobile app
+- [ ] Add tests with Vitest and Playwright for the web app
+- [ ] Use Toastify for all success messages
+- [ ] Add features like current day, weather, some other nice to have information in header or below header.
+- [ ] Use HTTP status codes like 429 where it gives meaning
 
 ### Low Priority
 
-- [ ] Implement Jest and Maestro for testing for the mobile app
-- [ ] Implement a notification tool that will work with both the web app and the mobile app
 - [ ] Add Github actions for the project
-- [ ] Clean up unused clusters in our hosted MongoDB
 - [ ] Add Swagger to the web app project
-- [ ] Add tests with Vitest and Playwright for the web app
-- [ ] Use Toastify for all success messages
-- [ ] Use HTTP status codes like 429 where it gives meaning
-- [ ] Implement ErrorBoundry for both web app and mobile app
+- [x] ~~Clean up unused clusters in our hosted MongoDB~~
 - [x] ~~Update the PageNotFound component with a way to go to the home page or go back~~
 - [x] ~~Implement the PageNotFound component when we have a 404~~
-- [ ] Add features like current day, weather, some other nice to have information in header or below header.
+- [ ] Start the architecture for the mobile app, and map out the functionality
+- [ ] Start on mobile app API expansion on our current API endpoints
+- [ ] Start work on the mobile app
+- [ ] Implement Jest and Maestro for testing for the mobile app
+- [ ] Implement ErrorBoundry for both web app and mobile app
+- [ ] Implement a notification tool that will work with both the web app and the mobile app
 
 ### Next Steps
 

@@ -14,6 +14,12 @@ import FilesPage from '../pages/files/FilesPage';
 import SchedulePage from '../pages/schedule/SchedulePage';
 import InventoryPage from '../pages/inventory/InventoryPage';
 import ErrorPage from '../pages/ErrorPage';
+import { useTranslation } from 'react-i18next';
+
+const LanguageRedirect = () => {
+  const { i18n } = useTranslation();
+  return <Navigate to={`/${i18n.language}/profile`} replace />;
+};
 
 const AppRoutes: React.FC = () => {
   return (
@@ -23,7 +29,7 @@ const AppRoutes: React.FC = () => {
         path="/"
         element={
           <ProtectedRoute>
-            <Navigate to="/profile" replace />
+            <LanguageRedirect />
           </ProtectedRoute>
         }
       />

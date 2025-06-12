@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect } from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, useLocation } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './redux/store';
 import { useDispatch, useSelector } from 'react-redux';
@@ -25,6 +25,7 @@ const AppContent: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const { i18n } = useTranslation();
+  const location = useLocation();
 
   // Debug log
   console.log('isAuthenticated:', isAuthenticated);
@@ -44,21 +45,26 @@ const AppContent: React.FC = () => {
     }
   }, [i18n.language]);
 
+  // Hide sidebar and header on /login
+  const isLoginRoute = location.pathname === '/login';
+
   return (
     <div className="flex h-screen bg-gray-100">
-      {isAuthenticated && <Sidebar />}
+      {!isLoginRoute && isAuthenticated && <Sidebar />}
       <div className="flex-1 flex flex-col">
-        <header className="bg-gray-800 text-white shadow-sm z-50 relative">
-          <div
-            className="flex justify-between items-center px-4"
-            style={{ minHeight: '63px' }}
-          >
-            <div className="flex items-center space-x-4">
-              {isAuthenticated && <UserMenu />}
+        {!isLoginRoute && (
+          <header className="bg-gray-800 text-white shadow-sm z-50 relative">
+            <div
+              className="flex justify-between items-center px-4"
+              style={{ minHeight: '63px' }}
+            >
+              <div className="flex items-center space-x-4">
+                {isAuthenticated && <UserMenu />}
+              </div>
+              <LanguageSwitcher />
             </div>
-            <LanguageSwitcher />
-          </div>
-        </header>
+          </header>
+        )}
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
           <AppRoutes />
         </main>
