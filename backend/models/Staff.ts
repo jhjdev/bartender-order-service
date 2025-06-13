@@ -26,6 +26,7 @@ export interface StaffMember {
   _id?: ObjectId;
   firstName: string;
   lastName: string;
+  name?: string; // Full name derived from firstName and lastName
   email: string;
   phone: Phone;
   emergencyContact: EmergencyContact;

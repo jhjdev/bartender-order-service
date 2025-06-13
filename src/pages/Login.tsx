@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { login } from '../redux/slices/authSlice';
 import { AppDispatch } from '../redux/store';
+import { toast } from 'react-toastify';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -16,9 +17,27 @@ const Login: React.FC = () => {
 
     try {
       await dispatch(login({ email, password })).unwrap();
+      toast.success('Login successful', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'colored',
+      });
       navigate('/');
     } catch (error) {
       console.error('Login failed:', error);
+      toast.error('Invalid email or password', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'colored',
+      });
     }
   };
 

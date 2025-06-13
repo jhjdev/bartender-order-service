@@ -4,12 +4,11 @@ import { useCocktails } from '../../hooks/useCocktails';
 import { CocktailRecipe } from '../../types/drink';
 import { useAppDispatch } from '../../redux/hooks';
 import {
-  createCocktail,
+  addCocktail,
   updateCocktail,
   deleteCocktail,
 } from '../../redux/slices/cocktailsSlice';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import { cocktailService } from '../../services/cocktailService';
 import ReactDOM from 'react-dom';
 import AddNewButton from '../../components/common/AddNewButton';
@@ -512,9 +511,20 @@ const CocktailsPage: React.FC = () => {
   const [editingCocktail, setEditingCocktail] = useState<
     CocktailRecipe | undefined
   >();
+  const [searchTerm, setSearchTerm] = useState('');
   const { cocktails, loading, error } = useCocktails();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
+
+  // Filter cocktails based on search term
+  const filteredCocktails = cocktails.filter((cocktail) => {
+    const matchesSearch =
+      cocktail.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (cocktail.description?.toLowerCase() || '').includes(
+        searchTerm.toLowerCase()
+      );
+    return matchesSearch;
+  });
 
   const handleAddCocktail = async (
     cocktailData: Partial<CocktailRecipe>,
@@ -526,13 +536,13 @@ const CocktailsPage: React.FC = () => {
         createdOrUpdatedCocktail = await dispatch(
           updateCocktail({
             id: editingCocktail._id,
-            cocktailData: cocktailData,
+            data: cocktailData,
           })
         ).unwrap();
         toast.success(t('cocktails.messages.updated'));
       } else {
         createdOrUpdatedCocktail = await dispatch(
-          createCocktail(cocktailData)
+          addCocktail(cocktailData)
         ).unwrap();
         toast.success(t('cocktails.messages.created'));
       }
@@ -608,15 +618,7 @@ const CocktailsPage: React.FC = () => {
 
   return (
     <div className="relative min-h-screen">
-      <ToastContainer
-        position="top-center"
-        autoClose={3000}
-        style={{ top: '20px' }}
-        className="!z-[99999]"
-      />
-
       {renderDialogs()}
-
       <div className="container mx-auto px-4 py-8">
         <div className="mb-6 space-y-4">
           <div className="flex justify-between items-center gap-4">
@@ -628,6 +630,8 @@ const CocktailsPage: React.FC = () => {
                 id="cocktail-search"
                 type="text"
                 placeholder={t('cocktails.search')}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="form-input w-full md:w-96 px-4 py-2 rounded-md border-2 border-black bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition-colors duration-200"
                 aria-label={t('cocktails.search')}
               />
@@ -654,13 +658,13 @@ const CocktailsPage: React.FC = () => {
           <div className="text-center py-8">
             <p className="text-red-600">{error}</p>
           </div>
-        ) : cocktails.length === 0 ? (
+        ) : filteredCocktails.length === 0 ? (
           <div className="text-center py-8">
             <p className="text-gray-600">{t('common.noResults')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {cocktails.map((cocktail) => (
+            {filteredCocktails.map((cocktail) => (
               <div
                 key={cocktail._id}
                 className="bg-white rounded-lg shadow-md overflow-hidden"

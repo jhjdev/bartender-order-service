@@ -172,7 +172,7 @@ bar-manager-dashboard/
 - [ ] Update admin profile and seed more staff members
 - [ ] Finish the file management interface
 - [x] ~~Implement i18next for text and language management~~
-- [ ] Add more text throughout the app
+- [ ] Add more text throughout the app and fix translation keys
 - [ ] Add tooltips throughout the app
 
 ### Medium Priority
@@ -180,13 +180,12 @@ bar-manager-dashboard/
 - [ ] Map out and draw how I want the inventory management to look like and function
 - [ ] Finish the schedule system and seed it with data (using D3)
 - [ ] Finish the reports tool (using D3)
-- [ ] Start the architecture for the mobile app, and map out the functionality
-- [ ] Start on mobile app API expansion on our current API endpoints
-- [ ] Start work on the mobile app
 - [ ] Add tests with Vitest and Playwright for the web app
-- [ ] Use Toastify for all success messages
+- [x] ~~Use Toastify for all success messages~~
+- [x] ~~Use HTTP status codes like 429 where it gives meaning~~
+- [ ] Implement Vitest and Cypress for testing on web
+- [ ] Implement ErrorBoundry for web
 - [ ] Add features like current day, weather, some other nice to have information in header or below header.
-- [ ] Use HTTP status codes like 429 where it gives meaning
 
 ### Low Priority
 
@@ -198,8 +197,8 @@ bar-manager-dashboard/
 - [ ] Start the architecture for the mobile app, and map out the functionality
 - [ ] Start on mobile app API expansion on our current API endpoints
 - [ ] Start work on the mobile app
-- [ ] Implement Jest and Maestro for testing for the mobile app
-- [ ] Implement ErrorBoundry for both web app and mobile app
+- [ ] Implement Jest and Maestro for testing on mobile
+- [ ] Implement ErrorBoundry for the mobile app
 - [ ] Implement a notification tool that will work with both the web app and the mobile app
 
 ### Next Steps

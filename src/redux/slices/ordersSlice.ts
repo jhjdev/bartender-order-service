@@ -1,31 +1,28 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { cocktailService } from '../../services/cocktailService';
-import { CocktailRecipe } from '../../types/drink';
+import { orderService } from '../../services/orderService';
+import { Order } from '../../types/order';
 import { toast } from 'react-toastify';
 
-// Define the state type
-interface CocktailsState {
-  cocktails: CocktailRecipe[];
+interface OrdersState {
+  orders: Order[];
   loading: boolean;
   error: string | null;
 }
 
-// Initial state
-const initialState: CocktailsState = {
-  cocktails: [],
+const initialState: OrdersState = {
+  orders: [],
   loading: false,
   error: null,
 };
 
-// Async thunk for fetching cocktails
-export const fetchCocktails = createAsyncThunk(
-  'cocktails/fetchCocktails',
+export const fetchOrders = createAsyncThunk(
+  'orders/fetchOrders',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await cocktailService.getAllCocktails();
+      const response = await orderService.getAllOrders();
       return response;
     } catch (error) {
-      toast.error('Failed to fetch cocktails', {
+      toast.error('Failed to fetch orders', {
         position: 'top-right',
         autoClose: 5000,
         hideProgressBar: false,
@@ -34,17 +31,17 @@ export const fetchCocktails = createAsyncThunk(
         draggable: true,
         theme: 'colored',
       });
-      return rejectWithValue('Failed to fetch cocktails');
+      return rejectWithValue('Failed to fetch orders');
     }
   }
 );
 
-export const addCocktail = createAsyncThunk(
-  'cocktails/addCocktail',
-  async (cocktailData: Partial<CocktailRecipe>, { rejectWithValue }) => {
+export const addOrder = createAsyncThunk(
+  'orders/addOrder',
+  async (orderData: Omit<Order, 'id'>, { rejectWithValue }) => {
     try {
-      const response = await cocktailService.createCocktail(cocktailData);
-      toast.success('Cocktail added successfully', {
+      const response = await orderService.createOrder(orderData);
+      toast.success('Order created successfully', {
         position: 'top-right',
         autoClose: 5000,
         hideProgressBar: false,
@@ -55,7 +52,7 @@ export const addCocktail = createAsyncThunk(
       });
       return response;
     } catch (error) {
-      toast.error('Failed to add cocktail', {
+      toast.error('Failed to create order', {
         position: 'top-right',
         autoClose: 5000,
         hideProgressBar: false,
@@ -64,20 +61,20 @@ export const addCocktail = createAsyncThunk(
         draggable: true,
         theme: 'colored',
       });
-      return rejectWithValue('Failed to add cocktail');
+      return rejectWithValue('Failed to create order');
     }
   }
 );
 
-export const updateCocktail = createAsyncThunk(
-  'cocktails/updateCocktail',
+export const updateOrder = createAsyncThunk(
+  'orders/updateOrder',
   async (
-    { id, data }: { id: string; data: Partial<CocktailRecipe> },
+    { id, data }: { id: string; data: Partial<Order> },
     { rejectWithValue }
   ) => {
     try {
-      const response = await cocktailService.updateCocktail(id, data);
-      toast.success('Cocktail updated successfully', {
+      const response = await orderService.updateOrder(id, data);
+      toast.success('Order updated successfully', {
         position: 'top-right',
         autoClose: 5000,
         hideProgressBar: false,
@@ -88,7 +85,7 @@ export const updateCocktail = createAsyncThunk(
       });
       return response;
     } catch (error) {
-      toast.error('Failed to update cocktail', {
+      toast.error('Failed to update order', {
         position: 'top-right',
         autoClose: 5000,
         hideProgressBar: false,
@@ -97,17 +94,17 @@ export const updateCocktail = createAsyncThunk(
         draggable: true,
         theme: 'colored',
       });
-      return rejectWithValue('Failed to update cocktail');
+      return rejectWithValue('Failed to update order');
     }
   }
 );
 
-export const deleteCocktail = createAsyncThunk(
-  'cocktails/deleteCocktail',
+export const deleteOrder = createAsyncThunk(
+  'orders/deleteOrder',
   async (id: string, { rejectWithValue }) => {
     try {
-      await cocktailService.deleteCocktail(id);
-      toast.success('Cocktail deleted successfully', {
+      await orderService.deleteOrder(id);
+      toast.success('Order deleted successfully', {
         position: 'top-right',
         autoClose: 5000,
         hideProgressBar: false,
@@ -118,7 +115,7 @@ export const deleteCocktail = createAsyncThunk(
       });
       return id;
     } catch (error) {
-      toast.error('Failed to delete cocktail', {
+      toast.error('Failed to delete order', {
         position: 'top-right',
         autoClose: 5000,
         hideProgressBar: false,
@@ -127,82 +124,77 @@ export const deleteCocktail = createAsyncThunk(
         draggable: true,
         theme: 'colored',
       });
-      return rejectWithValue('Failed to delete cocktail');
+      return rejectWithValue('Failed to delete order');
     }
   }
 );
 
-// Create the slice
-const cocktailsSlice = createSlice({
-  name: 'cocktails',
+const ordersSlice = createSlice({
+  name: 'orders',
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // Fetch cocktails
-      .addCase(fetchCocktails.pending, (state) => {
+      .addCase(fetchOrders.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchCocktails.fulfilled, (state, action) => {
+      .addCase(fetchOrders.fulfilled, (state, action) => {
         state.loading = false;
-        state.cocktails = action.payload;
+        state.orders = action.payload;
         state.error = null;
       })
-      .addCase(fetchCocktails.rejected, (state, action) => {
+      .addCase(fetchOrders.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })
-      // Add cocktail
-      .addCase(addCocktail.pending, (state) => {
+      .addCase(addOrder.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(addCocktail.fulfilled, (state, action) => {
+      .addCase(addOrder.fulfilled, (state, action) => {
         state.loading = false;
-        state.cocktails.push(action.payload);
+        state.orders.push(action.payload);
         state.error = null;
       })
-      .addCase(addCocktail.rejected, (state, action) => {
+      .addCase(addOrder.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })
-      // Update cocktail
-      .addCase(updateCocktail.pending, (state) => {
+      .addCase(updateOrder.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(updateCocktail.fulfilled, (state, action) => {
+      .addCase(updateOrder.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.cocktails.findIndex(
-          (cocktail) => cocktail._id === action.payload._id
+        const index = state.orders.findIndex(
+          (order) => order._id === action.payload._id
         );
         if (index !== -1) {
-          state.cocktails[index] = action.payload;
+          state.orders[index] = action.payload;
         }
         state.error = null;
       })
-      .addCase(updateCocktail.rejected, (state, action) => {
+      .addCase(updateOrder.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })
-      // Delete cocktail
-      .addCase(deleteCocktail.pending, (state) => {
+      .addCase(deleteOrder.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(deleteCocktail.fulfilled, (state, action) => {
+      .addCase(deleteOrder.fulfilled, (state, action) => {
         state.loading = false;
-        state.cocktails = state.cocktails.filter(
-          (cocktail) => cocktail._id !== action.payload
+        state.orders = state.orders.filter(
+          (order) => order._id !== action.payload
         );
         state.error = null;
       })
-      .addCase(deleteCocktail.rejected, (state, action) => {
+      .addCase(deleteOrder.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });
   },
 });
 
-export default cocktailsSlice.reducer;
+export default ordersSlice.reducer;

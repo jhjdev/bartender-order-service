@@ -7,6 +7,7 @@ import { updateProfile, logout } from '../../redux/slices/authSlice';
 import { countries } from '../../utils/countries';
 import defaultProfileImage from '../../assets/default-profile.svg';
 import { User } from '../../types/user';
+import { toast } from 'react-toastify';
 
 type FormData = Omit<User, 'id'> & {
   phone: NonNullable<User['phone']>;
@@ -125,9 +126,27 @@ const ProfilePage: React.FC = () => {
     e.preventDefault();
     try {
       await dispatch(updateProfile(formData)).unwrap();
+      toast.success('Profile updated successfully', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'colored',
+      });
       setIsEditing(false);
     } catch (error) {
       console.error('Error updating profile:', error);
+      toast.error('Failed to update profile', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'colored',
+      });
     }
   };
 

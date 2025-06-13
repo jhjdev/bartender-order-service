@@ -11,6 +11,10 @@ import {
 import { AppDispatch } from './redux/store';
 import { useTranslation } from 'react-i18next';
 import './i18n';
+import { ToastContainer, toast } from 'react-toastify';
+
+// Import CSS directly
+import 'react-toastify/dist/ReactToastify.css';
 
 // Import components
 import Sidebar from './components/Sidebar';
@@ -45,21 +49,21 @@ const AppContent: React.FC = () => {
     }
   }, [i18n.language]);
 
-  // Hide sidebar and header on /login
-  const isLoginRoute = location.pathname === '/login';
+  // Check if we're on an auth page
+  const isAuthPage = location.pathname.includes('/login');
 
   return (
     <div className="flex h-screen bg-gray-100">
-      {!isLoginRoute && isAuthenticated && <Sidebar />}
+      {isAuthenticated && !isAuthPage && <Sidebar />}
       <div className="flex-1 flex flex-col">
-        {!isLoginRoute && (
+        {isAuthenticated && !isAuthPage && (
           <header className="bg-gray-800 text-white shadow-sm z-50 relative">
             <div
               className="flex justify-between items-center px-4"
               style={{ minHeight: '63px' }}
             >
               <div className="flex items-center space-x-4">
-                {isAuthenticated && <UserMenu />}
+                <UserMenu />
               </div>
               <LanguageSwitcher />
             </div>
@@ -74,10 +78,40 @@ const AppContent: React.FC = () => {
 };
 
 const App: React.FC = () => {
+  // Test toast on mount
+  useEffect(() => {
+    toast('NEW: App mounted successfully!', {
+      position: 'top-right',
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: 'colored',
+      style: {
+        background: '#333',
+        color: '#fff',
+      },
+    });
+  }, []);
+
   return (
     <Provider store={store}>
       <BrowserRouter>
         <AppContent />
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+          style={{ zIndex: 999999 }}
+        />
       </BrowserRouter>
     </Provider>
   );

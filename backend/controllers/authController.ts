@@ -151,7 +151,7 @@ export const authController = {
         return;
       }
 
-      const { firstName, lastName, email, phone, position, password } =
+      const { firstName, lastName, email, phone, position, password, name } =
         req.body as {
           firstName: string;
           lastName: string;
@@ -159,6 +159,7 @@ export const authController = {
           phone: { countryCode: string; number: string };
           position: string;
           password?: string;
+          name?: string;
         };
 
       // Check if email already exists for other users
@@ -182,6 +183,13 @@ export const authController = {
         position,
         updatedAt: new Date(),
       };
+
+      // Set the name field based on firstName and lastName
+      if (firstName || lastName) {
+        updateData.name = `${firstName || ''} ${lastName || ''}`.trim();
+      } else if (name) {
+        updateData.name = name;
+      }
 
       // Only update password if provided
       if (password) {

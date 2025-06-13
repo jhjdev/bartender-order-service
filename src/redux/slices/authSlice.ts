@@ -1,28 +1,49 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { authService } from '../../services/authService';
 import { User } from '../../types/user';
+import { toast } from 'react-toastify';
+import { RootState } from '../store';
 
 interface AuthState {
-  user: User | null;
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
+  user: User | null;
   initialized: boolean;
 }
 
 const initialState: AuthState = {
-  user: null,
-  isAuthenticated: !!authService.getToken(),
+  isAuthenticated: false,
   loading: false,
   error: null,
+  user: null,
   initialized: false,
 };
 
 export const login = createAsyncThunk(
   'auth/login',
-  async ({ email, password }: { email: string; password: string }) => {
-    const response = await authService.login(email, password);
-    return response.user;
+  async (
+    credentials: { email: string; password: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await authService.login(
+        credentials.email,
+        credentials.password
+      );
+      return response.user;
+    } catch (error) {
+      toast.error('Login failed. Please check your credentials.', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'colored',
+      });
+      return rejectWithValue('Login failed');
+    }
   }
 );
 
@@ -64,24 +85,44 @@ export const updateProfile = createAsyncThunk(
   }
 );
 
-export const logout = createAsyncThunk('auth/logout', async () => {
-  await authService.logout();
-});
+export const logout = createAsyncThunk(
+  'auth/logout',
+  async (_, { rejectWithValue }) => {
+    try {
+      await authService.logout();
+    } catch (error) {
+      toast.error('Logout failed. Please try again.', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'colored',
+      });
+      return rejectWithValue('Logout failed');
+    }
+  }
+);
+
+// Selectors
+export const selectIsAuthenticated = (state: RootState) =>
+  state.auth.isAuthenticated;
+export const selectAuthLoading = (state: RootState) => state.auth.loading;
+export const selectAuthInitialized = (state: RootState) =>
+  state.auth.initialized;
+export const selectAuthError = (state: RootState) => state.auth.error;
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    clearError: (state) => {
-      state.error = null;
-    },
     setInitialized: (state) => {
       state.initialized = true;
     },
   },
   extraReducers: (builder) => {
     builder
-      // Login
       .addCase(login.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -91,37 +132,35 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
         state.user = action.payload;
         state.error = null;
-        state.initialized = true;
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
-        state.isAuthenticated = false;
-        state.user = null;
-        state.error = action.error.message || 'Login failed';
-        state.initialized = true;
+        state.error = action.payload as string;
       })
-      // Get Current User
       .addCase(getCurrentUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(getCurrentUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
         state.isAuthenticated = true;
+        state.user = action.payload;
         state.error = null;
-        state.initialized = true;
       })
       .addCase(getCurrentUser.rejected, (state, action) => {
         state.loading = false;
         state.isAuthenticated = false;
         state.user = null;
-        if (action.error.message !== 'No token found') {
-          state.error = action.error.message || 'Failed to get current user';
-        }
-        state.initialized = true;
+        state.error = action.payload as string;
       })
-      // Update Profile
+      .addCase(logout.fulfilled, (state) => {
+        state.isAuthenticated = false;
+        state.user = null;
+        state.error = null;
+      })
+      .addCase(logout.rejected, (state, action) => {
+        state.error = action.payload as string;
+      })
       .addCase(updateProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -133,29 +172,10 @@ const authSlice = createSlice({
       })
       .addCase(updateProfile.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to update profile';
-      })
-      // Logout
-      .addCase(logout.fulfilled, (state) => {
-        state.user = null;
-        state.isAuthenticated = false;
-        state.loading = false;
-        state.error = null;
-        state.initialized = false;
+        state.error = action.payload as string;
       });
   },
 });
 
-export const { clearError, setInitialized } = authSlice.actions;
-
-// Selectors
-export const selectAuthLoading = (state: { auth: AuthState }) =>
-  state.auth.loading;
-export const selectAuthError = (state: { auth: AuthState }) => state.auth.error;
-export const selectAuthUser = (state: { auth: AuthState }) => state.auth.user;
-export const selectIsAuthenticated = (state: { auth: AuthState }) =>
-  state.auth.isAuthenticated;
-export const selectAuthInitialized = (state: { auth: AuthState }) =>
-  state.auth.initialized;
-
+export const { setInitialized } = authSlice.actions;
 export default authSlice.reducer;

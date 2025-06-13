@@ -5,11 +5,12 @@ import { useTranslation } from 'react-i18next';
 import { AppDispatch, RootState } from '../../redux/store';
 import {
   fetchStaff,
-  createStaff,
+  addStaff,
   updateStaff,
   deleteStaff,
 } from '../../redux/slices/staffSlice';
 import { Staff } from '../../types/staff';
+import { toast } from 'react-toastify';
 
 type FormData = Omit<Staff, 'id' | 'createdAt' | 'updatedAt'> & {
   confirmPassword?: string;
@@ -127,13 +128,29 @@ const StaffPage: React.FC = () => {
 
     // Validate password match if creating new staff
     if (!editingStaff && formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match');
+      toast.error('Passwords do not match', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'colored',
+      });
       return;
     }
 
     // Validate password length if creating new staff
     if (!editingStaff && formData.password && formData.password.length < 6) {
-      alert('Password must be at least 6 characters long');
+      toast.error('Password must be at least 6 characters long', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'colored',
+      });
       return;
     }
 
@@ -143,18 +160,45 @@ const StaffPage: React.FC = () => {
 
       if (editingStaff) {
         await dispatch(
-          updateStaff({ id: editingStaff.id, staffData })
+          updateStaff({ id: editingStaff.id, data: staffData })
         ).unwrap();
-        alert('Staff member updated successfully');
+        toast.success('Staff member updated successfully', {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: 'colored',
+        });
       } else {
-        await dispatch(createStaff(staffData)).unwrap();
-        alert('Staff member added successfully');
+        await dispatch(addStaff(staffData)).unwrap();
+        toast.success('Staff member added successfully', {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: 'colored',
+        });
       }
       setIsModalOpen(false);
       setFormData(initialFormData);
       setEditingStaff(null);
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'An error occurred');
+      toast.error(
+        error instanceof Error ? error.message : 'An error occurred',
+        {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: 'colored',
+        }
+      );
     }
   };
 
@@ -170,13 +214,30 @@ const StaffPage: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this staff member?')) {
-      try {
-        await dispatch(deleteStaff(id)).unwrap();
-        alert('Staff member deleted successfully');
-      } catch (error) {
-        alert(error instanceof Error ? error.message : 'An error occurred');
-      }
+    try {
+      await dispatch(deleteStaff(id)).unwrap();
+      toast.success('Staff member deleted successfully', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'colored',
+      });
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'An error occurred',
+        {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: 'colored',
+        }
+      );
     }
   };
 

@@ -1,30 +1,25 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
+import AuthLayout from '../components/layouts/AuthLayout';
+import LanguageRedirect from '../components/common/LanguageRedirect';
 import LoginPage from '../pages/auth/LoginPage';
-import ProfilePage from '../pages/profile/ProfilePage';
 import DrinksPage from '../pages/menu/DrinksPage';
 import CocktailsPage from '../pages/menu/CocktailsPage';
 import OrdersPage from '../pages/orders/OrdersPage';
 import AddOrder from '../pages/orders/AddOrder';
-import StaffPage from '../pages/staff/StaffPage';
 import TablesPage from '../pages/tables/TablesPage';
-import ReportsPage from '../pages/reports/ReportsPage';
-import FilesPage from '../pages/files/FilesPage';
-import SchedulePage from '../pages/schedule/SchedulePage';
 import InventoryPage from '../pages/inventory/InventoryPage';
+import ReportsPage from '../pages/reports/ReportsPage';
+import SchedulePage from '../pages/schedule/SchedulePage';
+import ProfilePage from '../pages/profile/ProfilePage';
+import StaffPage from '../pages/staff/StaffPage';
+import FilesPage from '../pages/files/FilesPage';
 import ErrorPage from '../pages/ErrorPage';
-import { useTranslation } from 'react-i18next';
-
-const LanguageRedirect = () => {
-  const { i18n } = useTranslation();
-  return <Navigate to={`/${i18n.language}/profile`} replace />;
-};
 
 const AppRoutes: React.FC = () => {
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
       <Route
         path="/"
         element={
@@ -33,6 +28,14 @@ const AppRoutes: React.FC = () => {
           </ProtectedRoute>
         }
       />
+
+      {/* Auth routes */}
+      <Route element={<AuthLayout />}>
+        <Route path="/:lang/login" element={<LoginPage />} />
+        {/* Add more auth routes here later (register, password reset, etc.) */}
+      </Route>
+
+      {/* Protected routes */}
       <Route
         path=":lang/menu/drinks"
         element={

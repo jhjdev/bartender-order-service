@@ -2086,6 +2086,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/express-rate-limit@npm:^6.0.2":
+  version: 6.0.2
+  resolution: "@types/express-rate-limit@npm:6.0.2"
+  dependencies:
+    express-rate-limit: "npm:*"
+  checksum: 10c0/079dcea4a65242e7777ffd36e336dc86762988eb91534d8c691e0d2856bb12e5c28d5b8812641f51e2f86bdd2994da23b7cff683453cf20d78501bd0b13a70ba
+  languageName: node
+  linkType: hard
+
 "@types/express-serve-static-core@npm:4":
   version: 4.19.6
   resolution: "@types/express-serve-static-core@npm:4.19.6"
@@ -2260,6 +2269,15 @@ __metadata:
     "@types/history": "npm:^4.7.11"
     "@types/react": "npm:*"
   checksum: 10c0/1f7eee61981d2f807fa01a34a0ef98ebc0774023832b6611a69c7f28fdff01de5a38cabf399f32e376bf8099dcb7afaf724775bea9d38870224492bea4cb5737
+  languageName: node
+  linkType: hard
+
+"@types/react-toastify@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "@types/react-toastify@npm:4.1.0"
+  dependencies:
+    react-toastify: "npm:*"
+  checksum: 10c0/1bf8312896d4a47bbb44d469b7ccb16999ce69b9f5271ab7f5cb2c63c2e66f247eb52edd575211b8414fbc2ee39e9322ac3c8ec60b2d7368b89d48be9e8d3fb8
   languageName: node
   linkType: hard
 
@@ -2705,6 +2723,7 @@ __metadata:
     "@types/cors": "npm:^2.8.13"
     "@types/debug": "npm:^4"
     "@types/express": "npm:^5.0.3"
+    "@types/express-rate-limit": "npm:^6.0.2"
     "@types/express-serve-static-core": "npm:4"
     "@types/jsonwebtoken": "npm:^9.0.9"
     "@types/multer": "npm:^1.4.7"
@@ -2719,6 +2738,7 @@ __metadata:
     debug: "npm:^4.4.1"
     dotenv: "npm:^16.0.3"
     express: "npm:^5.1.0"
+    express-rate-limit: "npm:^7.5.0"
     jsonwebtoken: "npm:^9.0.2"
     mongodb: "npm:^6.3.0"
     multer: "npm:^1.4.5-lts.1"
@@ -2745,6 +2765,7 @@ __metadata:
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
     "@types/react-router-dom": "npm:^5.3.3"
+    "@types/react-toastify": "npm:^4.1.0"
     "@typescript-eslint/eslint-plugin": "npm:^6.0.0"
     "@typescript-eslint/parser": "npm:^6.0.0"
     "@vitejs/plugin-react": "npm:^4.0.3"
@@ -3846,6 +3867,15 @@ __metadata:
   version: 3.1.2
   resolution: "exponential-backoff@npm:3.1.2"
   checksum: 10c0/d9d3e1eafa21b78464297df91f1776f7fbaa3d5e3f7f0995648ca5b89c069d17055033817348d9f4a43d1c20b0eab84f75af6991751e839df53e4dfd6f22e844
+  languageName: node
+  linkType: hard
+
+"express-rate-limit@npm:*, express-rate-limit@npm:^7.5.0":
+  version: 7.5.0
+  resolution: "express-rate-limit@npm:7.5.0"
+  peerDependencies:
+    express: ^4.11 || 5 || ^5.0.0-beta.1
+  checksum: 10c0/3e96afa05b4f577395688ede37e0cb19901f20c350b32575fb076f3d25176209fb88d3648151755c232aaf304147c58531f070757978f376e2f08326449299fd
   languageName: node
   linkType: hard
 
@@ -5778,7 +5808,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-toastify@npm:^11.0.5":
+"react-toastify@npm:*, react-toastify@npm:^11.0.5":
   version: 11.0.5
   resolution: "react-toastify@npm:11.0.5"
   dependencies:

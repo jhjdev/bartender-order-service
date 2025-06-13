@@ -11,17 +11,10 @@ const ORDER_STATUS_OPTIONS: OrderStatus[] = [
   'cancelled',
 ];
 
-interface OrderError {
-  operation: string;
-  message: string;
-}
-
 const OrderList: React.FC = () => {
-  const {
-    orders = [],
-    loadingStates,
-    errors,
-  } = useAppSelector((state) => state.orders);
+  const orders = useAppSelector((state) => state.orders.orders) || [];
+  const loading = useAppSelector((state) => state.orders.loading);
+  const error = useAppSelector((state) => state.orders.error);
   const [statusFilter, setStatusFilter] = useState<OrderStatus | 'ALL'>('ALL');
 
   // Filter orders by status
@@ -85,11 +78,6 @@ const OrderList: React.FC = () => {
       ));
   };
 
-  // Get fetch error if it exists
-  const fetchError = (errors as OrderError[]).find(
-    (error) => error.operation === 'fetch'
-  );
-
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
@@ -121,18 +109,18 @@ const OrderList: React.FC = () => {
       </div>
 
       {/* Error message */}
-      {fetchError && !loadingStates.fetch && (
+      {error && !loading && (
         <div
           className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded"
           role="alert"
         >
           <p className="font-bold">Error</p>
-          <p>{fetchError.message}</p>
+          <p>{error}</p>
         </div>
       )}
 
       {/* Loading skeletons */}
-      {loadingStates.fetch ? (
+      {loading ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {renderSkeletons()}
         </div>

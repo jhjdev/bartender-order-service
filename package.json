@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.5",
+    "@types/react-toastify": "^4.1.0",
     "axios": "^1.4.0",
     "framer-motion": "^12.11.4",
     "i18next": "^25.2.1",

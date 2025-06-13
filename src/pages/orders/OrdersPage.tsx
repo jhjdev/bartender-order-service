@@ -2,23 +2,20 @@ import { useEffect, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import InfoCard from '../../components/ui/InfoCard';
 import { RootState } from '../../redux/store';
-import { fetchOrders } from '../../redux/slices/orderSlice';
+import { fetchOrders } from '../../redux/slices/ordersSlice';
 import OrderList from '../../components/orders/OrderList';
 import { Order } from '../../types/order';
+import { toast } from 'react-toastify';
 
 const OrdersPage: React.FC = () => {
   const dispatch = useAppDispatch();
-  const {
-    orders = [],
-    loadingStates,
-    errors,
-  } = useAppSelector((state: RootState) => state.orders);
+  const orders =
+    useAppSelector((state: RootState) => state.orders.orders) || [];
+  const loading = useAppSelector((state: RootState) => state.orders.loading);
+  const error = useAppSelector((state: RootState) => state.orders.error);
   const { isAuthenticated, loading: authLoading } = useAppSelector(
     (state: RootState) => state.auth
   );
-
-  const isLoading = loadingStates['fetch'] || false;
-  const error = errors.find((e) => e.operation === 'fetch')?.message;
 
   // Fetch orders data when authenticated
   useEffect(() => {
@@ -65,6 +62,55 @@ const OrdersPage: React.FC = () => {
     }
   }, [orders]);
 
+  // Add these test functions
+  const handleTestSuccess = () => {
+    toast.success('This is a NEW success message! 🎉', {
+      position: 'top-right',
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: 'colored',
+    });
+  };
+
+  const handleTestWarning = () => {
+    toast.warning('This is a NEW warning message! ⚠️', {
+      position: 'top-right',
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: 'colored',
+    });
+  };
+
+  const handleTestError = () => {
+    toast.error('This is a NEW error message! ❌', {
+      position: 'top-right',
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: 'colored',
+    });
+  };
+
+  const handleTestInfo = () => {
+    toast.info('This is a NEW info message! ℹ️', {
+      position: 'top-right',
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: 'colored',
+    });
+  };
+
   if (authLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -105,7 +151,7 @@ const OrdersPage: React.FC = () => {
             Orders Dashboard
           </h1>
 
-          {isLoading && (
+          {loading && (
             <div className="flex items-center bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full">
               <svg
                 className="animate-spin h-4 w-4 mr-2"
@@ -130,6 +176,39 @@ const OrdersPage: React.FC = () => {
               <span className="text-sm font-medium">Refreshing data...</span>
             </div>
           )}
+        </div>
+
+        {/* Add test buttons section */}
+        <div className="mb-8 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
+          <h2 className="text-lg font-semibold mb-4">
+            Toast Notification Tests
+          </h2>
+          <div className="flex flex-wrap gap-4">
+            <button
+              onClick={handleTestSuccess}
+              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+            >
+              Test Success
+            </button>
+            <button
+              onClick={handleTestWarning}
+              className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
+            >
+              Test Warning
+            </button>
+            <button
+              onClick={handleTestError}
+              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+            >
+              Test Error
+            </button>
+            <button
+              onClick={handleTestInfo}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+            >
+              Test Info
+            </button>
+          </div>
         </div>
 
         {error && (

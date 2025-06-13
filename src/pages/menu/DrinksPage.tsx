@@ -1,23 +1,23 @@
 import { useState, useEffect } from 'react';
 import { Drink, DrinkCategory } from '../../types/drink';
-import { createDrink, deleteDrink } from '../../redux/slices/drinksSlice';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { drinkService } from '../../services/drinkService';
+import {
+  createDrink,
+  deleteDrink,
+  fetchDrinks,
+} from '../../redux/slices/drinksSlice';
+import { toast } from 'react-toastify';
 import ReactDOM from 'react-dom';
 import AddNewButton from '../../components/common/AddNewButton';
 import '../../styles/forms.css';
 import { useTranslation } from 'react-i18next';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../redux/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../redux/store';
 
 const categories = [
-  { value: 'all', label: 'All' },
   { value: DrinkCategory.DRAFT_BEER, label: 'Draft Beer' },
   { value: DrinkCategory.BOTTLED_BEER, label: 'Bottled Beer' },
   { value: DrinkCategory.WINE, label: 'Wine' },
   { value: DrinkCategory.SPIRIT, label: 'Spirits' },
-  { value: DrinkCategory.COCKTAIL, label: 'Cocktail' },
   { value: DrinkCategory.NON_ALCOHOLIC, label: 'Non-Alcoholic' },
 ];
 
@@ -450,62 +450,108 @@ const DrinkForm = ({
 
 const DrinksPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const { drinks, loading } = useSelector((state: RootState) => state.drinks);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDrink, setSelectedDrink] = useState<Drink | undefined>(
+    undefined
+  );
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const { t } = useTranslation();
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [selectedDrink, setSelectedDrink] = useState<Drink | undefined>();
-  const [drinks, setDrinks] = useState<Drink[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchDrinksList();
-  }, []);
+    const loadDrinks = async () => {
+      try {
+        await dispatch(fetchDrinks()).unwrap();
+      } catch (error) {
+        toast.error('Failed to fetch drinks', {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: 'colored',
+        });
+      }
+    };
+    loadDrinks();
+  }, [dispatch]);
 
-  const fetchDrinksList = async () => {
-    try {
-      setLoading(true);
-      const response = await drinkService.getAllDrinks();
-      setDrinks(response);
-      setError(null);
-    } catch (err) {
-      setError('Failed to fetch drinks');
-      toast.error('Failed to fetch drinks');
-    } finally {
-      setLoading(false);
-    }
+  // Filter drinks based on search term and selected category
+  const filteredDrinks = drinks.filter((drink) => {
+    const matchesSearch =
+      searchTerm === '' ||
+      drink.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (drink.description?.toLowerCase() || '').includes(
+        searchTerm.toLowerCase()
+      );
+
+    const matchesCategory =
+      selectedCategory === 'all' || drink.category === selectedCategory;
+
+    return matchesSearch && matchesCategory;
+  });
+
+  const handleCategorySelect = (category: string) => {
+    setSelectedCategory(category);
   };
 
-  const handleAddDrink = async (
-    drinkData: Partial<Drink>,
-    imageFile?: File
-  ) => {
+  const handleAddDrink = async (drinkData: Partial<Drink>) => {
     try {
-      const response = await dispatch(createDrink(drinkData)).unwrap();
-      if (imageFile && response._id) {
-        await drinkService.uploadDrinkImage(response._id, imageFile);
-      }
-      setDrinks((prev) => [...prev, response]);
-      setIsAddDialogOpen(false);
-      toast.success('Drink added successfully');
-    } catch (err) {
-      toast.error('Failed to add drink');
+      await dispatch(createDrink(drinkData)).unwrap();
+      toast.success('Drink added successfully', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'colored',
+      });
+      setIsModalOpen(false);
+    } catch (error) {
+      toast.error('Failed to add drink', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'colored',
+      });
     }
   };
 
   const handleDeleteDrink = async (drinkId: string) => {
     try {
       await dispatch(deleteDrink(drinkId)).unwrap();
-      setDrinks((prev) => prev.filter((drink) => drink._id !== drinkId));
-      toast.success('Drink deleted successfully');
-    } catch (err) {
-      toast.error('Failed to delete drink');
+      toast.success('Drink deleted successfully', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'colored',
+      });
+    } catch (error) {
+      toast.error('Failed to delete drink', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'colored',
+      });
     }
   };
 
   const renderDialogs = () => {
     return ReactDOM.createPortal(
       <>
-        {isAddDialogOpen && (
+        {isModalOpen && (
           <div
             className="absolute inset-0 z-[99999] flex items-center justify-center"
             style={{
@@ -535,7 +581,7 @@ const DrinksPage: React.FC = () => {
                 drink={selectedDrink}
                 onSubmit={handleAddDrink}
                 onCancel={() => {
-                  setIsAddDialogOpen(false);
+                  setIsModalOpen(false);
                   setSelectedDrink(undefined);
                 }}
               />
@@ -548,131 +594,131 @@ const DrinksPage: React.FC = () => {
   };
 
   return (
-    <div className="relative min-h-screen">
-      <ToastContainer
-        position="top-center"
-        autoClose={3000}
-        style={{ top: '20px' }}
-        className="!z-[99999]"
-      />
-
-      {renderDialogs()}
-
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-6 space-y-4">
-          <div className="flex justify-between items-center gap-4">
-            <div className="flex-grow">
-              <label htmlFor="drink-search" className="sr-only">
-                {t('drinks.search')}
-              </label>
-              <input
-                id="drink-search"
-                type="text"
-                placeholder={t('drinks.search')}
-                className="form-input w-full md:w-96 px-4 py-2 rounded-md border-2 border-black bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition-colors duration-200"
-                aria-label={t('drinks.search')}
-              />
-            </div>
-            <AddNewButton
-              onClick={() => setIsAddDialogOpen(true)}
-              title={t('drinks.addDrink')}
+    <div className="container mx-auto px-4 py-8">
+      <div className="mb-6 space-y-4">
+        <div className="flex justify-between items-center gap-4">
+          <div className="flex-grow">
+            <label htmlFor="drink-search" className="sr-only">
+              {t('drinks.search')}
+            </label>
+            <input
+              id="drink-search"
+              type="text"
+              placeholder={t('drinks.search')}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="form-input w-full md:w-96 px-4 py-2 rounded-md border-2 border-black bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent transition-colors duration-200"
+              aria-label={t('drinks.search')}
             />
           </div>
-          <div className="flex flex-wrap gap-2">
-            {categories.map((category) => (
-              <button
-                key={category.value}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
-                  selectedDrink?.category === category.value
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                {category.label}
-              </button>
-            ))}
-          </div>
+          <AddNewButton
+            onClick={() => setIsModalOpen(true)}
+            title={t('drinks.addDrink')}
+          />
         </div>
-
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-white">{t('drinks.title')}</h1>
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => handleCategorySelect('all')}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+              selectedCategory === 'all'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            All Drinks
+          </button>
+          {categories.map((category) => (
+            <button
+              key={category.value}
+              onClick={() => handleCategorySelect(category.value)}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+                selectedCategory === category.value
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              {category.label}
+            </button>
+          ))}
         </div>
+      </div>
 
-        {loading ? (
-          <div className="text-center py-8">
-            <p className="text-gray-600">{t('common.loading')}</p>
-          </div>
-        ) : error ? (
-          <div className="text-center py-8">
-            <p className="text-red-600">{error}</p>
-          </div>
-        ) : drinks.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-gray-600">{t('common.noResults')}</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {drinks.map((drink) => (
-              <div
-                key={drink._id}
-                className="bg-white rounded-lg shadow-md overflow-hidden"
-              >
-                {drink.imageData && (
-                  <div className="relative h-48 w-full">
-                    <img
-                      src={drink.imageData.url}
-                      alt={drink.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-                <div className="p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    {drink.name}
-                  </h3>
-                  <p className="text-sm text-gray-600 mb-4">
-                    {drink.description}
-                  </p>
-                  <div className="flex justify-between items-center">
-                    <span className="text-lg font-bold text-gray-900">
-                      ${drink.price.toFixed(2)}
-                    </span>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        drink.isAvailable
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}
-                    >
-                      {drink.isAvailable
-                        ? t('drinks.status.available')
-                        : t('drinks.status.unavailable')}
-                    </span>
-                  </div>
+      {/* Header */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-white">{t('drinks.title')}</h1>
+      </div>
+
+      {loading ? (
+        <div className="text-center py-8">
+          <p className="text-gray-600">{t('common.loading')}</p>
+        </div>
+      ) : filteredDrinks.length === 0 ? (
+        <div className="text-center py-8">
+          <p className="text-gray-600">{t('common.noResults')}</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredDrinks.map((drink) => (
+            <div
+              key={drink._id}
+              className="bg-white rounded-lg shadow-md overflow-hidden"
+            >
+              {drink.imageData && (
+                <div className="relative h-48 w-full">
+                  <img
+                    src={drink.imageData.url}
+                    alt={drink.name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <div className="bg-gray-50 px-6 py-3 flex justify-end space-x-3">
-                  <button
-                    onClick={() => {
-                      setSelectedDrink(drink);
-                      setIsAddDialogOpen(true);
-                    }}
-                    className="text-blue-600 hover:text-blue-800"
+              )}
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  {drink.name}
+                </h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  {drink.description}
+                </p>
+                <div className="flex justify-between items-center">
+                  <span className="text-lg font-bold text-gray-900">
+                    ${drink.price.toFixed(2)}
+                  </span>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      drink.isAvailable
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-red-100 text-red-800'
+                    }`}
                   >
-                    {t('common.edit')}
-                  </button>
-                  <button
-                    onClick={() => handleDeleteDrink(drink._id)}
-                    className="text-red-600 hover:text-red-800"
-                  >
-                    {t('common.delete')}
-                  </button>
+                    {drink.isAvailable
+                      ? t('drinks.status.available')
+                      : t('drinks.status.unavailable')}
+                  </span>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
+              <div className="bg-gray-50 px-6 py-3 flex justify-end space-x-3">
+                <button
+                  onClick={() => {
+                    setSelectedDrink(drink);
+                    setIsModalOpen(true);
+                  }}
+                  className="text-blue-600 hover:text-blue-800"
+                >
+                  {t('common.edit')}
+                </button>
+                <button
+                  onClick={() => handleDeleteDrink(drink._id)}
+                  className="text-red-600 hover:text-red-800"
+                >
+                  {t('common.delete')}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {renderDialogs()}
     </div>
   );
 };

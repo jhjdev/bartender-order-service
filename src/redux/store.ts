@@ -1,19 +1,19 @@
 import { configureStore } from '@reduxjs/toolkit';
-import orderReducer from './slices/orderSlice';
-import uiReducer from './slices/uiSlice';
 import authReducer from './slices/authSlice';
+import staffReducer from './slices/staffSlice';
 import drinksReducer from './slices/drinksSlice';
 import cocktailsReducer from './slices/cocktailsSlice';
-import staffReducer from './slices/staffSlice';
+import ordersReducer from './slices/ordersSlice';
+import uiReducer from './slices/uiSlice';
 
 export const store = configureStore({
   reducer: {
-    orders: orderReducer,
-    ui: uiReducer,
     auth: authReducer,
+    staff: staffReducer,
     drinks: drinksReducer,
     cocktails: cocktailsReducer,
-    staff: staffReducer,
+    orders: ordersReducer,
+    ui: uiReducer,
   },
 });
 
