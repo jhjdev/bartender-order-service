@@ -1,13 +1,33 @@
 {
+  "navigation": {
+    "dashboard": "Dashboard",
+    "orders": "Orders",
+    "ordersList": "Order History",
+    "addOrder": "New Order",
+    "drinks": "Drinks",
+    "cocktails": "Cocktails",
+    "staff": "Staff",
+    "tables": "Tables",
+    "profile": "Profile",
+    "settings": "Settings",
+    "menu": "Menu",
+    "schedule": "Schedule",
+    "inventory": "Inventory",
+    "reports": "Reports",
+    "files": "Files",
+    "logout": "Logout"
+  },
   "common": {
     "loading": "Loading...",
     "error": "Error",
+    "success": "Success",
     "noResults": "No results found",
     "cancel": "Cancel",
     "save": "Save",
     "add": "Add",
     "edit": "Edit",
     "delete": "Delete",
+    "search": "Search...",
     "confirmDelete": "Are you sure you want to delete this item?",
     "pagination": {
       "previous": "Previous",
@@ -17,6 +37,49 @@
       "of": "of",
       "results": "results"
     }
+  },
+  "orders": {
+    "new": {
+      "title": "New Order",
+      "subtitle": "Create a new order",
+      "description": "Add items to create a new order"
+    },
+    "history": {
+      "title": "Order History",
+      "subtitle": "View all orders",
+      "description": "Browse through your order history"
+    },
+    "stats": {
+      "totalOrders": "Total Orders",
+      "totalDrinks": "Total Drinks",
+      "totalProfit": "Total Profit"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "save": "Save Changes",
+    "logout": "Logout",
+    "logoutError": "Failed to logout",
+    "personalInfo": "Personal Information",
+    "contactInfo": "Contact Information",
+    "security": "Security",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "city": "City",
+    "state": "State",
+    "postalCode": "Postal Code",
+    "country": "Country",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "updateSuccess": "Profile updated successfully",
+    "updateError": "Failed to update profile"
   },
   "staff": {
     "title": "Staff Management",
@@ -67,6 +130,36 @@
         "add": "Add Staff Member",
         "edit": "Save Changes"
       }
+    }
+  },
+  "drinks": {
+    "title": "Drinks",
+    "search": "Search drinks...",
+    "addDrink": "Add Drink",
+    "status": {
+      "available": "Available",
+      "unavailable": "Unavailable"
+    },
+    "form": {
+      "name": "Name",
+      "category": "Category",
+      "price": "Price",
+      "description": "Description",
+      "availability": "Availability",
+      "available": "Available",
+      "unavailable": "Unavailable",
+      "alcoholPercentage": "Alcohol Percentage",
+      "brewery": "Brewery",
+      "wineType": "Wine Type",
+      "region": "Region",
+      "year": "Year",
+      "distillery": "Destillery",
+      "ageStatement": "Age Statement"
+    },
+    "messages": {
+      "created": "Drink created successfully",
+      "updated": "Drink updated successfully",
+      "error": "An error occurred while saving the drink"
     }
   },
   "cocktails": {
@@ -125,5 +218,25 @@
       "updated": "Cocktail updated successfully",
       "error": "An error occurred while saving the cocktail"
     }
+  },
+  "home": {
+    "title": "Dashboard",
+    "description": "Welcome to your bar management dashboard.",
+    "comingSoon": "Dashboard features coming soon."
+  },
+  "files": {
+    "title": "Files",
+    "description": "Manage your files and documents",
+    "comingSoon": "File management features coming soon."
+  },
+  "inventory": {
+    "title": "Inventory",
+    "description": "Manage your inventory and stock levels.",
+    "comingSoon": "Inventory management features coming soon."
+  },
+  "reports": {
+    "title": "Reports",
+    "description": "View and analyze your business data.",
+    "comingSoon": "Reporting features coming soon."
   }
 }

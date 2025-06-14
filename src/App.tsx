@@ -17,8 +17,8 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 // Import components
-import Sidebar from './components/layout/Sidebar';
-import Header from './components/layout/Header';
+import Sidebar from './components/layouts/Sidebar';
+import Header from './components/layouts/Header';
 // Import AppRoutes for language-prefixed routing
 import AppRoutes from './routes/Routes';
 // Import styles

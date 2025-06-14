@@ -818,7 +818,7 @@ const StaffPage: React.FC = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {paginatedStaff.map((member) => (
-                <tr key={member.id}>
+                <tr key={member.id || `${member.firstName}-${member.email}`}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">
                       {member.firstName} {member.lastName}

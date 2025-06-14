@@ -36,6 +36,7 @@ const initialFormData: FormData = {
   createdAt: '',
   updatedAt: '',
   profilePicture: '',
+  uuid: '',
 };
 
 const ProfilePage: React.FC = () => {
@@ -71,6 +72,7 @@ const ProfilePage: React.FC = () => {
         createdAt: user.createdAt || '',
         updatedAt: user.updatedAt || '',
         profilePicture: user.profilePicture || '',
+        uuid: user.id,
       });
     }
   }, [user]);

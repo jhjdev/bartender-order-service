@@ -1,13 +1,33 @@
 {
+  "navigation": {
+    "dashboard": "Dashboard",
+    "orders": "Ordrer",
+    "ordersList": "Ordrehistorik",
+    "addOrder": "Ny ordre",
+    "drinks": "Drikkevarer",
+    "cocktails": "Cocktails",
+    "staff": "Personale",
+    "tables": "Borde",
+    "profile": "Profil",
+    "settings": "Indstillinger",
+    "menu": "Menu",
+    "schedule": "Vagtplan",
+    "inventory": "Lager",
+    "reports": "Rapporter",
+    "files": "Filer",
+    "logout": "Log ud"
+  },
   "common": {
     "loading": "Indlæser...",
     "error": "Fejl",
+    "success": "Succes",
     "noResults": "Ingen resultater fundet",
     "cancel": "Annuller",
     "save": "Gem",
     "add": "Tilføj",
     "edit": "Rediger",
     "delete": "Slet",
+    "search": "Søg...",
     "confirmDelete": "Er du sikker på, at du vil slette dette element?",
     "pagination": {
       "previous": "Forrige",
@@ -17,6 +37,49 @@
       "of": "af",
       "results": "resultater"
     }
+  },
+  "orders": {
+    "new": {
+      "title": "Ny ordre",
+      "subtitle": "Opret en ny ordre",
+      "description": "Tilføj varer for at oprette en ny ordre"
+    },
+    "history": {
+      "title": "Ordrehistorik",
+      "subtitle": "Se alle ordrer",
+      "description": "Gennemse din ordrehistorik"
+    },
+    "stats": {
+      "totalOrders": "Totale ordrer",
+      "totalDrinks": "Totale drikkevarer",
+      "totalProfit": "Total profit"
+    }
+  },
+  "profile": {
+    "title": "Profil",
+    "edit": "Rediger",
+    "cancel": "Annuller",
+    "save": "Gem ændringer",
+    "logout": "Log ud",
+    "logoutError": "Kunne ikke logge ud",
+    "personalInfo": "Personlige oplysninger",
+    "contactInfo": "Kontaktoplysninger",
+    "security": "Sikkerhed",
+    "firstName": "Fornavn",
+    "lastName": "Efternavn",
+    "email": "E-mail",
+    "phone": "Telefon",
+    "address": "Adresse",
+    "city": "By",
+    "state": "Stat",
+    "postalCode": "Postnummer",
+    "country": "Land",
+    "changePassword": "Skift adgangskode",
+    "currentPassword": "Nuværende adgangskode",
+    "newPassword": "Ny adgangskode",
+    "confirmPassword": "Bekræft adgangskode",
+    "updateSuccess": "Profil opdateret med succes",
+    "updateError": "Kunne ikke opdatere profil"
   },
   "staff": {
     "title": "Personale Administration",
@@ -67,6 +130,36 @@
         "add": "Tilføj Medarbejder",
         "edit": "Gem Ændringer"
       }
+    }
+  },
+  "drinks": {
+    "title": "Drikkevarer",
+    "search": "Søg drikkevarer...",
+    "addDrink": "Tilføj drikkevare",
+    "status": {
+      "available": "Tilgængelig",
+      "unavailable": "Ikke tilgængelig"
+    },
+    "form": {
+      "name": "Navn",
+      "category": "Kategori",
+      "price": "Pris",
+      "description": "Beskrivelse",
+      "availability": "Tilgængelighed",
+      "available": "Tilgængelig",
+      "unavailable": "Ikke tilgængelig",
+      "alcoholPercentage": "Alkoholprocent",
+      "brewery": "Bryggeri",
+      "wineType": "Vintype",
+      "region": "Region",
+      "year": "År",
+      "distillery": "Destilleri",
+      "ageStatement": "Alder"
+    },
+    "messages": {
+      "created": "Drikkevare oprettet med succes",
+      "updated": "Drikkevare opdateret med succes",
+      "error": "Der opstod en fejl under gem af drikkevare"
     }
   },
   "cocktails": {
@@ -125,5 +218,25 @@
       "updated": "Cocktail opdateret succesfuldt",
       "error": "Der opstod en fejl under gem af cocktail"
     }
+  },
+  "home": {
+    "title": "Dashboard",
+    "description": "Velkommen til din bar administrations dashboard.",
+    "comingSoon": "Dashboard funktioner kommer snart."
+  },
+  "files": {
+    "title": "Filer",
+    "description": "Administrer dine filer og dokumenter",
+    "comingSoon": "Filadministrations funktioner kommer snart."
+  },
+  "inventory": {
+    "title": "Lager",
+    "description": "Administrer dit lager og beholdning.",
+    "comingSoon": "Lagerstyringsfunktioner kommer snart."
+  },
+  "reports": {
+    "title": "Rapporter",
+    "description": "Se og analyser dine forretningsdata.",
+    "comingSoon": "Rapporteringsfunktioner kommer snart."
   }
 }
