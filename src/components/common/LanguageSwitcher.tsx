@@ -1,73 +1,60 @@
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
-
-type Language = 'en' | 'da';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import ReactDOM from 'react-dom';
+import i18n from '../../i18n';
 
 const LanguageSwitcher: React.FC = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const menuRef = React.useRef<HTMLDivElement>(null);
-  const buttonRef = React.useRef<HTMLButtonElement>(null);
-  const { i18n } = useTranslation();
-  const currentLanguage = i18n.language as Language;
+  const [isOpen, setIsOpen] = useState(false);
+  const [currentLanguage, setCurrentLanguage] = useState(i18n.language);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
-  React.useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
+  useEffect(() => {
+    // Update current language when i18n language changes
+    const handleLanguageChange = (lng: string) => {
+      console.log('Language changed to:', lng);
+      setCurrentLanguage(lng);
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    i18n.on('languageChanged', handleLanguageChange);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      i18n.off('languageChanged', handleLanguageChange);
     };
   }, []);
 
-  const handleLanguageChange = (language: Language) => {
-    i18n.changeLanguage(language);
-    setIsOpen(false);
-  };
+  const handleLanguageChange = async (language: string) => {
+    try {
+      console.log('Changing language to:', language);
+      await i18n.changeLanguage(language);
+      setCurrentLanguage(language);
 
-  const handleToggle = () => {
-    setIsOpen(!isOpen);
-    const button = buttonRef.current;
-    if (button) {
-      button.setAttribute('aria-expanded', !isOpen ? 'true' : 'false');
+      // Update URL path
+      const currentPath = location.pathname;
+      const newPath = currentPath.replace(/^\/[a-z]{2}/, `/${language}`);
+      console.log('Updating path from', currentPath, 'to', newPath);
+      navigate(newPath);
+
+      setIsOpen(false);
+    } catch (error) {
+      console.error('Error changing language:', error);
     }
   };
 
-  return (
-    <div className="relative" ref={menuRef}>
-      <button
-        ref={buttonRef}
-        type="button"
-        onClick={handleToggle}
-        className="flex items-center space-x-2 text-white hover:text-gray-200 focus:outline-none"
-        aria-expanded="false"
-        aria-haspopup="true"
-      >
-        <span className="text-sm font-medium">
-          {currentLanguage === 'en' ? 'English' : 'Dansk'}
-        </span>
-        <svg
-          className={`h-5 w-5 transform transition-transform ${
-            isOpen ? 'rotate-180' : ''
-          }`}
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            fillRule="evenodd"
-            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-            clipRule="evenodd"
-          />
-        </svg>
-      </button>
+  const renderDropdown = () => {
+    if (!isOpen || !buttonRef.current) return null;
 
-      {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 text-gray-900 border border-gray-200 z-50">
+    const buttonRect = buttonRef.current.getBoundingClientRect();
+    const dropdownStyle = {
+      position: 'fixed' as const,
+      top: buttonRect.bottom + window.scrollY + 8,
+      right: window.innerWidth - buttonRect.right,
+      zIndex: 99999,
+    };
+
+    return ReactDOM.createPortal(
+      <div style={dropdownStyle}>
+        <div className="w-48 rounded-md shadow-lg bg-charcoal ring-1 ring-peach/20 text-papaya-whip border border-peach/20">
           <div
             className="py-1"
             role="menu"
@@ -76,10 +63,8 @@ const LanguageSwitcher: React.FC = () => {
           >
             <button
               onClick={() => handleLanguageChange('en')}
-              className={`block w-full text-left px-4 py-2 text-sm ${
-                currentLanguage === 'en'
-                  ? 'text-blue-600 bg-blue-50'
-                  : 'text-gray-700 hover:bg-gray-100'
+              className={`block w-full text-left px-4 py-2 text-sm text-papaya-whip hover:text-peach hover:bg-charcoal/80 transition-colors duration-200 ${
+                currentLanguage === 'en' ? 'bg-charcoal/80 text-peach' : ''
               }`}
               role="menuitem"
             >
@@ -87,10 +72,8 @@ const LanguageSwitcher: React.FC = () => {
             </button>
             <button
               onClick={() => handleLanguageChange('da')}
-              className={`block w-full text-left px-4 py-2 text-sm ${
-                currentLanguage === 'da'
-                  ? 'text-blue-600 bg-blue-50'
-                  : 'text-gray-700 hover:bg-gray-100'
+              className={`block w-full text-left px-4 py-2 text-sm text-papaya-whip hover:text-peach hover:bg-charcoal/80 transition-colors duration-200 ${
+                currentLanguage === 'da' ? 'bg-charcoal/80 text-peach' : ''
               }`}
               role="menuitem"
             >
@@ -98,7 +81,38 @@ const LanguageSwitcher: React.FC = () => {
             </button>
           </div>
         </div>
-      )}
+      </div>,
+      document.body
+    );
+  };
+
+  return (
+    <div className="relative">
+      <button
+        ref={buttonRef}
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center space-x-1 text-gray-700 hover:text-gray-900"
+      >
+        <span className="text-sm font-mono bg-charcoal px-4 py-1.5 rounded-full border border-peach/30 text-papaya-whip">
+          {currentLanguage.toUpperCase()}
+        </span>
+        <svg
+          className={`w-4 h-4 transition-transform text-papaya-whip ${
+            isOpen ? 'rotate-180' : ''
+          }`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
+      </button>
+      {renderDropdown()}
     </div>
   );
 };

@@ -12,6 +12,7 @@ import {
 import { AppDispatch } from '../../redux/store';
 import { authService } from '../../services/authService';
 import Spinner from '../ui/Spinner';
+import { useTranslation } from 'react-i18next';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -28,6 +29,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const loading = useSelector(selectAuthLoading);
   const initialized = useSelector(selectAuthInitialized);
   const error = useSelector(selectAuthError);
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     const token = authService.getToken();
@@ -72,7 +74,13 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }
 
   if (!isAuthenticated || error) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return (
+      <Navigate
+        to={`/${i18n.language}/login`}
+        state={{ from: location }}
+        replace
+      />
+    );
   }
 
   return <>{children}</>;

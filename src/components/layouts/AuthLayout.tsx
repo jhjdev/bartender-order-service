@@ -4,8 +4,8 @@ import LanguageSwitcher from '../common/LanguageSwitcher';
 
 const AuthLayout: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
-      <header className="bg-white shadow-sm">
+    <div className="min-h-screen bg-charcoal flex flex-col">
+      <header className="bg-oxford-blue shadow-lg">
         <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-end">
           <LanguageSwitcher />
         </div>

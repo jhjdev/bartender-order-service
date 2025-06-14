@@ -5,6 +5,8 @@ import { logout } from '../../redux/slices/authSlice';
 import type { RootState } from '../../redux/store';
 import type { AppDispatch } from '../../redux/store';
 import type { User } from '../../types/user';
+import ReactDOM from 'react-dom';
+import LanguageSwitcher from '../common/LanguageSwitcher';
 
 /**
  * UserMenu component displays the authenticated user's information
@@ -48,17 +50,54 @@ const UserMenu: React.FC = () => {
     }
   };
 
+  const renderDropdown = () => {
+    if (!isOpen) return null;
+
+    const buttonRect = buttonRef.current?.getBoundingClientRect();
+    if (!buttonRect) return null;
+
+    return ReactDOM.createPortal(
+      <div
+        className="fixed z-[9999]"
+        style={{
+          top: buttonRect.bottom + window.scrollY + 8,
+          right: window.innerWidth - buttonRect.right,
+        }}
+      >
+        <div className="w-48 rounded-md shadow-lg bg-charcoal ring-1 ring-peach/20 text-papaya-whip border border-peach/20">
+          <div
+            className="py-1"
+            role="menu"
+            aria-orientation="vertical"
+            aria-labelledby="user-menu"
+          >
+            <button
+              onClick={handleLogout}
+              className="block w-full text-left px-4 py-2 text-sm text-papaya-whip hover:text-peach hover:bg-charcoal/80 transition-colors duration-200"
+              role="menuitem"
+            >
+              {t('auth.logout')}
+            </button>
+          </div>
+        </div>
+      </div>,
+      document.body
+    );
+  };
+
   return (
-    <div className="relative" ref={menuRef}>
+    <div className="relative flex items-center space-x-4" ref={menuRef}>
       <button
         ref={buttonRef}
         type="button"
         onClick={handleToggle}
-        className="flex items-center space-x-2 text-white hover:text-gray-200 focus:outline-none"
+        className="flex items-center space-x-2 text-papaya-whip hover:text-peach focus:outline-none"
         aria-expanded="false"
         aria-haspopup="true"
       >
-        <span className="text-sm font-medium">{user?.name || user?.email}</span>
+        <span className="text-sm font-mono bg-charcoal px-4 py-1.5 rounded-full border border-peach/30 text-papaya-whip">
+          {user?.firstName}
+        </span>
         <svg
           className={`h-5 w-5 transform transition-transform ${
             isOpen ? 'rotate-180' : ''
@@ -75,25 +114,8 @@ const UserMenu: React.FC = () => {
           />
         </svg>
       </button>
-
-      {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 text-gray-900 border border-gray-200 z-50">
-          <div
-            className="py-1"
-            role="menu"
-            aria-orientation="vertical"
-            aria-labelledby="user-menu"
-          >
-            <button
-              onClick={handleLogout}
-              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              role="menuitem"
-            >
-              {t('auth.logout')}
-            </button>
-          </div>
-        </div>
-      )}
+      <LanguageSwitcher />
+      {renderDropdown()}
     </div>
   );
 };

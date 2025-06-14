@@ -289,7 +289,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
     >
       <div className="flex items-center justify-between p-4 border-b border-gray-700">
         {!isCollapsed && (
-          <h1 className="text-xl font-bold">{t('navigation.menu')}</h1>
+          <h1 className="text-xl font-bold">{t('navigation.dashboard')}</h1>
         )}
         <button
           onClick={toggleCollapse}
@@ -310,7 +310,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
             </h2>
           )}
           <NavItem
-            to={`/${lang}/menu/drinks`}
+            to={`/${lang}/drinks`}
             icon={DrinksIcon}
             onClick={onClose}
             isCollapsed={isCollapsed}
@@ -318,7 +318,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
             {t('navigation.drinks')}
           </NavItem>
           <NavItem
-            to={`/${lang}/menu/cocktails`}
+            to={`/${lang}/cocktails`}
             icon={CocktailsIcon}
             onClick={onClose}
             isCollapsed={isCollapsed}
@@ -339,10 +339,10 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
             onClick={onClose}
             isCollapsed={isCollapsed}
           >
-            {t('navigation.ordersOverview')}
+            {t('navigation.ordersList')}
           </NavItem>
           <NavItem
-            to={`/${lang}/add-order`}
+            to={`/${lang}/orders/new`}
             icon={AddIcon}
             onClick={onClose}
             isCollapsed={isCollapsed}
@@ -362,7 +362,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
         <div className="space-y-1">
           {!isCollapsed && (
             <h2 className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 transition-opacity duration-300">
-              {t('navigation.management')}
+              {t('navigation.staff')}
             </h2>
           )}
           <NavItem
@@ -394,7 +394,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
         <div className="space-y-1">
           {!isCollapsed && (
             <h2 className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 transition-opacity duration-300">
-              {t('navigation.other')}
+              {t('navigation.reports')}
             </h2>
           )}
           <NavItem

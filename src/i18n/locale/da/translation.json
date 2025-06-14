@@ -1,0 +1,129 @@
+{
+  "common": {
+    "loading": "Indlæser...",
+    "error": "Fejl",
+    "noResults": "Ingen resultater fundet",
+    "cancel": "Annuller",
+    "save": "Gem",
+    "add": "Tilføj",
+    "edit": "Rediger",
+    "delete": "Slet",
+    "confirmDelete": "Er du sikker på, at du vil slette dette element?",
+    "pagination": {
+      "previous": "Forrige",
+      "next": "Næste",
+      "showing": "Viser",
+      "to": "til",
+      "of": "af",
+      "results": "resultater"
+    }
+  },
+  "staff": {
+    "title": "Personale Administration",
+    "search": "Søg i personale...",
+    "addStaff": "Tilføj Personale",
+    "rowsPerPage": "Rækker per side",
+    "table": {
+      "name": "Navn",
+      "email": "E-mail",
+      "position": "Stilling",
+      "status": "Status",
+      "actions": "Handlinger",
+      "edit": "Rediger medarbejder",
+      "delete": "Slet medarbejder"
+    },
+    "status": {
+      "active": "Aktiv",
+      "inactive": "Inaktiv"
+    },
+    "roles": {
+      "STAFF": "Medarbejder",
+      "MANAGER": "Manager",
+      "ADMIN": "Administrator"
+    },
+    "employmentTypes": {
+      "FULL_TIME": "Fuld tid",
+      "PART_TIME": "Deltid",
+      "CONTRACT": "Kontrakt",
+      "INTERN": "Praktikant"
+    },
+    "form": {
+      "title": {
+        "add": "Tilføj Ny Medarbejder",
+        "edit": "Rediger Medarbejder"
+      },
+      "firstName": "Fornavn",
+      "lastName": "Efternavn",
+      "email": "E-mail",
+      "phone": "Telefon",
+      "position": "Stilling",
+      "employmentType": "Ansættelsestype",
+      "startDate": "Startdato",
+      "role": "Rolle",
+      "status": "Status",
+      "password": "Adgangskode",
+      "confirmPassword": "Bekræft adgangskode",
+      "submit": {
+        "add": "Tilføj Medarbejder",
+        "edit": "Gem Ændringer"
+      }
+    }
+  },
+  "cocktails": {
+    "title": "Cocktails",
+    "search": "Søg i cocktails...",
+    "addCocktail": "Tilføj Cocktail",
+    "status": {
+      "available": "Tilgængelig",
+      "unavailable": "Ikke tilgængelig"
+    },
+    "form": {
+      "title": {
+        "add": "Tilføj Ny Cocktail",
+        "edit": "Rediger Cocktail"
+      },
+      "name": "Navn",
+      "namePlaceholder": "Indtast cocktail navn",
+      "price": "Pris",
+      "pricePlaceholder": "Indtast pris",
+      "description": "Beskrivelse",
+      "descriptionPlaceholder": "Indtast cocktail beskrivelse",
+      "availability": "Tilgængelighed",
+      "available": "Tilgængelig",
+      "unavailable": "Ikke tilgængelig",
+      "setAvailable": "Sæt som tilgængelig",
+      "setUnavailable": "Sæt som ikke tilgængelig",
+      "ingredients": "Ingredienser",
+      "ingredientName": "Ingrediens Navn",
+      "ingredientNamePlaceholder": "Indtast ingrediens navn",
+      "amount": "Mængde",
+      "amountPlaceholder": "Mængde",
+      "unit": "Enhed",
+      "unitPlaceholder": "Enhed",
+      "addIngredient": "Tilføj Ingrediens",
+      "removeIngredient": "Fjern Ingrediens",
+      "instructions": "Instruktioner",
+      "instruction": "Trin {{number}}",
+      "instructionPlaceholder": "Indtast trin {{number}}",
+      "addInstruction": "Tilføj Trin",
+      "removeInstruction": "Fjern Trin",
+      "details": "Yderligere Detaljer",
+      "glassType": "Glas Type",
+      "glassTypePlaceholder": "Indtast glas type",
+      "garnish": "Pynt",
+      "garnishPlaceholder": "Indtast pynt",
+      "preparationTime": "Tilberedningstid (minutter)",
+      "preparationTimePlaceholder": "Indtast tilberedningstid",
+      "image": "Cocktail Billede",
+      "uploadImage": "Upload Billede",
+      "errors": {
+        "availabilityRequired": "Vælg venligst tilgængelighedsstatus"
+      }
+    },
+    "messages": {
+      "created": "Cocktail oprettet succesfuldt",
+      "updated": "Cocktail opdateret succesfuldt",
+      "error": "Der opstod en fejl under gem af cocktail"
+    }
+  }
+}

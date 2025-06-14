@@ -166,13 +166,15 @@ bar-manager-dashboard/
 
 ### High Priority
 
-- [ ] Improve theming and start to use it consistently throughout the app
+- [x] ~~Improve theming and start to use it consistently throughout the app~~
 - [ ] Finish Add New Order and the Order Overview, and overhaul Orders endpoint
 - [ ] Seed the Orders in our hosted MongoDB to give us data for the Reporting tool
-- [ ] Update admin profile and seed more staff members
+- [x] ~~Update admin profile~~
+- [ ] Seed more staff members
 - [ ] Finish the file management interface
 - [x] ~~Implement i18next for text and language management~~
-- [ ] Add more text throughout the app and fix translation keys
+- [ ] Add more text throughout the app
+- [x] ~~Fix translation keys~~
 - [ ] Add tooltips throughout the app
 
 ### Medium Priority
@@ -185,7 +187,7 @@ bar-manager-dashboard/
 - [x] ~~Use HTTP status codes like 429 where it gives meaning~~
 - [ ] Implement Vitest and Cypress for testing on web
 - [ ] Implement ErrorBoundry for web
-- [ ] Add features like current day, weather, some other nice to have information in header or below header.
+- [ ] Add features like current day, weather, stats & some other nice to have information in Home Component.
 
 ### Low Priority
 
@@ -203,7 +205,7 @@ bar-manager-dashboard/
 
 ### Next Steps
 
-1. Test existing functionality in the web app and clean up MongoDB
+1. ~~Test existing functionality in the web app and clean up MongoDB~~
 2. Start working on the Orders overview and order management
 
 ## Contributing

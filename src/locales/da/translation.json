@@ -1,0 +1,152 @@
+{
+  "navigation": {
+    "dashboard": "Dashboard",
+    "orders": "Ordrer",
+    "ordersList": "Ordrehistorik",
+    "addOrder": "Ny ordre",
+    "drinks": "Drikkevarer",
+    "cocktails": "Cocktails",
+    "staff": "Personale",
+    "tables": "Borde",
+    "profile": "Profil",
+    "settings": "Indstillinger",
+    "menu": "Menu",
+    "schedule": "Vagtplan",
+    "inventory": "Lager",
+    "reports": "Rapporter",
+    "files": "Filer",
+    "logout": "Log ud"
+  },
+  "common": {
+    "loading": "Indlæser...",
+    "error": "Fejl",
+    "success": "Succes",
+    "save": "Gem",
+    "cancel": "Annuller",
+    "delete": "Slet",
+    "edit": "Rediger",
+    "add": "Tilføj",
+    "search": "Søg...",
+    "noResults": "Ingen resultater fundet",
+    "confirmDelete": "Er du sikker på, at du vil slette dette element?",
+    "pagination": {
+      "previous": "Forrige",
+      "next": "Næste",
+      "showing": "Viser",
+      "to": "til",
+      "of": "af",
+      "results": "resultater"
+    }
+  },
+  "orders": {
+    "new": {
+      "title": "Ny ordre",
+      "subtitle": "Opret en ny ordre",
+      "description": "Tilføj varer for at oprette en ny ordre"
+    },
+    "history": {
+      "title": "Ordrehistorik",
+      "subtitle": "Se alle ordrer",
+      "description": "Gennemse din ordrehistorik"
+    },
+    "stats": {
+      "totalOrders": "Totale ordrer",
+      "totalDrinks": "Totale drikkevarer",
+      "totalProfit": "Total profit"
+    }
+  },
+  "profile": {
+    "title": "Profil",
+    "edit": "Rediger",
+    "cancel": "Annuller",
+    "save": "Gem ændringer",
+    "logout": "Log ud",
+    "logoutError": "Kunne ikke logge ud",
+    "personalInfo": "Personlige oplysninger",
+    "contactInfo": "Kontaktoplysninger",
+    "security": "Sikkerhed",
+    "firstName": "Fornavn",
+    "lastName": "Efternavn",
+    "email": "E-mail",
+    "phone": "Telefon",
+    "address": "Adresse",
+    "city": "By",
+    "state": "Stat",
+    "postalCode": "Postnummer",
+    "country": "Land",
+    "changePassword": "Skift adgangskode",
+    "currentPassword": "Nuværende adgangskode",
+    "newPassword": "Ny adgangskode",
+    "confirmPassword": "Bekræft adgangskode",
+    "updateSuccess": "Profil opdateret med succes",
+    "updateError": "Kunne ikke opdatere profil"
+  },
+  "drinks": {
+    "title": "Drikkevarer",
+    "search": "Søg drikkevarer...",
+    "addDrink": "Tilføj drikkevare",
+    "status": {
+      "available": "Tilgængelig",
+      "unavailable": "Ikke tilgængelig"
+    },
+    "form": {
+      "name": "Navn",
+      "category": "Kategori",
+      "price": "Pris",
+      "description": "Beskrivelse",
+      "availability": "Tilgængelighed",
+      "available": "Tilgængelig",
+      "unavailable": "Ikke tilgængelig",
+      "alcoholPercentage": "Alkoholprocent",
+      "brewery": "Bryggeri",
+      "wineType": "Vintype",
+      "region": "Region",
+      "year": "År",
+      "distillery": "Destilleri",
+      "ageStatement": "Alder"
+    },
+    "messages": {
+      "created": "Drikkevare oprettet med succes",
+      "updated": "Drikkevare opdateret med succes",
+      "error": "Der opstod en fejl under gem af drikkevare"
+    }
+  },
+  "cocktails": {
+    "title": "Cocktails",
+    "search": "Søg cocktails...",
+    "addCocktail": "Tilføj Cocktail",
+    "status": {
+      "available": "Tilgængelig",
+      "unavailable": "Ikke tilgængelig"
+    },
+    "form": {
+      "name": "Navn",
+      "price": "Pris",
+      "description": "Beskrivelse",
+      "ingredients": "Ingredienser",
+      "instructions": "Instruktioner",
+      "glassType": "Glas type",
+      "garnish": "Pynt",
+      "preparationTime": "Tilberedningstid",
+      "availability": "Tilgængelighed",
+      "available": "Tilgængelig",
+      "unavailable": "Ikke tilgængelig",
+      "addIngredient": "Tilføj ingrediens",
+      "removeIngredient": "Fjern ingrediens",
+      "addInstruction": "Tilføj trin",
+      "removeInstruction": "Fjern trin",
+      "ingredientName": "Ingrediens navn",
+      "amount": "Mængde",
+      "unit": "Enhed",
+      "instruction": "Trin",
+      "errors": {
+        "availabilityRequired": "Vælg venligst tilgængelighedsstatus"
+      }
+    },
+    "messages": {
+      "created": "Cocktail oprettet med succes",
+      "updated": "Cocktail opdateret med succes",
+      "error": "Der opstod en fejl under gem af cocktail"
+    }
+  }
+}

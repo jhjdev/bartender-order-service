@@ -1,10 +1,18 @@
-const ReportsPage = () => {
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+
+const ReportsPage: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">
-        src/pages/reports/ReportsPage Coming Soon
-      </h1>
-      <p>This feature is under development.</p>
+    <div className="container mx-auto px-4 py-8">
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h1 className="h1 mb-2">{t('reports.title')}</h1>
+        <p className="body mb-6">{t('reports.description')}</p>
+        <div className="text-center py-8">
+          <p className="body">{t('reports.comingSoon')}</p>
+        </div>
+      </div>
     </div>
   );
 };

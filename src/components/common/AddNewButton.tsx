@@ -15,7 +15,7 @@ const AddNewButton: React.FC<AddNewButtonProps> = ({
     <button
       type="button"
       onClick={onClick}
-      className="btn-primary flex items-center space-x-2"
+      className="form-button form-button-primary flex items-center space-x-2"
       title={title}
       aria-label={title}
     >

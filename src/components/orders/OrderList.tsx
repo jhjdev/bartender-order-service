@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAppSelector } from '../../redux/hooks';
-import { OrderStatus } from '../../types/order';
+import { OrderStatus, Order } from '../../types/order';
 import OrderCard from './OrderCard';
 
 const ORDER_STATUS_OPTIONS: OrderStatus[] = [
@@ -11,17 +11,23 @@ const ORDER_STATUS_OPTIONS: OrderStatus[] = [
   'cancelled',
 ];
 
-const OrderList: React.FC = () => {
+interface OrderListProps {
+  initialOrders?: Order[];
+}
+
+const OrderList: React.FC<OrderListProps> = ({ initialOrders }) => {
   const orders = useAppSelector((state) => state.orders.orders) || [];
   const loading = useAppSelector((state) => state.orders.loading);
   const error = useAppSelector((state) => state.orders.error);
   const [statusFilter, setStatusFilter] = useState<OrderStatus | 'ALL'>('ALL');
 
   // Filter orders by status
-  const filteredOrders = Array.isArray(orders)
+  const filteredOrders = Array.isArray(initialOrders || orders)
     ? statusFilter === 'ALL'
-      ? orders
-      : orders.filter((order) => order.status === statusFilter)
+      ? initialOrders || orders
+      : (initialOrders || orders).filter(
+          (order) => order.status === statusFilter
+        )
     : [];
 
   // Sort orders by date (newest first)

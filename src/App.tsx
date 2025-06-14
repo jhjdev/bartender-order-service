@@ -11,15 +11,14 @@ import {
 import { AppDispatch } from './redux/store';
 import { useTranslation } from 'react-i18next';
 import './i18n';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 
 // Import CSS directly
 import 'react-toastify/dist/ReactToastify.css';
 
 // Import components
-import Sidebar from './components/Sidebar';
-import UserMenu from './components/auth/UserMenu';
-import LanguageSwitcher from './components/common/LanguageSwitcher';
+import Sidebar from './components/layout/Sidebar';
+import Header from './components/layout/Header';
 // Import AppRoutes for language-prefixed routing
 import AppRoutes from './routes/Routes';
 // Import styles
@@ -30,9 +29,6 @@ const AppContent: React.FC = () => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const { i18n } = useTranslation();
   const location = useLocation();
-
-  // Debug log
-  console.log('isAuthenticated:', isAuthenticated);
 
   // Initialize auth state on app load
   useEffect(() => {
@@ -53,65 +49,36 @@ const AppContent: React.FC = () => {
   const isAuthPage = location.pathname.includes('/login');
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-charcoal text-papaya-whip">
       {isAuthenticated && !isAuthPage && <Sidebar />}
       <div className="flex-1 flex flex-col">
-        {isAuthenticated && !isAuthPage && (
-          <header className="bg-gray-800 text-white shadow-sm z-50 relative">
-            <div
-              className="flex justify-between items-center px-4"
-              style={{ minHeight: '63px' }}
-            >
-              <div className="flex items-center space-x-4">
-                <UserMenu />
-              </div>
-              <LanguageSwitcher />
-            </div>
-          </header>
-        )}
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
+        {isAuthenticated && !isAuthPage && <Header />}
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-papaya-whip text-charcoal">
           <AppRoutes />
         </main>
       </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+        style={{ zIndex: 999999 }}
+      />
     </div>
   );
 };
 
 const App: React.FC = () => {
-  // Test toast on mount
-  useEffect(() => {
-    toast('NEW: App mounted successfully!', {
-      position: 'top-right',
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: 'colored',
-      style: {
-        background: '#333',
-        color: '#fff',
-      },
-    });
-  }, []);
-
   return (
     <Provider store={store}>
       <BrowserRouter>
         <AppContent />
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-          style={{ zIndex: 999999 }}
-        />
       </BrowserRouter>
     </Provider>
   );

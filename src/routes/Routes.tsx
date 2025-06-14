@@ -1,54 +1,51 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
-import AuthLayout from '../components/layouts/AuthLayout';
-import LanguageRedirect from '../components/common/LanguageRedirect';
 import LoginPage from '../pages/auth/LoginPage';
-import DrinksPage from '../pages/menu/DrinksPage';
-import CocktailsPage from '../pages/menu/CocktailsPage';
-import OrdersPage from '../pages/orders/OrdersPage';
-import AddOrder from '../pages/orders/AddOrder';
+import OrdersHistoryPage from '../pages/orders/OrdersHistoryPage';
+import NewOrdersPage from '../pages/orders/NewOrdersPage';
+import FilesPage from '../pages/files/FilesPage';
+import ErrorPage from '../pages/ErrorPage';
+import StaffPage from '../pages/staff/StaffPage';
 import TablesPage from '../pages/tables/TablesPage';
+import CocktailsPage from '../pages/menu/CocktailsPage';
+import DrinksPage from '../pages/menu/DrinksPage';
 import InventoryPage from '../pages/inventory/InventoryPage';
 import ReportsPage from '../pages/reports/ReportsPage';
 import SchedulePage from '../pages/schedule/SchedulePage';
+import HomePage from '../pages/home/HomePage';
+import SettingsPage from '../pages/settings/SettingsPage';
 import ProfilePage from '../pages/profile/ProfilePage';
-import StaffPage from '../pages/staff/StaffPage';
-import FilesPage from '../pages/files/FilesPage';
-import ErrorPage from '../pages/ErrorPage';
+import { useTranslation } from 'react-i18next';
 
 const AppRoutes: React.FC = () => {
+  const { i18n } = useTranslation();
+
   return (
     <Routes>
       <Route
         path="/"
-        element={
-          <ProtectedRoute>
-            <LanguageRedirect />
-          </ProtectedRoute>
-        }
+        element={<Navigate to={`/${i18n.language}/home`} replace />}
       />
+      <Route path="/:lang" element={<Navigate to="home" replace />} />
 
-      {/* Auth routes */}
-      <Route element={<AuthLayout />}>
-        <Route path="/:lang/login" element={<LoginPage />} />
-        {/* Add more auth routes here later (register, password reset, etc.) */}
-      </Route>
+      {/* Auth Routes */}
+      <Route path=":lang/login" element={<LoginPage />} />
 
-      {/* Protected routes */}
+      {/* Protected Routes */}
       <Route
-        path=":lang/menu/drinks"
+        path=":lang/home"
         element={
           <ProtectedRoute>
-            <DrinksPage />
+            <HomePage />
           </ProtectedRoute>
         }
       />
       <Route
-        path=":lang/menu/cocktails"
+        path=":lang/settings"
         element={
           <ProtectedRoute>
-            <CocktailsPage />
+            <SettingsPage />
           </ProtectedRoute>
         }
       />
@@ -56,15 +53,31 @@ const AppRoutes: React.FC = () => {
         path=":lang/orders"
         element={
           <ProtectedRoute>
-            <OrdersPage />
+            <OrdersHistoryPage />
           </ProtectedRoute>
         }
       />
       <Route
-        path=":lang/add-order"
+        path=":lang/orders/new"
         element={
           <ProtectedRoute>
-            <AddOrder />
+            <NewOrdersPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path=":lang/files"
+        element={
+          <ProtectedRoute>
+            <FilesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path=":lang/staff"
+        element={
+          <ProtectedRoute>
+            <StaffPage />
           </ProtectedRoute>
         }
       />
@@ -73,6 +86,30 @@ const AppRoutes: React.FC = () => {
         element={
           <ProtectedRoute>
             <TablesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path=":lang/cocktails"
+        element={
+          <ProtectedRoute>
+            <CocktailsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path=":lang/drinks"
+        element={
+          <ProtectedRoute>
+            <DrinksPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path=":lang/profile"
+        element={
+          <ProtectedRoute>
+            <ProfilePage />
           </ProtectedRoute>
         }
       />
@@ -100,39 +137,9 @@ const AppRoutes: React.FC = () => {
           </ProtectedRoute>
         }
       />
-      <Route
-        path=":lang/profile"
-        element={
-          <ProtectedRoute>
-            <ProfilePage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path=":lang/staff"
-        element={
-          <ProtectedRoute>
-            <StaffPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path=":lang/files"
-        element={
-          <ProtectedRoute>
-            <FilesPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="*"
-        element={
-          <ErrorPage
-            title="Page not found"
-            message="Sorry, we couldn't find the page you're looking for."
-          />
-        }
-      />
+
+      {/* Catch all route */}
+      <Route path="*" element={<ErrorPage />} />
     </Routes>
   );
 };

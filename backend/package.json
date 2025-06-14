@@ -7,7 +7,10 @@
     "dev": "tsx watch index.ts"
   },
   "dependencies": {
+    "@tailwindcss/forms": "^0.5.10",
+    "@tailwindcss/typography": "^0.5.16",
     "@types/express-rate-limit": "^6.0.2",
+    "animate.css": "^4.1.1",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",

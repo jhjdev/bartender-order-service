@@ -645,7 +645,7 @@ const DrinksPage: React.FC = () => {
 
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-white">{t('drinks.title')}</h1>
+        <h1 className="h1">{t('drinks.title')}</h1>
       </div>
 
       {loading ? (

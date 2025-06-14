@@ -1,7 +1,18 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+@import './styles/base.css';
+
+@layer base {
+  :root {
+    --animate-duration: 0.3s;
+  }
+}
+
 /* Reset all font sizes and prevent changes */
-*,
-*::before,
-*::after {
+*:not(.h1),
+*::before:not(.h1),
+*::after:not(.h1) {
   font-size: 16px !important;
   -webkit-text-size-adjust: none !important;
   text-size-adjust: none !important;
@@ -16,7 +27,7 @@
 
 /* Lock font sizes throughout the application */
 #root,
-#root * {
+#root *:not(.h1) {
   font-size: 16px !important;
   -webkit-text-size-adjust: none !important;
   text-size-adjust: none !important;

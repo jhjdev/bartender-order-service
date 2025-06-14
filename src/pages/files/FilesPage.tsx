@@ -1,10 +1,18 @@
-const FilesPage = () => {
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+
+const FilesPage: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">
-        src/pages/files/FilesPage Coming Soon
-      </h1>
-      <p>This feature is under development.</p>
+    <div className="container mx-auto px-4 py-8">
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h1 className="h1 mb-2">{t('files.title')}</h1>
+        <p className="body mb-6">{t('files.description')}</p>
+        <div className="text-center py-8">
+          <p className="body">{t('files.comingSoon')}</p>
+        </div>
+      </div>
     </div>
   );
 };

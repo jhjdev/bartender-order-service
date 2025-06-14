@@ -1,27 +1,11 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import Backend from 'i18next-http-backend';
+import enTranslations from './locale/en/translation.json';
+import daTranslations from './locale/da/translation.json';
 
-import enTranslations from './locales/en.json';
-import daTranslations from './locales/da.json';
-
-// Get language from URL or default to 'en'
-const getLanguageFromUrl = () => {
-  const path = window.location.pathname;
-  const langMatch = path.match(/^\/(en|da)/);
-  return langMatch ? langMatch[1] : 'en';
-};
-
-// Update URL when language changes
-const updateUrl = (lng: string) => {
-  const currentPath = window.location.pathname;
-  const newPath = currentPath.replace(/^\/(en|da)/, '') || '/';
-  window.history.replaceState({}, '', `/${lng}${newPath}`);
-};
-
+// Initialize i18next
 i18n
-  .use(Backend)
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
@@ -33,21 +17,29 @@ i18n
         translation: daTranslations,
       },
     },
-    lng: getLanguageFromUrl(),
+    lng: 'en', // default language
     fallbackLng: 'en',
-    interpolation: {
-      escapeValue: false,
-    },
     detection: {
-      order: ['path', 'localStorage', 'navigator'],
+      order: ['path', 'navigator', 'localStorage'],
       lookupFromPathIndex: 0,
       caches: ['localStorage'],
     },
+    interpolation: {
+      escapeValue: false,
+    },
+    react: {
+      useSuspense: false,
+    },
   });
 
-// Update URL when language changes
+// Add event listener for language changes
 i18n.on('languageChanged', (lng) => {
-  updateUrl(lng);
+  document.documentElement.lang = lng;
+  localStorage.setItem('i18nextLng', lng);
 });
+
+// Log the current language and available resources for debugging
+console.log('Current language:', i18n.language);
+console.log('Available languages:', Object.keys(i18n.options.resources || {}));
 
 export default i18n;

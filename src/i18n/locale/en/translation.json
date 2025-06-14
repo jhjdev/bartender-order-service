@@ -1,0 +1,129 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "noResults": "No results found",
+    "cancel": "Cancel",
+    "save": "Save",
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirmDelete": "Are you sure you want to delete this item?",
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "showing": "Showing",
+      "to": "to",
+      "of": "of",
+      "results": "results"
+    }
+  },
+  "staff": {
+    "title": "Staff Management",
+    "search": "Search staff...",
+    "addStaff": "Add Staff",
+    "rowsPerPage": "Rows per page",
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "position": "Position",
+      "status": "Status",
+      "actions": "Actions",
+      "edit": "Edit staff member",
+      "delete": "Delete staff member"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "roles": {
+      "STAFF": "Staff",
+      "MANAGER": "Manager",
+      "ADMIN": "Admin"
+    },
+    "employmentTypes": {
+      "FULL_TIME": "Full Time",
+      "PART_TIME": "Part Time",
+      "CONTRACT": "Contract",
+      "INTERN": "Intern"
+    },
+    "form": {
+      "title": {
+        "add": "Add New Staff Member",
+        "edit": "Edit Staff Member"
+      },
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone",
+      "position": "Position",
+      "employmentType": "Employment Type",
+      "startDate": "Start Date",
+      "role": "Role",
+      "status": "Status",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "submit": {
+        "add": "Add Staff Member",
+        "edit": "Save Changes"
+      }
+    }
+  },
+  "cocktails": {
+    "title": "Cocktails",
+    "search": "Search cocktails...",
+    "addCocktail": "Add Cocktail",
+    "status": {
+      "available": "Available",
+      "unavailable": "Unavailable"
+    },
+    "form": {
+      "title": {
+        "add": "Add New Cocktail",
+        "edit": "Edit Cocktail"
+      },
+      "name": "Name",
+      "namePlaceholder": "Enter cocktail name",
+      "price": "Price",
+      "pricePlaceholder": "Enter price",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter cocktail description",
+      "availability": "Availability",
+      "available": "Available",
+      "unavailable": "Unavailable",
+      "setAvailable": "Set as available",
+      "setUnavailable": "Set as unavailable",
+      "ingredients": "Ingredients",
+      "ingredientName": "Ingredient Name",
+      "ingredientNamePlaceholder": "Enter ingredient name",
+      "amount": "Amount",
+      "amountPlaceholder": "Amount",
+      "unit": "Unit",
+      "unitPlaceholder": "Unit",
+      "addIngredient": "Add Ingredient",
+      "removeIngredient": "Remove Ingredient",
+      "instructions": "Instructions",
+      "instruction": "Step {{number}}",
+      "instructionPlaceholder": "Enter step {{number}}",
+      "addInstruction": "Add Step",
+      "removeInstruction": "Remove Step",
+      "details": "Additional Details",
+      "glassType": "Glass Type",
+      "glassTypePlaceholder": "Enter glass type",
+      "garnish": "Garnish",
+      "garnishPlaceholder": "Enter garnish",
+      "preparationTime": "Preparation Time (minutes)",
+      "preparationTimePlaceholder": "Enter preparation time",
+      "image": "Cocktail Image",
+      "uploadImage": "Upload Image",
+      "errors": {
+        "availabilityRequired": "Please select availability status"
+      }
+    },
+    "messages": {
+      "created": "Cocktail created successfully",
+      "updated": "Cocktail updated successfully",
+      "error": "An error occurred while saving the cocktail"
+    }
+  }
+}

@@ -54,15 +54,19 @@
 }
 
 .form-button-primary {
-  @apply bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500;
+  @apply bg-[#4B6B8B] text-papaya-whip hover:bg-[#3B5B7B] focus:ring-[#4B6B8B]/50;
 }
 
 .form-button-secondary {
-  @apply border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-500;
+  @apply bg-[#4A7B6F] text-papaya-whip hover:bg-[#3D665C] focus:ring-[#4A7B6F]/50;
 }
 
 .form-button-danger {
-  @apply bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
+  @apply bg-[#B85C6A] text-papaya-whip hover:bg-[#9B4B57] focus:ring-[#B85C6A]/50;
+}
+
+.form-button-cancel {
+  @apply bg-papaya-whip text-charcoal border border-charcoal hover:bg-papaya-whip/90 focus:ring-charcoal/50;
 }
 
 .form-button:disabled {

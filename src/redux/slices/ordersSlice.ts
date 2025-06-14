@@ -20,7 +20,7 @@ export const fetchOrders = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await orderService.getAllOrders();
-      return response;
+      return Array.isArray(response) ? response : [];
     } catch (error) {
       toast.error('Failed to fetch orders', {
         position: 'top-right',
@@ -141,7 +141,7 @@ const ordersSlice = createSlice({
       })
       .addCase(fetchOrders.fulfilled, (state, action) => {
         state.loading = false;
-        state.orders = action.payload;
+        state.orders = Array.isArray(action.payload) ? action.payload : [];
         state.error = null;
       })
       .addCase(fetchOrders.rejected, (state, action) => {
