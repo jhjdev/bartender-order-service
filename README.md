@@ -207,6 +207,7 @@ bar-manager-dashboard/
 
 1. ~~Test existing functionality in the web app and clean up MongoDB~~
 2. Start working on the Orders overview and order management
+3. Investigate usage of memo and context where it might make sense.
 
 ## Contributing
 
