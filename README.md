@@ -187,6 +187,7 @@ bar-manager-dashboard/
 - [x] ~~Fix translation keys~~
 - [ ] Add more text throughout the app
 - [ ] Add tooltips throughout the app
+- [ ] Add mnore animate.css features throughout the app
 - [x] ~~Use Toastify for all success messages~~
 - [x] ~~Use HTTP status codes like 429 where it gives meaning~~
 - [ ] Implement Vitest and Cypress for testing on web
