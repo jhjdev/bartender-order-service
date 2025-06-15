@@ -195,11 +195,14 @@ bar-manager-dashboard/
 - [ ] Fix the form for Add New Order.
 - [ ] Fix the form for Add New Drink.
 - [ ] Fix the form for Add New Cocktail.
+- [ ] Fix active color on the drinks categories.
 
 ### Low Priority
 
 - [ ] Add Github actions for the project
 - [ ] Add Swagger to the web app project
+- [ ] Make sure everything is translated to Danish and Swedish
+- [ ] Implement forgot password and more auth stuff
 - [x] ~~Clean up unused clusters in our hosted MongoDB~~
 - [x] ~~Update the PageNotFound component with a way to go to the home page or go back~~
 - [x] ~~Implement the PageNotFound component when we have a 404~~
