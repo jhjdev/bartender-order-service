@@ -78,7 +78,7 @@ html {
 /* Toast Container */
 .Toastify__toast-container {
   position: fixed !important;
-  top: 1rem !important;
+  top: 7rem !important;
   right: 1rem !important;
   z-index: 999999 !important;
   width: auto !important;

@@ -12,6 +12,7 @@
     "settings": "Settings",
     "menu": "Menu",
     "schedule": "Schedule",
+    "messages": "Messages",
     "inventory": "Inventory",
     "reports": "Reports",
     "files": "Files",
@@ -129,7 +130,8 @@
       "submit": {
         "add": "Add Staff Member",
         "edit": "Save Changes"
-      }
+      },
+      "cancel": "Cancel"
     }
   },
   "drinks": {
@@ -238,5 +240,10 @@
     "title": "Reports",
     "description": "View and analyze your business data.",
     "comingSoon": "Reporting features coming soon."
+  },
+  "messages": {
+    "title": "Messages",
+    "description": "View and manage messages between the web app and mobile app",
+    "comingSoon": "The messaging system is coming soon. This will allow seamless communication between the web app and mobile app."
   }
 }

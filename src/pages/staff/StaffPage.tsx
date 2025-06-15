@@ -11,6 +11,7 @@ import {
 } from '../../redux/slices/staffSlice';
 import { Staff } from '../../types/staff';
 import { toast } from 'react-toastify';
+import { countries } from '../../utils/countries';
 
 type FormData = Omit<Staff, 'id' | 'createdAt' | 'updatedAt'> & {
   confirmPassword?: string;
@@ -413,9 +414,14 @@ const StaffPage: React.FC = () => {
                                 aria-label={t('staff.form.phone')}
                                 title={t('staff.form.phone')}
                               >
-                                <option value="+1">+1</option>
-                                <option value="+44">+44</option>
-                                <option value="+46">+46</option>
+                                {countries.map((country) => (
+                                  <option
+                                    key={country.code}
+                                    value={country.code}
+                                  >
+                                    {country.code}
+                                  </option>
+                                ))}
                               </select>
                               <input
                                 type="tel"

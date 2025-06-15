@@ -13,6 +13,7 @@ import DrinksPage from '../pages/menu/DrinksPage';
 import InventoryPage from '../pages/inventory/InventoryPage';
 import ReportsPage from '../pages/reports/ReportsPage';
 import SchedulePage from '../pages/schedule/SchedulePage';
+import MessagePage from '../pages/messages/MessagePage';
 import HomePage from '../pages/home/HomePage';
 import SettingsPage from '../pages/settings/SettingsPage';
 import ProfilePage from '../pages/profile/ProfilePage';
@@ -114,6 +115,22 @@ const AppRoutes: React.FC = () => {
         }
       />
       <Route
+        path=":lang/schedule"
+        element={
+          <ProtectedRoute>
+            <SchedulePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path=":lang/messages"
+        element={
+          <ProtectedRoute>
+            <MessagePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path=":lang/inventory"
         element={
           <ProtectedRoute>
@@ -126,14 +143,6 @@ const AppRoutes: React.FC = () => {
         element={
           <ProtectedRoute>
             <ReportsPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path=":lang/schedule"
-        element={
-          <ProtectedRoute>
-            <SchedulePage />
           </ProtectedRoute>
         }
       />

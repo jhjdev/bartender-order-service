@@ -12,6 +12,7 @@
     "settings": "Indstillinger",
     "menu": "Menu",
     "schedule": "Vagtplan",
+    "messages": "Beskeder",
     "inventory": "Lager",
     "reports": "Rapporter",
     "files": "Filer",
@@ -129,7 +130,8 @@
       "submit": {
         "add": "Tilføj Medarbejder",
         "edit": "Gem Ændringer"
-      }
+      },
+      "cancel": "Annuller"
     }
   },
   "drinks": {
@@ -238,5 +240,10 @@
     "title": "Rapporter",
     "description": "Se og analyser dine forretningsdata.",
     "comingSoon": "Rapporteringsfunktioner kommer snart."
+  },
+  "messages": {
+    "title": "Beskeder",
+    "description": "Se og administrer beskeder mellem web-appen og mobil-appen",
+    "comingSoon": "Besked-systemet kommer snart. Dette vil muliggøre problemfri kommunikation mellem web-appen og mobil-appen."
   }
 }

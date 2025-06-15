@@ -201,6 +201,7 @@ bar-manager-dashboard/
 - [ ] Start work on the mobile app
 - [ ] Implement Jest and Maestro for testing on mobile
 - [ ] Implement ErrorBoundry for the mobile app
+- [ ] Implement a messaging tool that will work with both the web app and the mobile app
 - [ ] Implement a notification tool that will work with both the web app and the mobile app
 
 ### Next Steps
