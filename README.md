@@ -177,14 +177,15 @@ bar-manager-dashboard/
 - [ ] Map out architecture for Inventory and finish it
 - [ ] Finish the Home Component Dashboard
 - [ ] Add features like current day, weather, stats & some other nice to have information in Home Component.
-- [x] ~~Finish the Settings page~~
-- [ ] Add more text throughout the app
+- [ ] Start work on CRM Tools
+- [ ] Finish work work on CRM Tools
 
 ### Medium Priority
 
 - [x] ~~Improve theming and start to use it consistently throughout the app~~
 - [x] ~~Implement i18next for text and language management~~
 - [x] ~~Fix translation keys~~
+- [ ] Add more text throughout the app
 - [ ] Add tooltips throughout the app
 - [x] ~~Use Toastify for all success messages~~
 - [x] ~~Use HTTP status codes like 429 where it gives meaning~~
