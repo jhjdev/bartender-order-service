@@ -28,6 +28,7 @@ export interface StaffMember {
   lastName: string;
   name?: string; // Full name derived from firstName and lastName
   email: string;
+  password: string; // Hashed password
   phone: Phone;
   emergencyContact: EmergencyContact;
   employmentType: 'FULL_TIME' | 'PART_TIME';

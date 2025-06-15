@@ -166,28 +166,34 @@ bar-manager-dashboard/
 
 ### High Priority
 
-- [x] ~~Improve theming and start to use it consistently throughout the app~~
-- [ ] Finish Add New Order and the Order Overview, and overhaul Orders endpoint
+- [ ] Start work on New Order and Order History backend. Routes, models, controllers
+- [ ] Continue work on New Order and Order History, and move on to frontend.
 - [ ] Seed the Orders in our hosted MongoDB to give us data for the Reporting tool
-- [x] ~~Update admin profile~~
+- [x] ~~Update Profile Page~~
 - [ ] Seed more staff members
 - [ ] Finish the file management interface
-- [x] ~~Implement i18next for text and language management~~
+- [ ] Finish the Schedule management (using D3)
+- [ ] Finish the Reports Tool (using D3)
+- [ ] Map out architecture for Inventory and finish it
+- [ ] Finish the Home Component Dashboard
+- [ ] Add features like current day, weather, stats & some other nice to have information in Home Component.
+- [x] ~~Finish the Settings page~~
 - [ ] Add more text throughout the app
-- [x] ~~Fix translation keys~~
-- [ ] Add tooltips throughout the app
 
 ### Medium Priority
 
-- [ ] Map out and draw how I want the inventory management to look like and function
-- [ ] Finish the schedule system and seed it with data (using D3)
-- [ ] Finish the reports tool (using D3)
-- [ ] Add tests with Vitest and Playwright for the web app
+- [x] ~~Improve theming and start to use it consistently throughout the app~~
+- [x] ~~Implement i18next for text and language management~~
+- [x] ~~Fix translation keys~~
+- [ ] Add tooltips throughout the app
 - [x] ~~Use Toastify for all success messages~~
 - [x] ~~Use HTTP status codes like 429 where it gives meaning~~
 - [ ] Implement Vitest and Cypress for testing on web
+- [ ] Add tests with Vitest and Playwright for the web app
 - [ ] Implement ErrorBoundry for web
-- [ ] Add features like current day, weather, stats & some other nice to have information in Home Component.
+- [ ] Fix the form for Add New Order.
+- [ ] Fix the form for Add New Drink.
+- [ ] Fix the form for Add New Cocktail.
 
 ### Low Priority
 

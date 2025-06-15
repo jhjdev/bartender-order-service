@@ -3,6 +3,7 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import enTranslations from './locale/en/translation.json';
 import daTranslations from './locale/da/translation.json';
+import svTranslations from './locale/sv/translation.json';
 
 // Initialize i18next
 i18n
@@ -15,6 +16,9 @@ i18n
       },
       da: {
         translation: daTranslations,
+      },
+      sv: {
+        translation: svTranslations,
       },
     },
     lng: 'en', // default language

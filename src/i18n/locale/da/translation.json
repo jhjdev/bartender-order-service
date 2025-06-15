@@ -16,7 +16,11 @@
     "inventory": "Lager",
     "reports": "Rapporter",
     "files": "Filer",
-    "logout": "Log ud"
+    "logout": "Log ud",
+    "customers": "CRM Værktøjer",
+    "loyaltyProgram": "Loyalitetsprogram",
+    "customerProfiles": "Kundeprofiler",
+    "loyaltyReports": "Loyalitetsrapporter"
   },
   "common": {
     "loading": "Indlæser...",

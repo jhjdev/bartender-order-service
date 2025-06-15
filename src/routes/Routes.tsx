@@ -17,6 +17,9 @@ import MessagePage from '../pages/messages/MessagePage';
 import HomePage from '../pages/home/HomePage';
 import SettingsPage from '../pages/settings/SettingsPage';
 import ProfilePage from '../pages/profile/ProfilePage';
+import LoyaltyProgram from '../pages/customers/LoyaltyProgram';
+import CustomerProfiles from '../pages/customers/CustomerProfiles';
+import LoyaltyReports from '../pages/customers/LoyaltyReports';
 import { useTranslation } from 'react-i18next';
 
 const AppRoutes: React.FC = () => {
@@ -143,6 +146,32 @@ const AppRoutes: React.FC = () => {
         element={
           <ProtectedRoute>
             <ReportsPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* CRM Routes */}
+      <Route
+        path=":lang/loyalty"
+        element={
+          <ProtectedRoute>
+            <LoyaltyProgram />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path=":lang/customers"
+        element={
+          <ProtectedRoute>
+            <CustomerProfiles />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path=":lang/loyalty-reports"
+        element={
+          <ProtectedRoute>
+            <LoyaltyReports />
           </ProtectedRoute>
         }
       />

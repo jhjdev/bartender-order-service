@@ -77,7 +77,7 @@ const SidebarAccordion: React.FC<SidebarAccordionProps> = ({
               transition={{ duration: 0.3 }}
               className="accordion-content"
             >
-              <div className="pl-8 space-y-2 py-2">
+              <div className="pl-4 space-y-2 py-2">
                 {subLinks.map((subLink) => (
                   <NavLink
                     key={subLink.path}

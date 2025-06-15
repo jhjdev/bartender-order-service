@@ -79,6 +79,15 @@ const LanguageSwitcher: React.FC = () => {
             >
               Dansk
             </button>
+            <button
+              onClick={() => handleLanguageChange('sv')}
+              className={`block w-full text-left px-4 py-2 text-sm text-papaya-whip hover:text-peach hover:bg-charcoal/80 transition-colors duration-200 ${
+                currentLanguage === 'sv' ? 'bg-charcoal/80 text-peach' : ''
+              }`}
+              role="menuitem"
+            >
+              Svenska
+            </button>
           </div>
         </div>
       </div>,

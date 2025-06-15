@@ -1,0 +1,63 @@
+{
+  "navigation": {
+    "dashboard": "Dashboard",
+    "orders": "Beställningar",
+    "ordersList": "Beställningshistorik",
+    "addOrder": "Ny beställning",
+    "drinks": "Drycker",
+    "cocktails": "Cocktails",
+    "staff": "Personal",
+    "tables": "Bord",
+    "profile": "Profil",
+    "settings": "Inställningar",
+    "menu": "Meny",
+    "schedule": "Schema",
+    "messages": "Meddelanden",
+    "inventory": "Lager",
+    "reports": "Rapporter",
+    "files": "Filer",
+    "logout": "Logga ut",
+    "customers": "CRM-verktyg",
+    "loyaltyProgram": "Lojalitetsprogram",
+    "customerProfiles": "Kundprofiler",
+    "loyaltyReports": "Lojalitetsrapporter"
+  },
+  "common": {
+    "loading": "Laddar...",
+    "error": "Fel",
+    "success": "Framgång",
+    "noResults": "Inga resultat hittades",
+    "cancel": "Avbryt",
+    "save": "Spara",
+    "add": "Lägg till",
+    "edit": "Redigera",
+    "delete": "Radera",
+    "search": "Sök...",
+    "confirmDelete": "Är du säker på att du vill radera detta objekt?",
+    "pagination": {
+      "previous": "Föregående",
+      "next": "Nästa",
+      "showing": "Visar",
+      "to": "till",
+      "of": "av",
+      "results": "resultat"
+    }
+  },
+  "orders": {
+    "new": {
+      "title": "Ny beställning",
+      "subtitle": "Skapa en ny beställning",
+      "description": "Lägg till objekt för att skapa en ny beställning"
+    },
+    "history": {
+      "title": "Beställningshistorik",
+      "subtitle": "Visa alla beställningar",
+      "description": "Bläddra genom din beställningshistorik"
+    },
+    "stats": {
+      "totalOrders": "Totalt antal beställningar",
+      "totalDrinks": "Totalt antal drycker",
+      "totalProfit": "Total vinst"
+    }
+  }
+}

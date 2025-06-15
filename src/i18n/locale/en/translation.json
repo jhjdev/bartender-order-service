@@ -16,7 +16,11 @@
     "inventory": "Inventory",
     "reports": "Reports",
     "files": "Files",
-    "logout": "Logout"
+    "logout": "Logout",
+    "customers": "CRM Tools",
+    "loyaltyProgram": "Loyalty Program",
+    "customerProfiles": "Customer Profiles",
+    "loyaltyReports": "Loyalty Reports"
   },
   "common": {
     "loading": "Loading...",

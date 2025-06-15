@@ -5,6 +5,7 @@ import drinksReducer from './slices/drinksSlice';
 import cocktailsReducer from './slices/cocktailsSlice';
 import ordersReducer from './slices/ordersSlice';
 import uiReducer from './slices/uiSlice';
+import settingsReducer from './slices/settingsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     cocktails: cocktailsReducer,
     orders: ordersReducer,
     ui: uiReducer,
+    settings: settingsReducer,
   },
 });
 

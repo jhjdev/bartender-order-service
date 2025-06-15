@@ -12,6 +12,7 @@ import { AppDispatch } from './redux/store';
 import { useTranslation } from 'react-i18next';
 import './i18n';
 import { ToastContainer } from 'react-toastify';
+import { ToastProvider } from './contexts/ToastContext';
 
 // Import CSS directly
 import 'react-toastify/dist/ReactToastify.css';
@@ -78,7 +79,9 @@ const App: React.FC = () => {
   return (
     <Provider store={store}>
       <BrowserRouter>
-        <AppContent />
+        <ToastProvider>
+          <AppContent />
+        </ToastProvider>
       </BrowserRouter>
     </Provider>
   );

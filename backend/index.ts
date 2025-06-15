@@ -7,6 +7,7 @@ import cocktailsRoutes from './routes/cocktails';
 import imageRoutes from './routes/images';
 import staffRoutes from './routes/staff';
 import ordersRoutes from './routes/orders';
+import settingsRoutes from './routes/settings';
 import * as dotenv from 'dotenv';
 import { getEnvPath } from './utils/paths';
 
@@ -27,6 +28,7 @@ app.use('/api/cocktails', cocktailsRoutes);
 app.use('/api/staff', staffRoutes);
 app.use('/api/orders', ordersRoutes);
 app.use('/api/images', imageRoutes);
+app.use('/api/settings', settingsRoutes);
 
 // Health check endpoint
 app.get('/api/health', (_req, res) => {

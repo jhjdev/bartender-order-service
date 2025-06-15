@@ -1,0 +1,131 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["navigation", "common", "orders"],
+  "properties": {
+    "navigation": {
+      "type": "object",
+      "required": [
+        "dashboard",
+        "orders",
+        "ordersList",
+        "addOrder",
+        "drinks",
+        "cocktails",
+        "staff",
+        "tables",
+        "profile",
+        "settings",
+        "menu",
+        "schedule",
+        "messages",
+        "inventory",
+        "reports",
+        "files",
+        "logout",
+        "customers",
+        "loyaltyProgram",
+        "customerProfiles",
+        "loyaltyReports"
+      ],
+      "properties": {
+        "dashboard": { "type": "string" },
+        "orders": { "type": "string" },
+        "ordersList": { "type": "string" },
+        "addOrder": { "type": "string" },
+        "drinks": { "type": "string" },
+        "cocktails": { "type": "string" },
+        "staff": { "type": "string" },
+        "tables": { "type": "string" },
+        "profile": { "type": "string" },
+        "settings": { "type": "string" },
+        "menu": { "type": "string" },
+        "schedule": { "type": "string" },
+        "messages": { "type": "string" },
+        "inventory": { "type": "string" },
+        "reports": { "type": "string" },
+        "files": { "type": "string" },
+        "logout": { "type": "string" },
+        "customers": { "type": "string" },
+        "loyaltyProgram": { "type": "string" },
+        "customerProfiles": { "type": "string" },
+        "loyaltyReports": { "type": "string" }
+      }
+    },
+    "common": {
+      "type": "object",
+      "required": [
+        "loading",
+        "error",
+        "success",
+        "noResults",
+        "cancel",
+        "save",
+        "add",
+        "edit",
+        "delete",
+        "search",
+        "confirmDelete",
+        "pagination"
+      ],
+      "properties": {
+        "loading": { "type": "string" },
+        "error": { "type": "string" },
+        "success": { "type": "string" },
+        "noResults": { "type": "string" },
+        "cancel": { "type": "string" },
+        "save": { "type": "string" },
+        "add": { "type": "string" },
+        "edit": { "type": "string" },
+        "delete": { "type": "string" },
+        "search": { "type": "string" },
+        "confirmDelete": { "type": "string" },
+        "pagination": {
+          "type": "object",
+          "required": ["previous", "next", "showing", "to", "of", "results"],
+          "properties": {
+            "previous": { "type": "string" },
+            "next": { "type": "string" },
+            "showing": { "type": "string" },
+            "to": { "type": "string" },
+            "of": { "type": "string" },
+            "results": { "type": "string" }
+          }
+        }
+      }
+    },
+    "orders": {
+      "type": "object",
+      "required": ["new", "history", "stats"],
+      "properties": {
+        "new": {
+          "type": "object",
+          "required": ["title", "subtitle", "description"],
+          "properties": {
+            "title": { "type": "string" },
+            "subtitle": { "type": "string" },
+            "description": { "type": "string" }
+          }
+        },
+        "history": {
+          "type": "object",
+          "required": ["title", "subtitle", "description"],
+          "properties": {
+            "title": { "type": "string" },
+            "subtitle": { "type": "string" },
+            "description": { "type": "string" }
+          }
+        },
+        "stats": {
+          "type": "object",
+          "required": ["totalOrders", "totalDrinks", "totalProfit"],
+          "properties": {
+            "totalOrders": { "type": "string" },
+            "totalDrinks": { "type": "string" },
+            "totalProfit": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+} 
