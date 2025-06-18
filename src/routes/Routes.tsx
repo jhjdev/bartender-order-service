@@ -21,6 +21,7 @@ import LoyaltyProgram from '../pages/customers/LoyaltyProgram';
 import CustomerProfiles from '../pages/customers/CustomerProfiles';
 import LoyaltyReports from '../pages/customers/LoyaltyReports';
 import { useTranslation } from 'react-i18next';
+import NotificationTest from '../components/NotificationTest';
 
 const AppRoutes: React.FC = () => {
   const { i18n } = useTranslation();
@@ -172,6 +173,16 @@ const AppRoutes: React.FC = () => {
         element={
           <ProtectedRoute>
             <LoyaltyReports />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Notification Test Route */}
+      <Route
+        path=":lang/notifications-test"
+        element={
+          <ProtectedRoute>
+            <NotificationTest />
           </ProtectedRoute>
         }
       />
