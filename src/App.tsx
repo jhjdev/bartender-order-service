@@ -13,6 +13,8 @@ import { useTranslation } from 'react-i18next';
 import './i18n';
 import { ToastContainer } from 'react-toastify';
 import { ToastProvider } from './contexts/ToastContext';
+import { SocketProvider } from './contexts/SocketContext';
+import NotificationSystem from './components/NotificationSystem';
 
 // Import CSS directly
 import 'react-toastify/dist/ReactToastify.css';
@@ -71,6 +73,7 @@ const AppContent: React.FC = () => {
         theme="dark"
         style={{ zIndex: 999999 }}
       />
+      <NotificationSystem />
     </div>
   );
 };
@@ -80,7 +83,9 @@ const App: React.FC = () => {
     <Provider store={store}>
       <BrowserRouter>
         <ToastProvider>
-          <AppContent />
+          <SocketProvider>
+            <AppContent />
+          </SocketProvider>
         </ToastProvider>
       </BrowserRouter>
     </Provider>

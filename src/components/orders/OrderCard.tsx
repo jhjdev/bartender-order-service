@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppDispatch } from '../../redux/hooks';
-import {
-  deleteOrder,
-  calculateOrderTotal,
-} from '../../redux/slices/orderSlice';
-import { Order, OrderStatus } from '../../types/order';
+import { useSocket } from '../../contexts/SocketContext';
+import { deleteOrder } from '../../redux/slices/orderSlice';
+import { Order, OrderStatus, OrderNote } from '../../types/order';
 import OrderPayment from './OrderPayment';
+import OrderNotes from './OrderNotes';
 
 interface OrderCardProps {
   order: Order;
@@ -13,8 +12,25 @@ interface OrderCardProps {
 
 const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
   const dispatch = useAppDispatch();
+  const { socket } = useSocket();
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [currentOrder, setCurrentOrder] = useState<Order>(order);
+
+  // Listen for real-time updates
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on('order:updated', (updatedOrder: Order) => {
+      if (updatedOrder._id === currentOrder._id) {
+        setCurrentOrder(updatedOrder);
+      }
+    });
+
+    return () => {
+      socket.off('order:updated');
+    };
+  }, [socket, currentOrder._id]);
 
   // Format date
   const formatDate = (dateString: string) => {
@@ -33,11 +49,9 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
     switch (status) {
       case 'pending':
         return 'bg-yellow-100 text-yellow-800';
-      case 'preparing':
+      case 'in_progress':
         return 'bg-blue-100 text-blue-800';
-      case 'ready':
-        return 'bg-purple-100 text-purple-800';
-      case 'served':
+      case 'completed':
         return 'bg-green-100 text-green-800';
       case 'cancelled':
         return 'bg-red-100 text-red-800';
@@ -54,7 +68,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
 
     try {
       setDeleteError(null);
-      await dispatch(deleteOrder(order._id!)).unwrap();
+      await dispatch(deleteOrder(currentOrder._id!)).unwrap();
     } catch (err: unknown) {
       setDeleteError(
         err instanceof Error ? err.message : 'Failed to delete order'
@@ -67,6 +81,25 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
     setDeleteConfirm(false);
   };
 
+  const handleAddNote = async (note: Omit<OrderNote, 'timestamp'>) => {
+    try {
+      // This would typically call an API to add the note
+      // For now, we'll just update the local state
+      const newNote: OrderNote = {
+        ...note,
+        _id: Date.now().toString(), // Temporary ID
+        timestamp: new Date().toISOString(),
+      };
+
+      setCurrentOrder((prev) => ({
+        ...prev,
+        notes: [...prev.notes, newNote],
+      }));
+    } catch (error) {
+      console.error('Failed to add note:', error);
+    }
+  };
+
   return (
     <div className="w-full bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 mb-4">
       {/* Order Header */}
@@ -74,19 +107,19 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
         <div className="flex flex-col md:flex-row md:justify-between md:items-center">
           <div>
             <h2 className="text-lg font-semibold text-gray-800">
-              Order #{order._id?.substring(order._id.length - 6)}
+              Order #{currentOrder._id?.substring(currentOrder._id.length - 6)}
             </h2>
             <p className="text-sm text-gray-600">
-              {formatDate(order.createdAt)}
+              {formatDate(currentOrder.createdAt)}
             </p>
           </div>
           <div className="mt-2 md:mt-0">
             <span
               className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(
-                order.status
+                currentOrder.status
               )}`}
             >
-              {order.status}
+              {currentOrder.status}
             </span>
           </div>
         </div>
@@ -101,8 +134,15 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
           </h3>
           <div className="flex flex-col sm:flex-row sm:gap-4">
             <p className="text-sm text-gray-600">
-              <span className="font-medium">Table:</span> {order.tableNumber}
+              <span className="font-medium">Customer:</span>{' '}
+              {currentOrder.customerNumber}
             </p>
+            {currentOrder.tableNumber && (
+              <p className="text-sm text-gray-600">
+                <span className="font-medium">Table:</span>{' '}
+                {currentOrder.tableNumber}
+              </p>
+            )}
           </div>
         </div>
 
@@ -113,8 +153,8 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
           </h3>
           <div className="bg-gray-50 rounded-md p-2">
             <ul className="divide-y divide-gray-200">
-              {order.items.map((item, index) => (
-                <li key={index} className="py-2">
+              {currentOrder.items.map((item, index) => (
+                <li key={item._id || index} className="py-2">
                   <div className="flex justify-between">
                     <div className="flex-1">
                       <p className="text-sm font-medium text-gray-800">
@@ -140,14 +180,23 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
             </ul>
             <div className="mt-2 pt-2 border-t border-gray-200 flex justify-between font-medium">
               <span>Total</span>
-              <span>${calculateOrderTotal(order).toFixed(2)}</span>
+              <span>${currentOrder.totalAmount.toFixed(2)}</span>
             </div>
           </div>
         </div>
 
         {/* Payment Section */}
         <div className="mb-4">
-          <OrderPayment order={order} />
+          <OrderPayment order={currentOrder} />
+        </div>
+
+        {/* Order Notes */}
+        <div className="mb-4">
+          <OrderNotes
+            notes={currentOrder.notes}
+            onAddNote={handleAddNote}
+            currentUser="Current User" // This should come from auth context
+          />
         </div>
 
         {/* Delete Section */}

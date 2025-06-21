@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppSelector } from '../../redux/hooks';
+import { useSocket } from '../../contexts/SocketContext';
 import { OrderStatus, Order } from '../../types/order';
 import OrderCard from './OrderCard';
 
 const ORDER_STATUS_OPTIONS: OrderStatus[] = [
   'pending',
-  'preparing',
-  'ready',
-  'served',
+  'in_progress',
+  'completed',
   'cancelled',
 ];
 
@@ -19,16 +19,47 @@ const OrderList: React.FC<OrderListProps> = ({ initialOrders }) => {
   const orders = useAppSelector((state) => state.orders.orders) || [];
   const loading = useAppSelector((state) => state.orders.loading);
   const error = useAppSelector((state) => state.orders.error);
+  const { socket, isConnected } = useSocket();
   const [statusFilter, setStatusFilter] = useState<OrderStatus | 'ALL'>('ALL');
+  const [realTimeOrders, setRealTimeOrders] = useState<Order[]>([]);
+
+  // Initialize real-time orders
+  useEffect(() => {
+    setRealTimeOrders(initialOrders || orders);
+  }, [initialOrders, orders]);
+
+  // Listen for real-time updates
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on('order:created', (newOrder: Order) => {
+      setRealTimeOrders((prev) => [newOrder, ...prev]);
+    });
+
+    socket.on('order:updated', (updatedOrder: Order) => {
+      setRealTimeOrders((prev) =>
+        prev.map((order) =>
+          order._id === updatedOrder._id ? updatedOrder : order
+        )
+      );
+    });
+
+    socket.on('order:deleted', ({ id }: { id: string }) => {
+      setRealTimeOrders((prev) => prev.filter((order) => order._id !== id));
+    });
+
+    return () => {
+      socket.off('order:created');
+      socket.off('order:updated');
+      socket.off('order:deleted');
+    };
+  }, [socket]);
 
   // Filter orders by status
-  const filteredOrders = Array.isArray(initialOrders || orders)
-    ? statusFilter === 'ALL'
-      ? initialOrders || orders
-      : (initialOrders || orders).filter(
-          (order) => order.status === statusFilter
-        )
-    : [];
+  const filteredOrders =
+    statusFilter === 'ALL'
+      ? realTimeOrders
+      : realTimeOrders.filter((order) => order.status === statusFilter);
 
   // Sort orders by date (newest first)
   const sortedOrders = [...filteredOrders].sort(
@@ -87,9 +118,19 @@ const OrderList: React.FC<OrderListProps> = ({ initialOrders }) => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-        <h1 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">
-          Orders
-        </h1>
+        <div className="flex items-center space-x-4 mb-4 md:mb-0">
+          <h1 className="text-2xl font-bold text-gray-800">Orders</h1>
+          <div className="flex items-center space-x-2">
+            <div
+              className={`w-2 h-2 rounded-full ${
+                isConnected ? 'bg-green-500' : 'bg-red-500'
+              }`}
+            ></div>
+            <span className="text-sm text-gray-500">
+              {isConnected ? 'Live Updates' : 'Offline'}
+            </span>
+          </div>
+        </div>
 
         <div className="w-full md:w-64">
           <label
@@ -107,7 +148,7 @@ const OrderList: React.FC<OrderListProps> = ({ initialOrders }) => {
             <option value="ALL">All Orders</option>
             {ORDER_STATUS_OPTIONS.map((status) => (
               <option key={status} value={status}>
-                {status}
+                {status.replace('_', ' ')}
               </option>
             ))}
           </select>
@@ -160,7 +201,10 @@ const OrderList: React.FC<OrderListProps> = ({ initialOrders }) => {
               </h3>
               <p className="text-gray-500">
                 {statusFilter !== 'ALL'
-                  ? `No orders with status "${statusFilter}" available.`
+                  ? `No orders with status "${statusFilter.replace(
+                      '_',
+                      ' '
+                    )}" available.`
                   : 'There are currently no orders in the system.'}
               </p>
             </div>

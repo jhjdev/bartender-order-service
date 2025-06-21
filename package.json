@@ -26,8 +26,7 @@
     "list:images": "cd backend && npx tsx scripts/listImages.ts",
     "clear:images": "cd backend && npx tsx scripts/clearImages.ts",
     "download:images": "cd backend && npx tsx scripts/downloadImages.ts",
-    "upload:images": "cd backend && npx tsx scripts/uploadImages.ts",
-    "notifications:local": "firebase emulators:start --only functions"
+    "upload:images": "cd backend && npx tsx scripts/uploadImages.ts"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -39,7 +38,6 @@
     "animate.css": "^4.1.1",
     "axios": "^1.4.0",
     "countries-list": "^3.1.1",
-    "firebase": "^11.9.1",
     "framer-motion": "^12.11.4",
     "i18next": "^25.2.1",
     "i18next-browser-languagedetector": "^8.1.0",
@@ -54,6 +52,7 @@
     "react-select": "^5.10.1",
     "react-timezone-select": "^3.2.8",
     "react-toastify": "^11.0.5",
+    "socket.io-client": "^4.8.1",
     "uuid": "^11.1.0"
   },
   "devDependencies": {

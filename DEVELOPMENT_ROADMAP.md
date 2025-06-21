@@ -2,115 +2,55 @@
 
 This document outlines a comprehensive, realistic week-by-week plan for the development of the Bar Manager Dashboard. The plan assumes one developer (with AI assistance) working on the project.
 
-## Week 1: Firebase Cloud Messaging (FCM) Setup
+## Week 1: Real-time Order Updates & Notes System
 
-### Day 1-2: Firebase Project Setup
+### Day 1-2: WebSocket Setup & Order Notes
 
-- [x] Create a Firebase project in the [Firebase Console](https://console.firebase.google.com/).
-- [x] Enable Firebase Cloud Messaging (FCM).
-- [x] Set up Firebase Authentication (if not already done).
+- [x] Set up WebSocket server using Socket.IO for real-time updates
+- [x] Add `notes` field to Order model in MongoDB
+- [x] Implement order notes functionality (add, edit, delete notes)
+- [x] Create WebSocket events for order status changes and new orders
 
-### Day 3-4: FCM Integration in Web App
+### Day 3-4: Real-time Frontend Integration
 
-- [x] Install the Firebase JS SDK:
-  ```bash
-  npm install firebase
-  # or
-  yarn add firebase
-  ```
-- [x] Initialize Firebase in your app (e.g., in `src/config/firebase.ts`):
+- [x] Install Socket.IO client in frontend
+- [x] Implement real-time order updates in the web app
+- [x] Add live order status indicators
+- [x] Create notification system for new orders and status changes
 
-  ```typescript
-  import { initializeApp } from 'firebase/app';
-  import { getMessaging } from 'firebase/messaging';
+### Day 5: Testing Real-time Features
 
-  const firebaseConfig = {
-    apiKey: 'your-api-key',
-    authDomain: 'your-auth-domain',
-    projectId: 'your-project-id',
-    storageBucket: 'your-storage-bucket',
-    messagingSenderId: 'your-messaging-sender-id',
-    appId: 'your-app-id',
-  };
+- [ ] Test WebSocket connections and real-time updates
+- [ ] Verify order notes functionality
+- [ ] Test order status changes across multiple browser tabs
+- [ ] Debug any real-time synchronization issues
 
-  const app = initializeApp(firebaseConfig);
-  const messaging = getMessaging(app);
+## Real-time Architecture Overview
 
-  export { messaging };
-  ```
+### **WebSocket Implementation:**
 
-- [x] Set up a service worker for web notifications (e.g., in `public/firebase-messaging-sw.js`):
+- **Server**: Socket.IO with Express.js backend
+- **Client**: Socket.IO client in React frontend
+- **Events**:
+  - `order:created` - New order notification
+  - `order:updated` - Order status/notes changes
+  - `order:completed` - Order completion notification
 
-  ```javascript
-  importScripts(
-    'https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js'
-  );
-  importScripts(
-    'https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js'
-  );
+### **Order Notes System:**
 
-  firebase.initializeApp({
-    apiKey: 'your-api-key',
-    authDomain: 'your-auth-domain',
-    projectId: 'your-project-id',
-    storageBucket: 'your-storage-bucket',
-    messagingSenderId: 'your-messaging-sender-id',
-    appId: 'your-app-id',
-  });
+- **Database**: MongoDB with notes array in Order model
+- **Features**:
+  - Add notes to orders (allergies, special requests, etc.)
+  - Edit/delete notes
+  - Real-time note updates across all clients
+  - Note history and timestamps
 
-  const messaging = firebase.messaging();
+### **Benefits of This Approach:**
 
-  messaging.onBackgroundMessage((payload) => {
-    console.log('Received background message:', payload);
-    const notificationTitle = payload.notification.title;
-    const notificationOptions = {
-      body: payload.notification.body,
-      icon: '/icon.png',
-    };
-    self.registration.showNotification(notificationTitle, notificationOptions);
-  });
-  ```
-
-- [x] Request notification permissions in your app (e.g., in `src/App.tsx`):
-
-  ```typescript
-  import { getToken } from 'firebase/messaging';
-  import { messaging } from './config/firebase';
-
-  async function requestNotificationPermission() {
-    try {
-      const permission = await Notification.requestPermission();
-      if (permission === 'granted') {
-        const token = await getToken(messaging);
-        console.log('Notification token:', token);
-        // Send the token to your server
-      }
-    } catch (error) {
-      console.error('Error requesting notification permission:', error);
-    }
-  }
-
-  // Call this function when your app starts
-  requestNotificationPermission();
-  ```
-
-### Day 5: Testing FCM Notifications
-
-- [x] Use the Firebase Console to send a test notification to your web app.
-- [x] Verify that the notification appears in the browser.
-- [x] Debug any issues with FCM setup.
-
-## Firebase Blaze Plan & Hosting Considerations
-
-- **Firebase Blaze Plan Upgrade:**
-
-  - To deploy Cloud Functions, you must upgrade your Firebase project to the Blaze (pay-as-you-go) plan.
-  - Visit the [Firebase Console](https://console.firebase.google.com/project/bar-manager-6b790/usage/details) to upgrade.
-  - Once upgraded, you can deploy your functions using `yarn deploy` inside the functions folder.
-
-- **Hosting Options:**
-  - If you prefer not to use Firebase Hosting, consider alternatives like [Vercel](https://vercel.com/), [Netlify](https://www.netlify.com/), or [Cloudflare Pages](https://pages.cloudflare.com/).
-  - These platforms offer free tiers and are easy to set up for hobby projects.
+- ✅ **Free** - No external service costs
+- ✅ **Simple** - Direct database integration
+- ✅ **Reliable** - Works offline, reconnects automatically
+- ✅ **Perfect for bars** - Order-focused, not complex messaging
 
 ## Week 2: Order System Backend
 
@@ -119,23 +59,26 @@ This document outlines a comprehensive, realistic week-by-week plan for the deve
 - Implement CRUD endpoints for orders (create, read, update, delete).
 - Add validation for order data (e.g., required fields, valid statuses, payment methods).
 - Implement error handling and proper HTTP status codes.
+- Add WebSocket event emissions for real-time updates.
 
 ### Day 3-4: Order Model & Database Schema
 
-- Finalize the MongoDB schema for orders (as outlined in ORDER_SYSTEM.md).
+- Finalize the MongoDB schema for orders with notes field.
 - Ensure indexes are set up for efficient querying (e.g., by date, status, staff, table).
-- Test the model with sample data.
+- Test the model with sample data including notes.
 
 ### Day 5: Order Status & Payment Logic
 
 - Implement logic for order status transitions (e.g., pending → in_progress → completed).
 - Add payment status handling (unpaid, partially paid, paid).
 - Implement split payment logic if needed.
+- Emit WebSocket events for status changes.
 
 ### Day 6: Real-time Updates
 
 - Implement real-time updates for order status and notifications using WebSocket.
 - Test the model and endpoints with sample data.
+- Verify WebSocket events are properly emitted and received.
 
 ## Week 3: Order System Frontend
 
@@ -144,34 +87,42 @@ This document outlines a comprehensive, realistic week-by-week plan for the deve
 - Build the UI for creating new orders (table selection, staff selection, item selection, notes, etc.).
 - Implement dynamic item lists, quantity controls, and price calculations.
 - Add validation and error handling.
+- Include notes field in order creation form.
 
 ### Day 3-4: Order History/Overview
 
 - Build the UI for viewing order history (filtering, sorting, detailed views).
-- Implement real-time updates for order status changes.
+- Implement real-time updates for order status changes via WebSocket.
 - Add pagination or infinite scroll for large datasets.
+- Display order notes in the overview.
 
 ### Day 5: Order Details View
 
 - Build a detailed view for individual orders (timeline, payment details, notes, etc.).
-- Allow staff to update order status or add notes.
+- Allow staff to update order status or add/edit notes.
+- Implement real-time note updates across all connected clients.
+- Add note history and timestamps.
 
 ### Day 6: Test Order Flow
 
-- Test the order flow end-to-end.
+- Test the order flow end-to-end with real-time updates.
+- Verify WebSocket connections and event handling.
+- Test order notes functionality across multiple users.
 
 ## Week 4: Seed Orders & Prepare for Reports
 
 ### Day 1-2: Seed Orders
 
 - Use your seeding script to populate the database with sample orders.
-- Ensure the data is realistic and covers various scenarios (e.g., different statuses, payment methods, split payments).
+- Ensure the data is realistic and covers various scenarios (e.g., different statuses, payment methods, split payments, notes).
+- Test real-time updates with seeded data.
 
 ### Day 3-5: Prepare for Reports
 
 - Once orders are seeded, start building the reporting tool.
 - Focus on basic reports first (e.g., daily sales, popular items, staff performance).
 - Use D3.js for data visualization.
+- Include notes analytics in reports.
 
 ## Week 5: Schedule Management (Advanced)
 
@@ -212,17 +163,27 @@ This document outlines a comprehensive, realistic week-by-week plan for the deve
 - Build UI for analytics dashboard and report builder.
 - Test analytics workflows and export functionality.
 
-## Week 8: Messaging, Communication & CRM Tools
+## Week 8: Enhanced Order Notes & Communication
 
-### Day 1-2: Internal Messaging System
+### Day 1-2: Advanced Order Notes System
 
-- Implement internal messaging system (direct, group, announcements).
-- Add customer communication features (message templates, history, feedback).
-- Build notification system for staff and customers (WebSocket, FCM).
-- Add file sharing and attachment support in messages.
-- Implement read receipts, message categories, and search.
-- Build UI for message center, announcements, and customer communication.
-- Test messaging and notification workflows.
+- Implement rich text notes with formatting options.
+- Add note categories (allergies, special requests, customer preferences, etc.).
+- Build note templates for common scenarios.
+- Add note search and filtering functionality.
+- Implement note notifications and alerts.
+- Build UI for advanced note management and templates.
+- Test note workflows and real-time updates.
+
+### Day 3-4: Order Communication Features
+
+- Add customer communication features (message templates, order confirmations).
+- Implement order status notifications for customers.
+- Add feedback collection and rating system.
+- Build notification system for staff (WebSocket-based).
+- Add file attachments to orders (receipts, photos, etc.).
+- Build UI for customer communication and feedback.
+- Test communication workflows and notifications.
 
 ## Week 9: File Management
 
@@ -231,7 +192,7 @@ This document outlines a comprehensive, realistic week-by-week plan for the deve
 - Implement file storage, folder structure, and file categorization.
 - Add version control, sharing (links, permissions), and advanced search.
 - Build UI for file browser, upload, preview, and sharing dialogs.
-- Add integration with messaging and CRM tools.
+- Add integration with orders and notes.
 - Test file operations, sharing, and search workflows.
 
 ## Week 10: Dashboard Enhancements
@@ -240,7 +201,7 @@ This document outlines a comprehensive, realistic week-by-week plan for the deve
 
 - Implement customizable dashboard widgets (metrics, charts, tables, status, quick actions).
 - Add widget management (add, remove, configure, arrange, resize).
-- Implement quick actions (create order, add staff, update inventory, send message, generate report).
+- Implement quick actions (create order, add staff, update inventory, add notes, generate report).
 - Add real-time updates and notifications to dashboard widgets.
 - Build UI for dashboard customization and quick actions.
 - Test dashboard workflows and user preferences.
@@ -282,9 +243,410 @@ This document outlines a comprehensive, realistic week-by-week plan for the deve
 
 - Continuous testing, documentation, and DevOps (CI/CD, GitHub Actions, Swagger API docs).
 
+## Firebase Removal & WebSocket Implementation Plan
+
+### **Phase 1: Firebase Removal**
+
+#### **1. Remove Firebase Dependencies:**
+
+```bash
+# Remove Firebase packages
+yarn remove firebase
+yarn remove firebase-admin
+yarn remove firebase-functions
+yarn remove firebase-functions-test
+
+# Remove Firebase config files
+rm -rf functions/
+rm firebase.json
+rm firestore.rules
+rm firestore.indexes.json
+rm storage.rules
+```
+
+#### **2. Remove Firebase Files:**
+
+- Delete `functions/` directory
+- Delete `firebase.json`
+- Delete `firestore.rules`
+- Delete `firestore.indexes.json`
+- Delete `storage.rules`
+- Delete `public/firebase-messaging-sw.js`
+
+#### **3. Clean Up Frontend:**
+
+- Remove Firebase imports from components
+- Remove Firebase config files (`src/config/firebase.ts`)
+- Update notification components to use WebSocket
+- Remove Firebase-related environment variables
+
+#### **4. Update Package.json Scripts:**
+
+```json
+{
+  "scripts": {
+    // Remove Firebase-related scripts
+    "firebase:emulators": "echo 'Firebase removed - using WebSocket instead'",
+    "notifications:local": "echo 'Using local WebSocket notifications'"
+  }
+}
+```
+
+### **Phase 2: WebSocket Implementation**
+
+#### **1. Add Socket.IO to Backend:**
+
+```bash
+cd backend
+yarn add socket.io
+yarn add @types/socket.io
+```
+
+#### **2. Update Order Model (MongoDB):**
+
+Add `notes` field to your MongoDB Order schema:
+
+```typescript
+// backend/models/order.ts
+interface OrderNote {
+  text: string;
+  author: string;
+  timestamp: Date;
+  category: 'allergy' | 'special_request' | 'general';
+}
+
+interface Order {
+  // ... existing fields
+  notes: OrderNote[];
+}
+```
+
+#### **3. WebSocket Server Setup:**
+
+```typescript
+// backend/socket.ts
+import { Server } from 'socket.io';
+import { Server as HttpServer } from 'http';
+
+export const setupSocket = (server: HttpServer) => {
+  const io = new Server(server, {
+    cors: {
+      origin: 'http://localhost:5173', // Your frontend URL
+      methods: ['GET', 'POST'],
+    },
+  });
+
+  io.on('connection', (socket) => {
+    console.log('Client connected:', socket.id);
+
+    // Join room for real-time updates
+    socket.on('join:orders', () => {
+      socket.join('orders');
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Client disconnected:', socket.id);
+    });
+  });
+
+  return io;
+};
+```
+
+#### **4. Update Backend Index:**
+
+```typescript
+// backend/index.ts
+import { createServer } from 'http';
+import { setupSocket } from './socket';
+
+const server = createServer(app);
+const io = setupSocket(server);
+
+// Make io available to controllers
+app.set('io', io);
+
+// Start server with Socket.IO
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+```
+
+#### **5. Emit Events on Order Changes:**
+
+```typescript
+// In your order controller
+export const createOrder = async (req: Request, res: Response) => {
+  try {
+    const order = await Order.create(req.body);
+
+    // Emit WebSocket event
+    const io = req.app.get('io');
+    io.to('orders').emit('order:created', order);
+
+    res.status(201).json(order);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const updateOrder = async (req: Request, res: Response) => {
+  try {
+    const order = await Order.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+
+    // Emit WebSocket event
+    const io = req.app.get('io');
+    io.to('orders').emit('order:updated', order);
+
+    res.json(order);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+```
+
+#### **6. Frontend Socket.IO Client:**
+
+```bash
+cd src
+yarn add socket.io-client
+```
+
+#### **7. Create Socket Context:**
+
+```typescript
+// src/contexts/SocketContext.tsx
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { io, Socket } from 'socket.io-client';
+
+interface SocketContextType {
+  socket: Socket | null;
+  isConnected: boolean;
+}
+
+const SocketContext = createContext<SocketContextType>({
+  socket: null,
+  isConnected: false,
+});
+
+export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
+
+  useEffect(() => {
+    const newSocket = io('http://localhost:4000');
+
+    newSocket.on('connect', () => {
+      setIsConnected(true);
+      newSocket.emit('join:orders');
+    });
+
+    newSocket.on('disconnect', () => {
+      setIsConnected(false);
+    });
+
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.close();
+    };
+  }, []);
+
+  return (
+    <SocketContext.Provider value={{ socket, isConnected }}>
+      {children}
+    </SocketContext.Provider>
+  );
+};
+
+export const useSocket = () => useContext(SocketContext);
+```
+
+#### **8. Real-time Order Updates:**
+
+```typescript
+// In your React components
+import { useSocket } from '../contexts/SocketContext';
+
+const OrderList: React.FC = () => {
+  const { socket } = useSocket();
+  const [orders, setOrders] = useState<Order[]>([]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on('order:created', (newOrder: Order) => {
+      setOrders((prev) => [...prev, newOrder]);
+    });
+
+    socket.on('order:updated', (updatedOrder: Order) => {
+      setOrders((prev) =>
+        prev.map((order) =>
+          order._id === updatedOrder._id ? updatedOrder : order
+        )
+      );
+    });
+
+    socket.on('order:completed', (completedOrder: Order) => {
+      setOrders((prev) =>
+        prev.map((order) =>
+          order._id === completedOrder._id ? completedOrder : order
+        )
+      );
+    });
+
+    return () => {
+      socket.off('order:created');
+      socket.off('order:updated');
+      socket.off('order:completed');
+    };
+  }, [socket]);
+
+  // ... rest of component
+};
+```
+
+#### **9. Order Notes Component:**
+
+```typescript
+// src/components/OrderNotes.tsx
+import React, { useState } from 'react';
+import { useSocket } from '../contexts/SocketContext';
+
+interface OrderNotesProps {
+  orderId: string;
+  notes: OrderNote[];
+  onAddNote: (note: Omit<OrderNote, 'timestamp'>) => void;
+}
+
+const OrderNotes: React.FC<OrderNotesProps> = ({
+  orderId,
+  notes,
+  onAddNote,
+}) => {
+  const [newNote, setNewNote] = useState('');
+  const [category, setCategory] = useState<
+    'allergy' | 'special_request' | 'general'
+  >('general');
+  const { socket } = useSocket();
+
+  const handleAddNote = () => {
+    if (!newNote.trim()) return;
+
+    const note = {
+      text: newNote,
+      author: 'Current User', // Get from auth context
+      category,
+    };
+
+    onAddNote(note);
+    setNewNote('');
+  };
+
+  return (
+    <div className="space-y-4">
+      <h3 className="text-lg font-semibold">Order Notes</h3>
+
+      {/* Add new note */}
+      <div className="space-y-2">
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value as any)}
+          className="border rounded px-2 py-1"
+        >
+          <option value="general">General</option>
+          <option value="allergy">Allergy</option>
+          <option value="special_request">Special Request</option>
+        </select>
+
+        <textarea
+          value={newNote}
+          onChange={(e) => setNewNote(e.target.value)}
+          placeholder="Add a note..."
+          className="w-full border rounded px-2 py-1"
+        />
+
+        <button
+          onClick={handleAddNote}
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+        >
+          Add Note
+        </button>
+      </div>
+
+      {/* Display notes */}
+      <div className="space-y-2">
+        {notes.map((note, index) => (
+          <div key={index} className="border rounded p-3">
+            <div className="flex justify-between items-start">
+              <span className="text-sm text-gray-600">{note.author}</span>
+              <span className="text-xs text-gray-500">
+                {new Date(note.timestamp).toLocaleString()}
+              </span>
+            </div>
+            <p className="mt-1">{note.text}</p>
+            <span className="inline-block mt-2 px-2 py-1 text-xs bg-gray-100 rounded">
+              {note.category}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+```
+
+### **Phase 3: Testing & Validation**
+
+#### **1. Test WebSocket Connection:**
+
+- Verify Socket.IO server starts with backend
+- Test client connection in browser
+- Check real-time updates across multiple tabs
+
+#### **2. Test Order Events:**
+
+- Create new order → verify `order:created` event
+- Update order → verify `order:updated` event
+- Complete order → verify `order:completed` event
+
+#### **3. Test Notes Functionality:**
+
+- Add note to order → verify real-time update
+- Edit note → verify update across clients
+- Delete note → verify removal across clients
+
+### **Benefits of This Implementation:**
+
+✅ **Cost-effective** - No Firebase subscription needed  
+✅ **Simple architecture** - Direct MongoDB integration  
+✅ **Real-time updates** - WebSocket for instant synchronization  
+✅ **Offline support** - Reconnects automatically  
+✅ **Scalable** - Can handle multiple concurrent users  
+✅ **Maintainable** - No external service dependencies
+
+### **Migration Checklist:**
+
+- [ ] Remove Firebase dependencies
+- [ ] Delete Firebase configuration files
+- [ ] Install Socket.IO packages
+- [ ] Update Order model with notes field
+- [ ] Implement WebSocket server
+- [ ] Update order controllers with event emissions
+- [ ] Create Socket.IO client context
+- [ ] Update frontend components for real-time updates
+- [ ] Test WebSocket connections and events
+- [ ] Test order notes functionality
+- [ ] Update documentation
+
 ## Notes
 
 - This roadmap is flexible and can be adjusted based on progress and priorities.
 - Each week's tasks are designed to be achievable by one developer with AI assistance.
 - Testing should be done continuously throughout the development process.
 - Documentation should be updated as new features are implemented.
+- The real-time system uses WebSockets instead of Firebase for cost-effectiveness and simplicity.
