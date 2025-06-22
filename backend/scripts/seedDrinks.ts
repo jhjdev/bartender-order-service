@@ -16,9 +16,9 @@ const drinksData = [
     alcoholPercentage: 5.0,
     brewery: 'Heineken',
     imageData: {
-      _id: new ObjectId().toString(),
-      url: '/images/drinks/heineken.jpg',
-      name: 'heineken.jpg',
+      _id: '',
+      url: '',
+      name: '',
     },
   },
   {
@@ -31,9 +31,9 @@ const drinksData = [
     alcoholPercentage: 4.2,
     brewery: 'Guinness',
     imageData: {
-      _id: new ObjectId().toString(),
-      url: '/images/drinks/guinness.jpg',
-      name: 'guinness.jpg',
+      _id: '',
+      url: '',
+      name: '',
     },
   },
   // Wines
@@ -49,9 +49,9 @@ const drinksData = [
     region: 'Bordeaux',
     year: 2018,
     imageData: {
-      _id: new ObjectId().toString(),
-      url: '/images/drinks/chateau-margaux.jpg',
-      name: 'chateau-margaux.jpg',
+      _id: '',
+      url: '',
+      name: '',
     },
   },
   {
@@ -66,9 +66,9 @@ const drinksData = [
     region: 'Marlborough',
     year: 2022,
     imageData: {
-      _id: new ObjectId().toString(),
-      url: '/images/drinks/cloudy-bay.jpg',
-      name: 'cloudy-bay.jpg',
+      _id: '',
+      url: '',
+      name: '',
     },
   },
   // Spirits
@@ -83,9 +83,9 @@ const drinksData = [
     distillery: 'The Macallan',
     ageStatement: '18 years',
     imageData: {
-      _id: new ObjectId().toString(),
-      url: '/images/drinks/macallan-18.jpg',
-      name: 'macallan-18.jpg',
+      _id: '',
+      url: '',
+      name: '',
     },
   },
   {
@@ -98,9 +98,9 @@ const drinksData = [
     alcoholPercentage: 40.0,
     distillery: 'Grey Goose',
     imageData: {
-      _id: new ObjectId().toString(),
-      url: '/images/drinks/grey-goose.jpg',
-      name: 'grey-goose.jpg',
+      _id: '',
+      url: '',
+      name: '',
     },
   },
   // Non-alcoholic
@@ -112,9 +112,9 @@ const drinksData = [
     description: 'Refreshing mint and lime mocktail',
     isAvailable: true,
     imageData: {
-      _id: new ObjectId().toString(),
-      url: '/images/drinks/virgin-mojito.jpg',
-      name: 'virgin-mojito.jpg',
+      _id: '',
+      url: '',
+      name: '',
     },
   },
 ];
@@ -145,9 +145,9 @@ const cocktailsData = [
     garnish: 'Mint sprig and lime wheel',
     preparationTime: 5,
     imageData: {
-      _id: new ObjectId().toString(),
-      url: '/images/cocktails/mojito.jpg',
-      name: 'mojito.jpg',
+      _id: '',
+      url: '',
+      name: '',
     },
   },
   {
@@ -174,9 +174,9 @@ const cocktailsData = [
     garnish: 'Orange peel',
     preparationTime: 4,
     imageData: {
-      _id: new ObjectId().toString(),
-      url: '/images/cocktails/old-fashioned.jpg',
-      name: 'old-fashioned.jpg',
+      _id: '',
+      url: '',
+      name: '',
     },
   },
   {
@@ -203,9 +203,9 @@ const cocktailsData = [
     garnish: 'Coffee beans',
     preparationTime: 5,
     imageData: {
-      _id: new ObjectId().toString(),
-      url: '/images/cocktails/espresso-martini.jpg',
-      name: 'espresso-martini.jpg',
+      _id: '',
+      url: '',
+      name: '',
     },
   },
 ];
@@ -226,14 +226,58 @@ async function seedDrinks() {
     await cocktailsCollection.deleteMany({});
     console.log('Cleared existing drinks and cocktails data');
 
+    // Process drinks - set imageData to use the same ID as the document
+    const processedDrinks = drinksData.map((drink) => {
+      const drinkId = drink._id.toString();
+      const filename = `${drink.name
+        .toLowerCase()
+        .replace(/\s+/g, '_')}-${drinkId}.jpg`;
+
+      return {
+        ...drink,
+        imageData: {
+          _id: drinkId,
+          url: `/uploads/${filename}`,
+          name: filename,
+        },
+      };
+    });
+
+    // Process cocktails - set imageData to use the same ID as the document
+    const processedCocktails = cocktailsData.map((cocktail) => {
+      const cocktailId = cocktail._id.toString();
+      const filename = `${cocktail.name
+        .toLowerCase()
+        .replace(/\s+/g, '_')}-${cocktailId}.jpg`;
+
+      return {
+        ...cocktail,
+        imageData: {
+          _id: cocktailId,
+          url: `/uploads/${filename}`,
+          name: filename,
+        },
+      };
+    });
+
     // Insert new data
-    const drinksResult = await drinksCollection.insertMany(drinksData);
-    const cocktailsResult = await cocktailsCollection.insertMany(cocktailsData);
+    const drinksResult = await drinksCollection.insertMany(processedDrinks);
+    const cocktailsResult = await cocktailsCollection.insertMany(
+      processedCocktails
+    );
 
     console.log(`Successfully seeded ${drinksResult.insertedCount} drinks`);
     console.log(
       `Successfully seeded ${cocktailsResult.insertedCount} cocktails`
     );
+
+    console.log('\nImage filenames that should be used:');
+    processedDrinks.forEach((drink) => {
+      console.log(`${drink.name}: ${drink.imageData.name}`);
+    });
+    processedCocktails.forEach((cocktail) => {
+      console.log(`${cocktail.name}: ${cocktail.imageData.name}`);
+    });
   } catch (error) {
     console.error('Error seeding drinks data:', error);
   } finally {
@@ -242,5 +286,4 @@ async function seedDrinks() {
   }
 }
 
-// Run the seed function
-seedDrinks().catch(console.error);
+seedDrinks();

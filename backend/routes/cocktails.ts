@@ -6,7 +6,11 @@ import { CocktailDocument } from '../types/drink';
 import { BaseDocument, convertToApiResponse } from '../types/mongodb';
 
 const router = Router();
-const cocktails = db.collection<CocktailDocument & BaseDocument>('cocktails');
+
+// Function to get cocktails collection when needed
+const getCocktailsCollection = () => {
+  return db.collection<CocktailDocument & BaseDocument>('cocktails');
+};
 
 // Apply authentication middleware to all cocktail routes
 router.use(authController.verifyToken as RequestHandler);
@@ -14,6 +18,7 @@ router.use(authController.verifyToken as RequestHandler);
 // Get all cocktails
 router.get('/', (async (_req, res) => {
   try {
+    const cocktails = getCocktailsCollection();
     const allCocktails = await cocktails.find().toArray();
     const cocktailsWithStringIds = allCocktails.map(convertToApiResponse);
     res.json(cocktailsWithStringIds);
@@ -25,6 +30,7 @@ router.get('/', (async (_req, res) => {
 // Create a new cocktail
 router.post('/', (async (req, res) => {
   try {
+    const cocktails = getCocktailsCollection();
     const result = await cocktails.insertOne(req.body);
     const cocktail = await cocktails.findOne({ _id: result.insertedId });
     if (!cocktail) {
@@ -44,6 +50,7 @@ router.put('/:id', (async (req, res) => {
       return res.status(400).json({ message: 'Invalid cocktail ID format' });
     }
 
+    const cocktails = getCocktailsCollection();
     const result = await cocktails.findOneAndUpdate(
       { _id: new ObjectId(id) },
       { $set: req.body },
@@ -68,6 +75,7 @@ router.delete('/:id', (async (req, res) => {
       return res.status(400).json({ message: 'Invalid cocktail ID format' });
     }
 
+    const cocktails = getCocktailsCollection();
     const result = await cocktails.findOneAndDelete({ _id: new ObjectId(id) });
     if (!result) {
       return res.status(404).json({ message: 'Cocktail not found' });

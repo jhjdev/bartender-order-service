@@ -1,11 +1,14 @@
 import { Router, Request, Response } from 'express';
 import multer from 'multer';
 import { ObjectId } from 'mongodb';
-import { client } from '../config/db';
+import { db } from '../config/db';
 
 const router = Router();
-const db = client.db();
-const imagesCollection = db.collection('images');
+
+// Function to get images collection when needed
+const getImagesCollection = () => {
+  return db.collection('images');
+};
 
 // Configure multer for memory storage
 const upload = multer({
@@ -18,7 +21,7 @@ const upload = multer({
 // Upload image to MongoDB
 router.post(
   '/upload',
-  upload.single('image') as any,
+  upload.single('image'),
   async (req: Request, res: Response): Promise<void> => {
     try {
       if (!req.file) {
@@ -30,6 +33,7 @@ router.post(
       const imageType = req.file.mimetype;
       const imageName = req.file.originalname;
 
+      const imagesCollection = getImagesCollection();
       const result = await imagesCollection.insertOne({
         name: imageName,
         data: imageBuffer,
@@ -59,6 +63,7 @@ router.get('/:id', async (req: Request, res: Response): Promise<void> => {
     }
     console.log('Fetching image with ID:', id);
 
+    const imagesCollection = getImagesCollection();
     const image = await imagesCollection.findOne({
       _id: new ObjectId(id),
     });

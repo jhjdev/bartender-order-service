@@ -1,17 +1,15 @@
 import { Router } from 'express';
 import { RequestHandler } from 'express';
 import { ObjectId } from 'mongodb';
-import { client } from '../config/db';
+import { db } from '../config/db';
 import { Table, TableLayout, TableWithOrders } from '../types/table';
 import { Order, OrderStatus, OrderDocument } from '../types/order';
 import { BaseDocument, convertToApiResponse } from '../types/mongodb';
 
 const router = Router();
-const tables = client.db().collection<Table & BaseDocument>('tables');
-const layouts = client
-  .db()
-  .collection<TableLayout & BaseDocument>('tableLayouts');
-const orders = client.db().collection<OrderDocument>('orders');
+const tables = db.collection<Table & BaseDocument>('tables');
+const layouts = db.collection<TableLayout & BaseDocument>('tableLayouts');
+const orders = db.collection<OrderDocument>('orders');
 
 // Helper function to convert OrderDocument to Order
 const convertOrderToApiResponse = (order: OrderDocument): Order => {

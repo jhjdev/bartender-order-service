@@ -81,7 +81,12 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => {
   return (
     <Provider store={store}>
-      <BrowserRouter>
+      <BrowserRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
         <ToastProvider>
           <SocketProvider>
             <AppContent />

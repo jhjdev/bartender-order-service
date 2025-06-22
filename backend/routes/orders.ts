@@ -10,9 +10,13 @@ router.use(authController.verifyToken as RequestHandler);
 // Order routes
 router.post('/', orderController.createOrder as RequestHandler);
 router.get('/', orderController.getOrders as RequestHandler);
+router.get('/stats', orderController.getOrderStats as RequestHandler);
 router.get('/:id', orderController.getOrderById as RequestHandler);
 router.put('/:id', orderController.updateOrder as RequestHandler);
 router.delete('/:id', orderController.deleteOrder as RequestHandler);
+
+// Payment processing route
+router.put('/:id/payment', orderController.processPayment as RequestHandler);
 
 // Note routes
 router.post('/:id/notes', orderController.addNote as RequestHandler);

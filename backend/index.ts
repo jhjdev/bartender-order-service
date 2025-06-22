@@ -1,6 +1,8 @@
 import express, { Express } from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { connectDB } from './config/db';
 import { setupSocket } from './socket';
 import authRoutes from './routes/auth';
@@ -17,6 +19,10 @@ import { getEnvPath } from './utils/paths';
 // Load environment variables from root .env file
 dotenv.config({ path: getEnvPath() });
 
+// ES module equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app: Express = express();
 const server = createServer(app);
 const io = setupSocket(server);
@@ -29,6 +35,9 @@ const PORT = process.env.PORT || 3001;
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Serve static files from uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use('/api/auth', authRoutes);

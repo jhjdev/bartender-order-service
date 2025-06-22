@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
-import { staffCollection, StaffMember, UserRole } from '../models/Staff';
+import { getStaffCollection, StaffMember, UserRole } from '../models/Staff';
 import bcrypt from 'bcryptjs';
 
 interface StaffMemberWithPassword extends StaffMember {
@@ -9,12 +9,9 @@ interface StaffMemberWithPassword extends StaffMember {
 
 // Helper function to remove password from staff member
 const removePassword = (staff: StaffMemberWithPassword): StaffMember => {
-  const staffWithoutPassword = { ...staff } as { password?: string } & Omit<
-    StaffMemberWithPassword,
-    'password'
-  >;
-  delete staffWithoutPassword.password;
-  return staffWithoutPassword;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { password, ...staffWithoutPassword } = staff;
+  return staffWithoutPassword as StaffMember;
 };
 
 export const staffController = {
@@ -27,7 +24,7 @@ export const staffController = {
         return;
       }
 
-      const staff = await staffCollection.findOne({
+      const staff = await getStaffCollection().findOne({
         _id: new ObjectId(userId),
       });
       if (!staff) {
@@ -49,7 +46,7 @@ export const staffController = {
   // Get all staff members
   getAllStaff: async (_req: Request, res: Response): Promise<void> => {
     try {
-      const staff = await staffCollection.find({}).toArray();
+      const staff = await getStaffCollection().find({}).toArray();
       res.json(staff);
     } catch (error) {
       console.error('Error fetching staff:', error);
@@ -61,7 +58,9 @@ export const staffController = {
   getStaffById: async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
-      const staff = await staffCollection.findOne({ _id: new ObjectId(id) });
+      const staff = await getStaffCollection().findOne({
+        _id: new ObjectId(id),
+      });
 
       if (!staff) {
         res.status(404).json({ message: 'Staff member not found' });
@@ -95,7 +94,7 @@ export const staffController = {
       }
 
       // Check if email already exists
-      const existingStaff = await staffCollection.findOne({ email });
+      const existingStaff = await getStaffCollection().findOne({ email });
       if (existingStaff) {
         res.status(400).json({ message: 'Email already exists' });
         return;
@@ -141,8 +140,8 @@ export const staffController = {
         updatedAt: new Date(),
       };
 
-      const result = await staffCollection.insertOne(newStaff);
-      const createdStaff = await staffCollection.findOne({
+      const result = await getStaffCollection().insertOne(newStaff);
+      const createdStaff = await getStaffCollection().findOne({
         _id: result.insertedId,
       });
 
@@ -183,7 +182,7 @@ export const staffController = {
       }
 
       // Check if email already exists for other staff members
-      const existingStaff = await staffCollection.findOne({
+      const existingStaff = await getStaffCollection().findOne({
         email,
         _id: { $ne: new ObjectId(id) },
       });
@@ -214,7 +213,7 @@ export const staffController = {
         updateData.password = await bcrypt.hash(password, 10);
       }
 
-      const result = await staffCollection.findOneAndUpdate(
+      const result = await getStaffCollection().findOneAndUpdate(
         { _id: new ObjectId(id) },
         { $set: updateData },
         { returnDocument: 'after' }
@@ -246,7 +245,7 @@ export const staffController = {
         return;
       }
 
-      const result = await staffCollection.findOneAndDelete({
+      const result = await getStaffCollection().findOneAndDelete({
         _id: new ObjectId(id),
       });
 

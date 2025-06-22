@@ -4,7 +4,7 @@ This document outlines how to integrate the WebSocket server with mobile applica
 
 ## Overview
 
-The WebSocket server runs on `http://localhost:3001` and provides real-time communication for:
+The WebSocket server runs on `http://localhost:4000` and provides real-time communication for:
 
 - Order creation, updates, and deletion
 - Order status changes
@@ -75,7 +75,7 @@ export const SocketProvider = ({ children }) => {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    const newSocket = io('http://localhost:3001', {
+    const newSocket = io('http://localhost:4000', {
       transports: ['websocket', 'polling'],
       autoConnect: true,
     });
@@ -200,7 +200,7 @@ class SocketService {
   }
 
   void connect() {
-    _socket = IO.io('http://localhost:3001', <String, dynamic>{
+    _socket = IO.io('http://localhost:4000', <String, dynamic>{
       'transports': ['websocket', 'polling'],
       'autoConnect': true,
     });
@@ -324,7 +324,7 @@ class SocketManager: ObservableObject {
     private init() {}
 
     func connect() {
-        guard let url = URL(string: "http://localhost:3001") else { return }
+        guard let url = URL(string: "http://localhost:4000") else { return }
 
         manager = SocketManager(socketURL: url, config: [
             .log(true),
@@ -474,7 +474,7 @@ class SocketManager private constructor() {
                 transports = arrayOf("websocket", "polling")
             }
 
-            socket = IO.socket("http://localhost:3001", options)
+            socket = IO.socket("http://localhost:4000", options)
 
             socket?.on(Socket.EVENT_CONNECT) {
                 println("Connected to WebSocket server")
@@ -595,7 +595,7 @@ class OrderListActivity : AppCompatActivity() {
 ### REST API Base URL
 
 ```
-http://localhost:3001/api
+http://localhost:4000/api
 ```
 
 ### Authentication
@@ -687,7 +687,7 @@ Body:
 
 ```javascript
 // Test in browser console
-const socket = io('http://localhost:3001');
+const socket = io('http://localhost:4000');
 
 socket.on('connect', () => {
   console.log('Connected!');
@@ -710,7 +710,7 @@ socket.on('order:deleted', (data) => {
 ### Test Order Creation
 
 ```bash
-curl -X POST http://localhost:3001/api/orders \
+curl -X POST http://localhost:4000/api/orders \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer <your_jwt_token>" \
   -d '{
@@ -759,7 +759,7 @@ curl -X POST http://localhost:3001/api/orders \
 
 ```bash
 # Backend
-PORT=3001
+PORT=4000
 MONGODB_URI=mongodb://localhost:27017/bartender
 JWT_SECRET=your_jwt_secret
 

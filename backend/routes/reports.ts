@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { Collection } from 'mongodb';
-import { client } from '../config/db';
+import { db } from '../config/db';
 import { OrderDocument, OrderItemDocument } from '../types/order';
 import { DrinkDocument } from '../types/drink';
 import { EmployeeDocument } from '../types/employee';
@@ -8,10 +8,10 @@ import { Shift } from '../types/employee';
 import { Filter } from 'mongodb';
 
 const router = Router();
-const orders = client.db().collection<OrderDocument>('orders');
-const drinks = client.db().collection<DrinkDocument>('drinks');
-const employees = client.db().collection<EmployeeDocument>('employees');
-const shifts = client.db().collection<Shift>('shifts');
+const orders = db.collection<OrderDocument>('orders');
+const drinks = db.collection<DrinkDocument>('drinks');
+const employees = db.collection<EmployeeDocument>('employees');
+const shifts = db.collection<Shift>('shifts');
 
 // Get daily profits
 router.get('/profits/daily', async (req, res) => {
@@ -124,9 +124,7 @@ router.get('/items/popular', async (req, res) => {
       };
     }
 
-    const ordersCollection: Collection<OrderDocument> = client
-      .db()
-      .collection('orders');
+    const ordersCollection: Collection<OrderDocument> = db.collection('orders');
     const orders = await ordersCollection.find(query).toArray();
 
     // Count drink occurrences

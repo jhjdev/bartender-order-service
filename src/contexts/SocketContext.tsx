@@ -18,7 +18,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    const newSocket = io('http://localhost:3001', {
+    const newSocket = io('http://localhost:4000', {
       transports: ['websocket', 'polling'],
       autoConnect: true,
     });

@@ -4,7 +4,9 @@
   "type": "module",
   "packageManager": "yarn@4.1.1",
   "scripts": {
-    "dev": "tsx watch index.ts"
+    "dev": "tsx watch index.ts",
+    "seed:orders": "tsx scripts/seedOrders.ts",
+    "seed:all": "tsx scripts/seedDrinks.ts && tsx scripts/seedStaff.ts && tsx scripts/seedOrders.ts"
   },
   "dependencies": {
     "@types/express-rate-limit": "^6.0.2",

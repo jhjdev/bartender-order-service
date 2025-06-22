@@ -6,7 +6,11 @@ import { db } from '../config/db';
 import { FileMetadata, FileType } from '../types/file';
 
 const router = express.Router();
-const files = db.collection<FileMetadata>('files');
+
+// Function to get files collection when needed
+const getFilesCollection = () => {
+  return db.collection<FileMetadata>('files');
+};
 
 // Configure multer storage
 const storage = multer.diskStorage({
@@ -73,6 +77,7 @@ router.post(
         uploadedAt: new Date().toISOString(),
       };
 
+      const files = getFilesCollection();
       const result = await files.insertOne(fileData);
       res.status(201).json({
         message: 'File uploaded successfully',
@@ -89,6 +94,7 @@ router.post(
 router.get('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const files = getFilesCollection();
     const file = await files.findOne({ _id: id });
 
     if (!file) {
@@ -109,6 +115,7 @@ router.put('/:id', async (req: Request, res: Response) => {
     const { id } = req.params;
     const { originalName } = req.body;
 
+    const files = getFilesCollection();
     const result = await files.findOneAndUpdate(
       { _id: id },
       { $set: { originalName } },
@@ -131,6 +138,7 @@ router.put('/:id', async (req: Request, res: Response) => {
 router.delete('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const files = getFilesCollection();
     const file = await files.findOne({ _id: id });
 
     if (!file) {

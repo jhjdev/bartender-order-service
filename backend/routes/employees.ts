@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import { ObjectId } from 'mongodb';
-import { client } from '../config/db';
+import { db } from '../config/db';
 import { Employee, TimeOff, Shift } from '../types/employee';
 
 const router = Router();
-const employees = client.db().collection('employees');
-const timeOff = client.db().collection('timeOff');
-const shifts = client.db().collection('shifts');
+const employees = db.collection('employees');
+const timeOff = db.collection('timeOff');
+const shifts = db.collection('shifts');
 
 // Get all employees
 router.get('/', async (req, res) => {

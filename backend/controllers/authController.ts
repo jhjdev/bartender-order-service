@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { ObjectId } from 'mongodb';
-import { staffCollection, StaffMember, UserRole } from '../models/Staff';
+import { getStaffCollection, StaffMember, UserRole } from '../models/Staff';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
@@ -27,12 +27,9 @@ declare module 'express' {
 
 // Helper function to remove password from staff member
 const removePassword = (staff: StaffMemberWithPassword): StaffMember => {
-  const staffWithoutPassword = { ...staff } as { password?: string } & Omit<
-    StaffMemberWithPassword,
-    'password'
-  >;
-  delete staffWithoutPassword.password;
-  return staffWithoutPassword;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { password, ...staffWithoutPassword } = staff;
+  return staffWithoutPassword as StaffMember;
 };
 
 export const authController = {
@@ -45,7 +42,7 @@ export const authController = {
       };
 
       // Find user by email
-      const user = (await staffCollection.findOne({
+      const user = (await getStaffCollection().findOne({
         email: email,
       })) as StaffMemberWithPassword | null;
       if (!user) {
@@ -98,7 +95,7 @@ export const authController = {
         return;
       }
 
-      const user = (await staffCollection.findOne({
+      const user = (await getStaffCollection().findOne({
         _id: new ObjectId(userId),
       })) as StaffMemberWithPassword | null;
       if (!user) {
@@ -163,7 +160,7 @@ export const authController = {
         };
 
       // Check if email already exists for other users
-      const existingUser = await staffCollection.findOne({
+      const existingUser = await getStaffCollection().findOne({
         email,
         _id: { $ne: new ObjectId(userId) },
       });
@@ -196,7 +193,7 @@ export const authController = {
         updateData.password = await bcrypt.hash(password, 10);
       }
 
-      const result = await staffCollection.findOneAndUpdate(
+      const result = await getStaffCollection().findOneAndUpdate(
         { _id: new ObjectId(userId) },
         { $set: updateData },
         { returnDocument: 'after' }

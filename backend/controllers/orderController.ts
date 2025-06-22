@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
-import { getDb } from '../db';
+import { db } from '../config/db';
 import {
   Order,
   CreateOrderRequest,
@@ -8,22 +8,67 @@ import {
   OrderNote,
 } from '../models/order';
 
+// Validation helpers
+const validateOrderStatus = (status: string): boolean => {
+  const validStatuses = ['pending', 'in_progress', 'completed', 'cancelled'];
+  return validStatuses.includes(status);
+};
+
+const validatePaymentStatus = (status: string): boolean => {
+  const validStatuses = ['unpaid', 'partially_paid', 'paid'];
+  return validStatuses.includes(status);
+};
+
+const validatePaymentMethod = (method: string): boolean => {
+  const validMethods = ['cash', 'card', 'split'];
+  return validMethods.includes(method);
+};
+
+const validateOrderTransition = (
+  currentStatus: string,
+  newStatus: string
+): boolean => {
+  const validTransitions: Record<string, string[]> = {
+    pending: ['in_progress', 'cancelled'],
+    in_progress: ['completed', 'cancelled'],
+    completed: [], // No further transitions
+    cancelled: [], // No further transitions
+  };
+
+  return validTransitions[currentStatus]?.includes(newStatus) || false;
+};
+
 export const orderController = {
   // Create a new order
   createOrder: async (req: Request, res: Response) => {
     try {
-      const db = getDb();
       const orderData: CreateOrderRequest = req.body;
 
-      // Validate required fields
-      if (
-        !orderData.customerNumber ||
-        !orderData.items ||
-        orderData.items.length === 0
-      ) {
+      // Enhanced validation
+      if (!orderData.customerNumber || orderData.customerNumber.trim() === '') {
         return res.status(400).json({
-          error: 'Customer number and items are required',
+          error: 'Customer number is required and cannot be empty',
         });
+      }
+
+      if (!orderData.items || orderData.items.length === 0) {
+        return res.status(400).json({
+          error: 'Order must contain at least one item',
+        });
+      }
+
+      // Validate each item
+      for (const item of orderData.items) {
+        if (!item.drinkId || !ObjectId.isValid(item.drinkId)) {
+          return res.status(400).json({
+            error: 'Invalid drink ID provided',
+          });
+        }
+        if (!item.quantity || item.quantity <= 0) {
+          return res.status(400).json({
+            error: 'Item quantity must be greater than 0',
+          });
+        }
       }
 
       // Get drinks to calculate prices
@@ -34,6 +79,19 @@ export const orderController = {
       const drinks = await drinksCollection
         .find({ _id: { $in: drinkIds } })
         .toArray();
+
+      // Validate all drinks exist
+      if (drinks.length !== orderData.items.length) {
+        const foundDrinkIds = drinks.map((d) => d._id.toString());
+        const missingDrinks = orderData.items.filter(
+          (item) => !foundDrinkIds.includes(item.drinkId)
+        );
+        return res.status(400).json({
+          error: `Drinks not found: ${missingDrinks
+            .map((d) => d.drinkId)
+            .join(', ')}`,
+        });
+      }
 
       // Calculate total amount and prepare items
       let totalAmount = 0;
@@ -66,13 +124,14 @@ export const orderController = {
 
       // Create order object
       const order: Order = {
-        customerNumber: orderData.customerNumber,
-        tableNumber: orderData.tableNumber,
-        staffId: orderData.staffId
-          ? new ObjectId(orderData.staffId)
-          : undefined,
+        customerNumber: orderData.customerNumber.trim(),
+        tableNumber: orderData.tableNumber?.trim(),
+        staffId:
+          orderData.staffId && ObjectId.isValid(orderData.staffId)
+            ? new ObjectId(orderData.staffId)
+            : undefined,
         items,
-        totalAmount,
+        totalAmount: Math.round(totalAmount * 100) / 100, // Round to 2 decimal places
         status: 'pending',
         paymentStatus: 'unpaid',
         notes,
@@ -97,22 +156,79 @@ export const orderController = {
     }
   },
 
-  // Get all orders
+  // Get all orders with advanced filtering
   getOrders: async (req: Request, res: Response) => {
     try {
-      const db = getDb();
-      const { status, limit = 50, page = 1 } = req.query;
+      const {
+        status,
+        paymentStatus,
+        staffId,
+        tableNumber,
+        customerNumber,
+        startDate,
+        endDate,
+        limit = 50,
+        page = 1,
+        sortBy = 'createdAt',
+        sortOrder = 'desc',
+      } = req.query;
 
-      let filter = {};
-      if (status) {
-        filter = { status };
+      // Build filter object
+      const filter: Record<string, unknown> = {};
+
+      if (status && validateOrderStatus(status as string)) {
+        filter.status = status;
       }
+
+      if (paymentStatus && validatePaymentStatus(paymentStatus as string)) {
+        filter.paymentStatus = paymentStatus;
+      }
+
+      if (staffId && ObjectId.isValid(staffId as string)) {
+        filter.staffId = new ObjectId(staffId as string);
+      }
+
+      if (tableNumber) {
+        filter.tableNumber = tableNumber;
+      }
+
+      if (customerNumber) {
+        filter.customerNumber = { $regex: customerNumber, $options: 'i' };
+      }
+
+      // Date range filtering
+      if (startDate || endDate) {
+        filter.createdAt = {};
+        if (startDate) {
+          (filter.createdAt as Record<string, unknown>).$gte = new Date(
+            startDate as string
+          );
+        }
+        if (endDate) {
+          (filter.createdAt as Record<string, unknown>).$lte = new Date(
+            endDate as string
+          );
+        }
+      }
+
+      // Validate sort parameters
+      const validSortFields = [
+        'createdAt',
+        'updatedAt',
+        'totalAmount',
+        'status',
+        'customerNumber',
+      ];
+      const sortField = validSortFields.includes(sortBy as string)
+        ? sortBy
+        : 'createdAt';
+      const sortDirection = sortOrder === 'asc' ? 1 : -1;
 
       const skip = (Number(page) - 1) * Number(limit);
       const orders = await db
         .collection('orders')
         .find(filter)
-        .sort({ createdAt: -1 })
+        .sort({ [sortField as string]: sortDirection })
         .skip(skip)
         .limit(Number(limit))
         .toArray();
@@ -127,6 +243,15 @@ export const orderController = {
           total,
           pages: Math.ceil(total / Number(limit)),
         },
+        filters: {
+          status,
+          paymentStatus,
+          staffId,
+          tableNumber,
+          customerNumber,
+          startDate,
+          endDate,
+        },
       });
     } catch (error) {
       console.error('Error fetching orders:', error);
@@ -139,8 +264,11 @@ export const orderController = {
   // Get order by ID
   getOrderById: async (req: Request, res: Response) => {
     try {
-      const db = getDb();
       const { id } = req.params;
+
+      if (!ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid order ID format' });
+      }
 
       const order = await db.collection('orders').findOne({
         _id: new ObjectId(id),
@@ -159,12 +287,54 @@ export const orderController = {
     }
   },
 
-  // Update order
+  // Update order with status transition validation
   updateOrder: async (req: Request, res: Response) => {
     try {
-      const db = getDb();
       const { id } = req.params;
       const updateData: UpdateOrderRequest = req.body;
+
+      if (!ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid order ID format' });
+      }
+
+      // Get current order to validate transitions
+      const currentOrder = await db.collection('orders').findOne({
+        _id: new ObjectId(id),
+      });
+
+      if (!currentOrder) {
+        return res.status(404).json({ error: 'Order not found' });
+      }
+
+      // Validate status transition
+      if (
+        updateData.status &&
+        !validateOrderTransition(currentOrder.status, updateData.status)
+      ) {
+        return res.status(400).json({
+          error: `Invalid status transition from ${currentOrder.status} to ${updateData.status}`,
+        });
+      }
+
+      // Validate payment status
+      if (
+        updateData.paymentStatus &&
+        !validatePaymentStatus(updateData.paymentStatus)
+      ) {
+        return res.status(400).json({
+          error: 'Invalid payment status',
+        });
+      }
+
+      // Validate payment method
+      if (
+        updateData.paymentMethod &&
+        !validatePaymentMethod(updateData.paymentMethod)
+      ) {
+        return res.status(400).json({
+          error: 'Invalid payment method',
+        });
+      }
 
       // Prepare update object
       const update: Record<string, unknown> = {
@@ -225,8 +395,27 @@ export const orderController = {
   // Delete order
   deleteOrder: async (req: Request, res: Response) => {
     try {
-      const db = getDb();
       const { id } = req.params;
+
+      if (!ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid order ID format' });
+      }
+
+      // Check if order exists and can be deleted
+      const order = await db.collection('orders').findOne({
+        _id: new ObjectId(id),
+      });
+
+      if (!order) {
+        return res.status(404).json({ error: 'Order not found' });
+      }
+
+      // Prevent deletion of completed orders (optional business rule)
+      if (order.status === 'completed') {
+        return res.status(400).json({
+          error: 'Cannot delete completed orders. Consider cancelling instead.',
+        });
+      }
 
       const result = await db.collection('orders').deleteOne({
         _id: new ObjectId(id),
@@ -252,7 +441,6 @@ export const orderController = {
   // Add note to order
   addNote: async (req: Request, res: Response) => {
     try {
-      const db = getDb();
       const { id } = req.params;
       const {
         text,
@@ -260,16 +448,26 @@ export const orderController = {
         category = 'general',
       }: Omit<OrderNote, 'timestamp'> = req.body;
 
-      if (!text || !author) {
+      if (!ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid order ID format' });
+      }
+
+      if (!text || text.trim() === '') {
         return res.status(400).json({
-          error: 'Text and author are required',
+          error: 'Note text is required and cannot be empty',
+        });
+      }
+
+      if (!author || author.trim() === '') {
+        return res.status(400).json({
+          error: 'Author is required and cannot be empty',
         });
       }
 
       const note: OrderNote = {
         _id: new ObjectId(),
-        text,
-        author,
+        text: text.trim(),
+        author: author.trim(),
         timestamp: new Date(),
         category,
       };
@@ -296,6 +494,131 @@ export const orderController = {
       res.json(result);
     } catch (error) {
       console.error('Error adding note:', error);
+      res.status(500).json({
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  },
+
+  // Process payment for order
+  processPayment: async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { isPaid = true, paymentMethod, amount } = req.body;
+
+      if (!ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid order ID format' });
+      }
+
+      // Validate payment method if provided
+      if (paymentMethod && !validatePaymentMethod(paymentMethod)) {
+        return res.status(400).json({ error: 'Invalid payment method' });
+      }
+
+      // Validate amount if provided
+      if (amount && (typeof amount !== 'number' || amount < 0)) {
+        return res
+          .status(400)
+          .json({ error: 'Amount must be a positive number' });
+      }
+
+      const update: Record<string, unknown> = {
+        updatedAt: new Date(),
+      };
+
+      // Update payment status
+      if (isPaid) {
+        update.paymentStatus = 'paid';
+        update.paymentMethod = paymentMethod || 'card';
+      } else {
+        update.paymentStatus = 'unpaid';
+        update.paymentMethod = undefined;
+      }
+
+      // If partial payment, handle it
+      if (amount && amount > 0) {
+        update.paymentStatus = 'partially_paid';
+        update.paymentMethod = paymentMethod || 'card';
+      }
+
+      const result = await db
+        .collection('orders')
+        .findOneAndUpdate({ _id: new ObjectId(id) }, update, {
+          returnDocument: 'after',
+        });
+
+      if (!result) {
+        return res.status(404).json({ error: 'Order not found' });
+      }
+
+      // Emit WebSocket event
+      const io = req.app.get('io');
+      io.to('orders').emit('order:updated', result);
+
+      res.json(result);
+    } catch (error) {
+      console.error('Error processing payment:', error);
+      res.status(500).json({
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  },
+
+  // Get order statistics
+  getOrderStats: async (req: Request, res: Response) => {
+    try {
+      const { startDate, endDate } = req.query;
+
+      let dateFilter = {};
+      if (startDate || endDate) {
+        dateFilter = {
+          createdAt: {
+            ...(startDate && { $gte: new Date(startDate as string) }),
+            ...(endDate && { $lte: new Date(endDate as string) }),
+          },
+        };
+      }
+
+      const stats = await db
+        .collection('orders')
+        .aggregate([
+          { $match: dateFilter },
+          {
+            $group: {
+              _id: null,
+              totalOrders: { $sum: 1 },
+              totalRevenue: { $sum: '$totalAmount' },
+              averageOrderValue: { $avg: '$totalAmount' },
+              pendingOrders: {
+                $sum: { $cond: [{ $eq: ['$status', 'pending'] }, 1, 0] },
+              },
+              inProgressOrders: {
+                $sum: { $cond: [{ $eq: ['$status', 'in_progress'] }, 1, 0] },
+              },
+              completedOrders: {
+                $sum: { $cond: [{ $eq: ['$status', 'completed'] }, 1, 0] },
+              },
+              paidOrders: {
+                $sum: { $cond: [{ $eq: ['$paymentStatus', 'paid'] }, 1, 0] },
+              },
+            },
+          },
+        ])
+        .toArray();
+
+      const result = stats[0] || {
+        totalOrders: 0,
+        totalRevenue: 0,
+        averageOrderValue: 0,
+        pendingOrders: 0,
+        inProgressOrders: 0,
+        completedOrders: 0,
+        paidOrders: 0,
+      };
+
+      res.json(result);
+    } catch (error) {
+      console.error('Error fetching order stats:', error);
       res.status(500).json({
         error: error instanceof Error ? error.message : 'Unknown error',
       });

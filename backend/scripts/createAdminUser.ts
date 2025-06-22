@@ -1,5 +1,5 @@
 import { connectDB } from '../config/db';
-import { staffCollection, StaffMember } from '../models/Staff';
+import { getStaffCollection, StaffMember } from '../models/Staff';
 import bcrypt from 'bcryptjs';
 
 const createAdminUser = async () => {
@@ -7,7 +7,7 @@ const createAdminUser = async () => {
     await connectDB();
 
     // Check if admin user already exists
-    const existingAdmin = await staffCollection.findOne({
+    const existingAdmin = await getStaffCollection().findOne({
       email: 'admin@example.com',
     });
     if (existingAdmin) {
@@ -16,45 +16,44 @@ const createAdminUser = async () => {
     }
 
     // Create admin user
-    const hashedPassword = await bcrypt.hash('admin123', 10);
-    const adminUser: Omit<StaffMember, '_id'> = {
+    const adminUser: StaffMember = {
       firstName: 'Admin',
       lastName: 'User',
       name: 'Admin User',
       email: 'admin@example.com',
-      password: hashedPassword,
+      password: await bcrypt.hash('admin123', 10),
       phone: {
         countryCode: '+1',
-        number: '1234567890',
+        number: '555-0123',
       },
       emergencyContact: {
         name: 'Emergency Contact',
-        relationship: 'Family',
+        relationship: 'Spouse',
         phone: {
           countryCode: '+1',
-          number: '0987654321',
+          number: '555-0124',
         },
       },
-      employmentType: 'FULL_TIME' as const,
+      employmentType: 'FULL_TIME',
       age: 30,
       gender: 'OTHER',
       dateOfBirth: '1990-01-01',
       address: {
         street: '123 Admin St',
         city: 'Admin City',
-        state: 'Admin State',
+        state: 'AS',
         postalCode: '12345',
-        country: 'Admin Country',
+        country: 'USA',
       },
-      startDate: new Date().toISOString(),
-      position: 'Administrator',
+      startDate: '2024-01-01',
+      position: 'System Administrator',
       isActive: true,
       role: 'ADMIN',
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
-    await staffCollection.insertOne(adminUser);
+    await getStaffCollection().insertOne(adminUser);
     console.log('Admin user created successfully');
     process.exit(0);
   } catch (error) {

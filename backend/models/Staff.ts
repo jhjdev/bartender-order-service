@@ -54,8 +54,17 @@ export interface StaffMember {
   updatedAt?: Date;
 }
 
-export const staffCollection: Collection<StaffMember> =
-  db.collection<StaffMember>('staff');
+// Function to get the staff collection when needed
+export const getStaffCollection = (): Collection<StaffMember> => {
+  return db.collection<StaffMember>('staff');
+};
 
-// Create indexes
-staffCollection.createIndex({ email: 1 }, { unique: true });
+// Initialize indexes when the module is first used
+let indexesInitialized = false;
+export const initializeIndexes = async () => {
+  if (!indexesInitialized) {
+    const collection = getStaffCollection();
+    await collection.createIndex({ email: 1 }, { unique: true });
+    indexesInitialized = true;
+  }
+};
