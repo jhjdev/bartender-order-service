@@ -22,14 +22,26 @@ export const drinkService = {
     return response.data;
   },
 
-  async uploadDrinkImage(id: string, imageFile: File) {
+  // Upload image to temp-uploads
+  async uploadTempImage(imageFile: File) {
     const formData = new FormData();
     formData.append('image', imageFile);
 
-    const response = await axios.post(`/drinks/${id}/image`, formData, {
+    const response = await axios.post('/images/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
+    });
+    return response.data;
+  },
+
+  // Move temp image to uploads and sync to database
+  async moveImageToUploads(tempId: string, drinkId: string, drinkName: string) {
+    const response = await axios.post('/images/move-to-uploads', {
+      tempId,
+      drinkId,
+      drinkName,
+      type: 'drink',
     });
     return response.data;
   },

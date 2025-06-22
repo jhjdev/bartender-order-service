@@ -39,6 +39,9 @@ app.use(express.json());
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Serve static files from temp-uploads directory
+app.use('/temp-uploads', express.static(path.join(__dirname, 'temp-uploads')));
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/drinks', drinksRoutes);

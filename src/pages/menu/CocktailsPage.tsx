@@ -7,6 +7,7 @@ import {
   addCocktail,
   updateCocktail,
   deleteCocktail,
+  fetchCocktails,
 } from '../../redux/slices/cocktailsSlice';
 import { toast } from 'react-toastify';
 import { cocktailService } from '../../services/cocktailService';
@@ -546,12 +547,38 @@ const CocktailsPage: React.FC = () => {
         ).unwrap();
         toast.success(t('cocktails.messages.created'));
       }
+
+      // If there's an image file, handle the upload flow
       if (imageFile && createdOrUpdatedCocktail?._id) {
-        await cocktailService.uploadCocktailImage(
-          createdOrUpdatedCocktail._id,
-          imageFile
-        );
+        try {
+          // Upload to temp-uploads
+          const uploadResponse = await cocktailService.uploadTempImage(
+            imageFile
+          );
+
+          // Move to uploads and sync to database
+          await cocktailService.moveImageToUploads(
+            uploadResponse.imageData.tempId,
+            createdOrUpdatedCocktail._id,
+            cocktailData.name || ''
+          );
+
+          // Refresh cocktails to show the new image
+          await dispatch(fetchCocktails()).unwrap();
+        } catch (imageError) {
+          console.error('Error uploading image:', imageError);
+          toast.warning('Cocktail saved but image upload failed', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: 'colored',
+          });
+        }
       }
+
       setShowForm(false);
       setEditingCocktail(undefined);
     } catch (error) {

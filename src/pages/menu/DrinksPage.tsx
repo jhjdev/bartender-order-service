@@ -12,6 +12,7 @@ import '../../styles/forms.css';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../redux/store';
+import { drinkService } from '../../services/drinkService';
 
 const categories = [
   { value: DrinkCategory.DRAFT_BEER, label: 'Draft Beer' },
@@ -497,9 +498,43 @@ const DrinksPage: React.FC = () => {
     setSelectedCategory(category);
   };
 
-  const handleAddDrink = async (drinkData: Partial<Drink>) => {
+  const handleAddDrink = async (
+    drinkData: Partial<Drink>,
+    imageFile?: File
+  ) => {
     try {
-      await dispatch(createDrink(drinkData)).unwrap();
+      // First create the drink
+      const createdDrink = await dispatch(createDrink(drinkData)).unwrap();
+
+      // If there's an image file, handle the upload flow
+      if (imageFile && createdDrink._id) {
+        try {
+          // Upload to temp-uploads
+          const uploadResponse = await drinkService.uploadTempImage(imageFile);
+
+          // Move to uploads and sync to database
+          await drinkService.moveImageToUploads(
+            uploadResponse.imageData.tempId,
+            createdDrink._id,
+            drinkData.name || ''
+          );
+
+          // Refresh drinks to show the new image
+          await dispatch(fetchDrinks()).unwrap();
+        } catch (imageError) {
+          console.error('Error uploading image:', imageError);
+          toast.warning('Drink created but image upload failed', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: 'colored',
+          });
+        }
+      }
+
       toast.success('Drink added successfully', {
         position: 'top-right',
         autoClose: 5000,
