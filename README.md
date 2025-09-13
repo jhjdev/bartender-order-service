@@ -1,4 +1,4 @@
-# Bar Manager Dashboard
+# WIP: Bar Manager Dashboard
 
 A comprehensive bar management system built with modern web technologies. This application helps bar managers handle orders, inventory, staff scheduling, and reporting in one centralized platform.
 
