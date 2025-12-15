@@ -1,40 +1,20 @@
-import { getToken } from 'firebase/messaging';
-import { messaging } from '../config/firebase';
+// NOTE: Firebase Cloud Messaging (FCM) is not wired up in this repo yet.
+// This file keeps the notification API surface without requiring firebase deps.
 
-export async function requestNotificationPermission() {
+export async function requestNotificationPermission(): Promise<string | null> {
   try {
-    console.log('Requesting notification permission...');
     const permission = await Notification.requestPermission();
-    console.log('Permission status:', permission);
+    if (permission !== 'granted') return null;
 
-    if (permission === 'granted') {
-      console.log('Permission granted, getting token...');
-      const token = await getToken(messaging, {
-        vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
-      });
-      console.log('Successfully got token:', token);
-      // TODO: Send this token to your server
-      return token;
-    } else {
-      console.log('Permission denied');
-      return null;
-    }
+    // TODO: Implement FCM token retrieval once firebase is added/configured.
+    return null;
   } catch (error) {
     console.error('Error in requestNotificationPermission:', error);
     return null;
   }
 }
 
-export async function getNotificationToken() {
-  try {
-    console.log('Getting notification token...');
-    const token = await getToken(messaging, {
-      vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
-    });
-    console.log('Successfully got token:', token);
-    return token;
-  } catch (error) {
-    console.error('Error getting notification token:', error);
-    return null;
-  }
+export async function getNotificationToken(): Promise<string | null> {
+  // TODO: Implement FCM token retrieval once firebase is added/configured.
+  return null;
 }

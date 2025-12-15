@@ -25,6 +25,11 @@ export interface Order {
   status: OrderStatus;
   paymentStatus: PaymentStatus;
   paymentMethod?: PaymentMethod;
+  /**
+   * Legacy field still used by some UI/components.
+   * Prefer using paymentStatus going forward.
+   */
+  isPaid?: boolean;
   notes: OrderNote[];
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string

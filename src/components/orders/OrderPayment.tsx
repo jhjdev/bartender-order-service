@@ -19,13 +19,15 @@ const OrderPayment: React.FC<OrderPaymentProps> = ({
   const loading = useAppSelector((state: RootState) => state.orders.loading);
   const [paymentError, setPaymentError] = useState<string | null>(null);
 
+  const isPaid = order.isPaid ?? order.paymentStatus === 'paid';
+
   const handlePaymentProcess = async () => {
     try {
       setPaymentError(null);
       await dispatch(
         processOrderPayment({
           orderId: order._id!,
-          isPaid: !order.isPaid,
+          isPaid: !isPaid,
         })
       ).unwrap();
       showToast.success('Payment processed successfully');
@@ -38,9 +40,9 @@ const OrderPayment: React.FC<OrderPaymentProps> = ({
   };
 
   const totalAmount = calculateOrderTotal(order);
-  const paymentStatus = order.isPaid ? 'Paid' : 'Unpaid';
-  const buttonText = order.isPaid ? 'Mark as Unpaid' : 'Process Payment';
-  const statusColor = order.isPaid ? 'text-green-600' : 'text-red-600';
+  const paymentStatus = isPaid ? 'Paid' : 'Unpaid';
+  const buttonText = isPaid ? 'Mark as Unpaid' : 'Process Payment';
+  const statusColor = isPaid ? 'text-green-600' : 'text-red-600';
 
   return (
     <div className="w-full bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
@@ -71,7 +73,7 @@ const OrderPayment: React.FC<OrderPaymentProps> = ({
           className={`w-full py-2 px-4 rounded-md text-white font-medium ${
             loading
               ? 'bg-gray-400 cursor-not-allowed'
-              : order.isPaid
+              : isPaid
               ? 'bg-red-600 hover:bg-red-700'
               : 'bg-green-600 hover:bg-green-700'
           }`}
