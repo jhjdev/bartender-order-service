@@ -3128,7 +3128,7 @@ __metadata:
     i18next-browser-languagedetector: "npm:^8.1.0"
     i18next-http-backend: "npm:^3.0.2"
     libphonenumber-js: "npm:^1.12.8"
-    mongodb: "npm:^6.17.0"
+    mongodb: "npm:^6.18.0"
     postcss: "npm:^8.4.27"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
@@ -5670,7 +5670,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb@npm:*, mongodb@npm:^6.17.0":
+"mongodb@npm:*":
   version: 6.17.0
   resolution: "mongodb@npm:6.17.0"
   dependencies:
@@ -5704,7 +5704,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb@npm:^6.3.0":
+"mongodb@npm:^6.18.0, mongodb@npm:^6.3.0":
   version: 6.21.0
   resolution: "mongodb@npm:6.21.0"
   dependencies:
