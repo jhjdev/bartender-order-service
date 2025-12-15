@@ -228,12 +228,13 @@ const orderSlice = createSlice({
         (order) => order._id === action.payload
       );
       if (orderToUpdate) {
-        // Toggle the payment status
-        orderToUpdate.isPaid = !orderToUpdate.isPaid;
+        // Toggle the payment status (legacy boolean field)
+        const nextIsPaid = !(orderToUpdate.isPaid ?? false);
+        orderToUpdate.isPaid = nextIsPaid;
 
         // If the current order is being updated, update it too
         if (state.currentOrder && state.currentOrder._id === action.payload) {
-          state.currentOrder.isPaid = orderToUpdate.isPaid;
+          state.currentOrder.isPaid = nextIsPaid;
         }
 
         // Record last operation

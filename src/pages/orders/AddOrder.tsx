@@ -28,7 +28,7 @@ const AddOrder: React.FC = () => {
       await dispatch(
         createOrder({
           customerNumber,
-          tableNumber,
+          tableNumber: `T${tableNumber}`,
           items: [], // Items will be added through drink selection
         })
       ).unwrap();

@@ -15,7 +15,7 @@ const getImagesCollection = () => {
 
 // Configure multer for temp-uploads
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
+  destination: (_req, _file, cb) => {
     const tempUploadsDir = path.join(__dirname, '../temp-uploads');
 
     // Ensure temp-uploads directory exists
@@ -25,7 +25,7 @@ const storage = multer.diskStorage({
 
     cb(null, tempUploadsDir);
   },
-  filename: (req, file, cb) => {
+  filename: (_req, file, cb) => {
     // Generate unique filename with timestamp
     const uniqueName = `${Date.now()}-${uuidv4()}${path.extname(
       file.originalname
@@ -39,7 +39,7 @@ const upload = multer({
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB limit
   },
-  fileFilter: (req, file, cb) => {
+  fileFilter: (_req, file, cb) => {
     // Check file type
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);
@@ -144,7 +144,7 @@ router.post(
 );
 
 // Clean up temp images (optional - can be called periodically)
-router.delete('/cleanup-temp', (req: Request, res: Response): void => {
+router.delete('/cleanup-temp', (_req: Request, res: Response): void => {
   try {
     const tempUploadsDir = path.join(__dirname, '../temp-uploads');
 

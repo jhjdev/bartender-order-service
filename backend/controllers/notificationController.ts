@@ -4,12 +4,16 @@ interface NotificationData {
   token: string;
 }
 
-export const sendTestNotification = async (req: Request, res: Response) => {
+export const sendTestNotification = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { token } = req.body as NotificationData;
 
     if (!token) {
-      return res.status(400).json({ error: 'Token is required' });
+      res.status(400).json({ error: 'Token is required' });
+      return;
     }
 
     // Mock notification sending for local development
@@ -27,19 +31,19 @@ export const sendTestNotification = async (req: Request, res: Response) => {
     console.log('Mock notification sent:', message);
 
     // Return success response similar to Firebase function
-    return res.json({
+    res.json({
       success: true,
       messageId: `local-${Date.now()}`,
       message: 'Notification sent (local development mode)',
     });
   } catch (error) {
     console.error('Error sending notification:', error);
-    return res.status(500).json({ error: 'Error sending notification' });
+    res.status(500).json({ error: 'Error sending notification' });
   }
 };
 
 // Health check for notification service
-export const notificationHealth = (req: Request, res: Response) => {
+export const notificationHealth = (_req: Request, res: Response): void => {
   res.json({
     status: 'OK',
     service: 'notification',

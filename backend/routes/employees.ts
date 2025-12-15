@@ -9,7 +9,7 @@ const timeOff = db.collection('timeOff');
 const shifts = db.collection('shifts');
 
 // Get all employees
-router.get('/', async (req, res) => {
+router.get('/', async (_req, res) => {
   try {
     const allEmployees = await employees.find().toArray();
     const employeesWithStringIds = allEmployees.map((emp) => ({

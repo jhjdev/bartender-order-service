@@ -215,7 +215,7 @@ router.get('/staff/performance', async (req, res) => {
 });
 
 // Get inventory status (most/least stocked items)
-router.get('/inventory/status', async (req, res) => {
+router.get('/inventory/status', async (_req, res) => {
   try {
     const drinksData = await drinks.find().toArray();
 

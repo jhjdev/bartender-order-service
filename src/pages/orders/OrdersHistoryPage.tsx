@@ -64,7 +64,7 @@ const OrdersHistoryPage: React.FC = () => {
     }
 
     return orders.filter(
-      (order) => order.status === 'served' || order.status === 'cancelled'
+      (order) => order.status === 'completed' || order.status === 'cancelled'
     );
   }, [orders]);
 
