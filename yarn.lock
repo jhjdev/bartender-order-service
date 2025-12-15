@@ -3139,7 +3139,7 @@ __metadata:
     postcss: "npm:^8.4.27"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
-    react-i18next: "npm:^15.5.2"
+    react-i18next: "npm:^15.6.1"
     react-redux: "npm:^8.1.2"
     react-router-dom: "npm:^6"
     react-select: "npm:^5.10.1"
@@ -6306,14 +6306,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-i18next@npm:^15.5.2":
-  version: 15.5.3
-  resolution: "react-i18next@npm:15.5.3"
+"react-i18next@npm:^15.6.1":
+  version: 15.7.4
+  resolution: "react-i18next@npm:15.7.4"
   dependencies:
     "@babel/runtime": "npm:^7.27.6"
     html-parse-stringify: "npm:^3.0.1"
   peerDependencies:
-    i18next: ">= 23.2.3"
+    i18next: ">= 23.4.0"
     react: ">= 16.8.0"
     typescript: ^5
   peerDependenciesMeta:
@@ -6323,7 +6323,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: 10/7e93c2fe408c0a56ce57be4ff87d8cbf58ea181380d4b366f73142e45ddc10b3a435feb76447ad3c5e5320e7fc10d61596113405e89b97bc23e140613f5b19a4
+  checksum: 10/bda66694f159e6874b090997e6fe99a3cd112f535ec8f7d7b04ec8766444a2842fc6688b1f8ed7513a167a94dbeb4aa3d487368d166e41c03d7998dc8b09eac4
   languageName: node
   linkType: hard
 
