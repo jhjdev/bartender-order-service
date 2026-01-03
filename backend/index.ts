@@ -15,6 +15,7 @@ import settingsRoutes from './routes/settings';
 import notificationsRoutes from './routes/notifications';
 import * as dotenv from 'dotenv';
 import { getEnvPath } from './utils/paths';
+import { apiLimiter, authLimiter } from './middleware/rateLimiter';
 
 // Load environment variables from root .env file
 dotenv.config({ path: getEnvPath() });
@@ -31,10 +32,21 @@ const io = setupSocket(server);
 app.set('io', io);
 
 const PORT = process.env.PORT || 3001;
+const BODY_LIMIT = process.env.BODY_LIMIT || '100kb';
 
-// Middleware
+// Security and parsing middleware
 app.use(cors());
-app.use(express.json());
+
+// Use the simple query parser to avoid `qs` for query strings
+app.set('query parser', 'simple');
+
+// Limit JSON and URL-encoded body sizes to mitigate resource exhaustion
+app.use(express.json({ limit: BODY_LIMIT }));
+app.use(express.urlencoded({ extended: false, limit: BODY_LIMIT }));
+
+// Rate limiting
+app.use('/api/auth', authLimiter);
+app.use('/api', apiLimiter);
 
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
